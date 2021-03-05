@@ -4,23 +4,24 @@ import hu.bme.aut.onlab.poker.gamemodel.TableSettings
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class NetworkMessage(
+data class NetworkRequest(
     val messageCode: Int,
     val data: String
 )
 
-/*@Serializable
+@Serializable
 data class StartTableMessage(
+    val playerId: Int,
     val settings: TableSettings
 )
 
 @Serializable
 data class JoinTableMessage(
-    val tableId: Int,
-    var mCode: Int
-) : NetworkMessage(1)
+    val playerId: Int,
+    val tableId: Int
+)
 
 @Serializable
 data class GetOpenTablesMessage(
-    var mCode: Int
-) : NetworkMessage(2)*/
+    val settings: TableSettings
+)

@@ -1,7 +1,9 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
-class Table(private val settings: TableSettings) {
+import java.util.concurrent.atomic.AtomicInteger
 
+class Table(private val settings: TableSettings) {
+    val Id: Int = lastTableId.getAndIncrement()
     private val players: MutableList<Player> = mutableListOf()
     var isStarted: Boolean = false
     var bigBlindAmount = settings.bigBlindStartingAmount
@@ -31,5 +33,9 @@ class Table(private val settings: TableSettings) {
 
     fun evaluateHand(fromCards: List<Card>) : Hand {
         TODO("Hand evaluation algorithm needed")
+    }
+
+    companion object {
+        var lastTableId = AtomicInteger(100)
     }
 }

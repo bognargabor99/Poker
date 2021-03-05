@@ -1,10 +1,14 @@
 package hu.bme.aut.onlab.poker
 
+import hu.bme.aut.onlab.poker.gamemodel.Card
+import hu.bme.aut.onlab.poker.gamemodel.Suit
 import hu.bme.aut.onlab.poker.network.User
 import io.ktor.application.*
 import io.ktor.routing.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.time.*
 import java.util.*
 
@@ -12,7 +16,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
-    install(io.ktor.websocket.WebSockets) {
+    install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)
         timeout = Duration.ofSeconds(15)
         maxFrameSize = Long.MAX_VALUE
@@ -23,7 +27,9 @@ fun Application.module(testing: Boolean = false) {
         webSocket("/poker") {
             val thisUser = User(this)
             pokerUsers += thisUser
-            thisUser.sendToClient("General Kenobi")
+            thisUser.sendToClient("You're connected")
+            val card = Card(10, Suit.SPADES)
+            thisUser.sendToClient(Json.encodeToString(card))
             try {
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue

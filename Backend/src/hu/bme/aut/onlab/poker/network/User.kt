@@ -7,9 +7,15 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class User(private val session: DefaultWebSocketSession) {
     val name = "user${lastId.getAndIncrement()}"
+    private val chain = NetworkChain()
+
+    init {
+        //TODO("User Collection")
+    }
 
     fun receiveFromClient(receivedText: String) {
-        Json.decodeFromString<NetworkMessage>(receivedText)
+        val request = Json.decodeFromString<NetworkRequest>(receivedText)
+        chain.process(request)
     }
 
     suspend fun sendToClient(textToSend: String) {
