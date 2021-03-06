@@ -2,7 +2,7 @@ package hu.bme.aut.onlab.poker.gamemodel
 
 import java.util.concurrent.atomic.AtomicInteger
 
-class Table(private val settings: TableSettings) {
+class Table(val settings: TableSettings) {
     val Id: Int = lastTableId.getAndIncrement()
     private val players: MutableList<Player> = mutableListOf()
     var isStarted: Boolean = false
@@ -24,6 +24,9 @@ class Table(private val settings: TableSettings) {
     }
 
     fun newTurn() {
+        if (turnCount % settings.doubleBlindsAfterTurnCount == 0)
+            bigBlindAmount*=2
+        turnCount++
         TODO("Start new turn")
     }
 

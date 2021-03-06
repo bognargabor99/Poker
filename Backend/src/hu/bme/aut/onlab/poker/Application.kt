@@ -3,6 +3,7 @@ package hu.bme.aut.onlab.poker
 import hu.bme.aut.onlab.poker.gamemodel.Card
 import hu.bme.aut.onlab.poker.gamemodel.Suit
 import hu.bme.aut.onlab.poker.network.User
+import hu.bme.aut.onlab.poker.network.UserCollection
 import io.ktor.application.*
 import io.ktor.routing.*
 import io.ktor.http.cio.websocket.*
@@ -22,11 +23,10 @@ fun Application.module(testing: Boolean = false) {
         maxFrameSize = Long.MAX_VALUE
         masking = false
     }
-    val pokerUsers = Collections.synchronizedSet<User?>(LinkedHashSet())
     routing {
         webSocket("/poker") {
             val thisUser = User(this)
-            pokerUsers += thisUser
+            UserCollection += thisUser
             thisUser.sendToClient("You're connected")
             val card = Card(10, Suit.SPADES)
             thisUser.sendToClient(Json.encodeToString(card))
@@ -40,7 +40,7 @@ fun Application.module(testing: Boolean = false) {
                 println(e.localizedMessage)
             } finally {
                 println("Removing $thisUser!")
-                pokerUsers -= thisUser
+                UserCollection -= thisUser
             }
         }
     }

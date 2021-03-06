@@ -23,5 +23,10 @@ data class JoinTableMessage(
 
 @Serializable
 data class GetOpenTablesMessage(
-    val settings: TableSettings
+    val playerId: Int
+)
+
+@Serializable
+data class AskActionMessage(
+    val toCall: Int
 )

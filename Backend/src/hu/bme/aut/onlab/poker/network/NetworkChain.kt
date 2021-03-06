@@ -44,3 +44,14 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
         else
             super.process(request)
 }
+
+class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(request: NetworkRequest?) =
+        if (request?.messageCode == 3) {
+            val getTablesMessage = Json.decodeFromString<GetOpenTablesMessage>(request.data)
+            val tables = Game.getOpenTables()
+            //UserCollection.sendToClient(getTablesMessage.playerId, tables)
+        }
+        else
+            super.process(request)
+}

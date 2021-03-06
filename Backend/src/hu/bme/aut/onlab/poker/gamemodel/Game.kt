@@ -14,4 +14,8 @@ object Game {
             //?.addPlayer(userId)
         TODO("Implement collection of users for attaching player objects for them")
     }
+
+    fun getOpenTables(): List<Int> =
+        tables.filter { table -> table.settings.isOpen && !table.isStarted }
+            .map { it.Id }
 }
