@@ -3,7 +3,7 @@ package hu.bme.aut.onlab.poker.gamemodel
 import java.util.concurrent.atomic.AtomicInteger
 
 class Table(val settings: TableSettings) {
-    val Id: Int = lastTableId.getAndIncrement()
+    val id: Int = lastTableId.getAndIncrement()
     private val players: MutableList<Player> = mutableListOf()
     var isStarted: Boolean = false
     var bigBlindAmount = settings.bigBlindStartingAmount
@@ -34,9 +34,7 @@ class Table(val settings: TableSettings) {
         TODO("End turn")
     }
 
-    fun evaluateHand(fromCards: List<Card>) : Hand {
-        TODO("Hand evaluation algorithm needed")
-    }
+    fun evaluateHand(fromCards: MutableList<Card>) = HandEvaluator.evaluateHand(fromCards)
 
     companion object {
         var lastTableId = AtomicInteger(100)

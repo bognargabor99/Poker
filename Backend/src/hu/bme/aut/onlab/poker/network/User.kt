@@ -9,13 +9,13 @@ import java.util.concurrent.atomic.AtomicInteger
 class User(private val session: DefaultWebSocketSession) {
     val name = "user${lastId.getAndIncrement()}"
     private val chain = NetworkChain()
-    private lateinit var player: Player
+    lateinit var player: Player
 
     init {
         //TODO("User Collection")
     }
 
-    fun receiveFromClient(receivedText: String) {
+    suspend fun receiveFromClient(receivedText: String) {
         val request = Json.decodeFromString<NetworkRequest>(receivedText)
         chain.process(request)
     }

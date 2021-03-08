@@ -6,16 +6,16 @@ object Game {
     fun startTable(settings: TableSettings): Int {
         val newTable = Table(settings)
         tables.add(newTable)
-        return newTable.Id
+        return newTable.id
     }
 
     fun joinTable(tableId: Int, userId: Int) {
-        tables.find { t -> t.Id == tableId }
+        tables.find { t -> t.id == tableId }
             //?.addPlayer(userId)
         TODO("Implement collection of users for attaching player objects for them")
     }
 
     fun getOpenTables(): List<Int> =
         tables.filter { table -> table.settings.isOpen && !table.isStarted }
-            .map { it.Id }
+            .map { it.id }
 }

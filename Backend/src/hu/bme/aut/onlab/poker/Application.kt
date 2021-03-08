@@ -28,8 +28,6 @@ fun Application.module(testing: Boolean = false) {
             val thisUser = User(this)
             UserCollection += thisUser
             thisUser.sendToClient("You're connected")
-            val card = Card(10, Suit.SPADES)
-            thisUser.sendToClient(Json.encodeToString(card))
             try {
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue
