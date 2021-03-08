@@ -80,10 +80,10 @@ class HandEvaluatorTest {
 
     @Test
     fun straightHandEvalTest() {
-        val handCards = mutableListOf(Card(2, Suit.HEARTS),
+        val handCards = mutableListOf(Card(9, Suit.HEARTS),
             Card(10, Suit.CLUBS),
             Card(12, Suit.SPADES),
-            Card(3, Suit.SPADES),
+            Card(9, Suit.SPADES),
             Card(13, Suit.HEARTS),
             Card(11, Suit.HEARTS),
             Card(9, Suit.CLUBS))
