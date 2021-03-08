@@ -28,8 +28,9 @@ class StartTableProcessor(processor: Processor?) : Processor(processor) {
     override suspend fun process(request: NetworkRequest?) =
         if (request?.messageCode == 1) {
             val startMessage = Json.decodeFromString<StartTableMessage>(request.data)
+            println("decoded JSON request data")
             val tableId = Game.startTable(startMessage.settings)
-            Game.joinTable(tableId, startMessage.playerId)
+            Game.joinTable(tableId, startMessage.userName)
         }
         else
             super.process(request)
@@ -39,7 +40,7 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
     override suspend fun process(request: NetworkRequest?) =
         if (request?.messageCode == 2) {
             val joinMessage = Json.decodeFromString<JoinTableMessage>(request.data)
-            Game.joinTable(joinMessage.tableId, joinMessage.playerId)
+            Game.joinTable(joinMessage.tableId, joinMessage.userName)
         }
         else
             super.process(request)
@@ -50,7 +51,7 @@ class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
         if (request?.messageCode == 3) {
             val getTablesMessage = Json.decodeFromString<GetOpenTablesMessage>(request.data)
             val tables = Game.getOpenTables()
-            UserCollection.sendToClient(getTablesMessage.playerId, tables)
+            UserCollection.sendToClient(getTablesMessage.userName, tables)
         }
         else
             super.process(request)

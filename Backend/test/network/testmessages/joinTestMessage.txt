@@ -1,0 +1,1 @@
+{"messageCode":2,"data":"{\"userName\":\"user2\",\"tableId\":100}"}

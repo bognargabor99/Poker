@@ -9,11 +9,12 @@ class Table(val settings: TableSettings) {
     var bigBlindAmount = settings.bigBlindStartingAmount
     var turnCount = 0
 
-    fun addPlayer(player: Player) : Boolean = if (!isStarted && players.size < settings.playerCount) {
-        players.add(player)
-        true
-    } else
-        false
+    fun addPlayer() = if (!isStarted && players.size < settings.playerCount) {
+            val newPlayer = Player(this, settings.playerStartingStack)
+            players.add(newPlayer)
+            Pair(true, newPlayer)
+        } else
+            Pair(false, null)
 
     fun startGame() {
         isStarted = true

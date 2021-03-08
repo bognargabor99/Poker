@@ -12,11 +12,12 @@ class User(private val session: DefaultWebSocketSession) {
     lateinit var player: Player
 
     init {
-        //TODO("User Collection")
+        UserCollection += this
     }
 
     suspend fun receiveFromClient(receivedText: String) {
         val request = Json.decodeFromString<NetworkRequest>(receivedText)
+        println("decoded JSON request")
         chain.process(request)
     }
 

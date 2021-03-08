@@ -4,6 +4,20 @@ object HandEvaluator {
     fun evaluateHand(fromCards: MutableList<Card>) : Hand {
         val sortedCards = fromCards.sortedDescending()
         //Flush section
+        val flushHand = getFlushType(sortedCards)
+        if (flushHand!=null)
+            return flushHand
+        //Straight section
+        val straightStartValue = getStraightSequenceFrom(sortedCards.map { it.value })
+        if (straightStartValue != -1)
+            return Hand(HandType.STRAIGHT, listOf(straightStartValue))
+        //Pairs
+        val valueCounts = MutableList(13) { Pair(it + 2, 0) }
+        sortedCards.forEach { valueCounts[it.value-2] = valueCounts[it.value-2].copy(second = valueCounts[it.value-2].second + 1) }
+        return getPairType(valueCounts)
+    }
+
+    private fun getFlushType(sortedCards: List<Card>): Hand? {
         val suitCounts = IntArray(4)
         sortedCards.forEach { suitCounts[it.suit.ordinal]++ }
         val indexOfFlush = suitCounts.indexOfFirst { it >= 5 }
@@ -22,14 +36,7 @@ object HandEvaluator {
             }
             return Hand(HandType.FLUSH, List(5) { flushValues[it] })
         }
-        //Straight section
-        val straightStartValue = getStraightSequenceFrom(sortedCards.map { it.value })
-        if (straightStartValue != -1)
-            return Hand(HandType.STRAIGHT, listOf(straightStartValue))
-        //Pairs
-        val valueCounts = MutableList(13) { Pair(it + 2, 0) }
-        sortedCards.forEach { valueCounts[it.value-2] = valueCounts[it.value-2].copy(second = valueCounts[it.value-2].second + 1) }
-        return getPairType(valueCounts)
+        return null
     }
 
     private fun getPairType(valueCounts: MutableList<Pair<Int, Int>>): Hand {

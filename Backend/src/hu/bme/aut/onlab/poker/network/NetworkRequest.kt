@@ -11,19 +11,19 @@ data class NetworkRequest(
 
 @Serializable
 data class StartTableMessage(
-    val playerId: Int,
+    val userName: String,
     val settings: TableSettings
 )
 
 @Serializable
 data class JoinTableMessage(
-    val playerId: Int,
+    val userName: String,
     val tableId: Int
 )
 
 @Serializable
 data class GetOpenTablesMessage(
-    val playerId: Int
+    val userName: String
 )
 
 @Serializable

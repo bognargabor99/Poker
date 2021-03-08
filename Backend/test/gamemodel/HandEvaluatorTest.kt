@@ -1,9 +1,6 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
-import hu.bme.aut.onlab.poker.module
-import io.ktor.http.*
 import kotlin.test.*
-import io.ktor.server.testing.*
 
 class HandEvaluatorTest {
     @Test

@@ -1,5 +1,6 @@
 package hu.bme.aut.onlab.poker.network
 
+import hu.bme.aut.onlab.poker.gamemodel.Player
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
@@ -15,8 +16,13 @@ object UserCollection {
         users.remove(user)
     }
 
-    suspend fun sendToClient(playerId: Int, tables: List<Int>) {
-        users.find { it.player.id == playerId }
+    fun setPlayerForUser(userName: String, player: Player) {
+        users.single { it.name == userName }
+            .player = player
+    }
+
+    suspend fun sendToClient(userName: String, tables: List<Int>) {
+        users.find { it.name == userName }
             ?.sendToClient(Json.encodeToString(tables))
     }
 }

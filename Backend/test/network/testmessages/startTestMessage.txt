@@ -1,0 +1,4 @@
+{
+    "messageCode":1,
+    "data":"{\"userName\":\"user1\",\"settings\":{\"isOpen\":true,\"playerCount\":3,\"bigBlindStartingAmount\":40,\"doubleBlindsAfterTurnCount\":5,\"playerStartingStack\":3000}}"
+}
