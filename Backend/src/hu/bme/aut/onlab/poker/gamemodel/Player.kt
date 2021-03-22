@@ -1,5 +1,6 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
+import hu.bme.aut.onlab.poker.network.UserCollection
 import java.util.concurrent.atomic.AtomicInteger
 
 class Player(
@@ -10,9 +11,10 @@ class Player(
     var inHandCards: MutableList<Card> = mutableListOf()
     var chipStack: Int = startingStack
     var inPot: Int = 0
+    lateinit var userName: String
 
-    fun getAction() {
-        TODO()
+    suspend fun askForAction(toCall: Int) {
+        UserCollection.askForAction(userName, toCall)
     }
 
     fun handCard(card: Card) {

@@ -21,8 +21,7 @@ object HandEvaluator {
         val suitCounts = IntArray(4)
         sortedCards.forEach { suitCounts[it.suit.ordinal]++ }
         val indexOfFlush = suitCounts.indexOfFirst { it >= 5 }
-        if (indexOfFlush != -1)
-        {
+        if (indexOfFlush != -1) {
             val flushValues = sortedCards.filter { it.suit.ordinal == indexOfFlush }
                 .map { it.value } as MutableList<Int>
             if (flushValues[0] == 14)

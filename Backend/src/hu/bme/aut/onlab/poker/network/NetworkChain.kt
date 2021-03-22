@@ -12,7 +12,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = JoinTableProcessor(StartTableProcessor(null))
+        chain = StartTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(null))))
     }
 
     suspend fun process(request: NetworkRequest) = chain.process(request)
@@ -29,7 +29,7 @@ class StartTableProcessor(processor: Processor?) : Processor(processor) {
         if (request?.messageCode == 1) {
             val startMessage = Json.decodeFromString<StartTableMessage>(request.data)
             println("decoded JSON request data")
-            val tableId = Game.startTable(startMessage.settings)
+            val tableId = Game.startTable(startMessage.rules)
             Game.joinTable(tableId, startMessage.userName)
         }
         else
@@ -52,6 +52,16 @@ class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
             val getTablesMessage = Json.decodeFromString<GetOpenTablesMessage>(request.data)
             val tables = Game.getOpenTables()
             UserCollection.sendToClient(getTablesMessage.userName, tables)
+        }
+        else
+            super.process(request)
+}
+
+class ActionProcessor(processor: Processor?) : Processor(processor) {
+    override suspend fun process(request: NetworkRequest?) =
+        if (request?.messageCode == 4) {
+            val actionMessage = Json.decodeFromString<ActionIncomingMessage>(request.data)
+            Game.performAction(actionMessage)
         }
         else
             super.process(request)

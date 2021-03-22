@@ -2,19 +2,20 @@ package hu.bme.aut.onlab.poker.gamemodel
 
 import java.util.concurrent.atomic.AtomicInteger
 
-class Table(val settings: TableSettings) {
+class Table(private val rules: TableRules) : PokerActionListener{
     val id: Int = lastTableId.getAndIncrement()
     private val players: MutableList<Player> = mutableListOf()
     var isStarted: Boolean = false
-    var bigBlindAmount = settings.bigBlindStartingAmount
+    var bigBlindAmount = rules.bigBlindStartingAmount
     var turnCount = 0
 
-    fun addPlayer() = if (!isStarted && players.size < settings.playerCount) {
-            val newPlayer = Player(this, settings.playerStartingStack)
-            players.add(newPlayer)
-            Pair(true, newPlayer)
-        } else
-            Pair(false, null)
+    fun addPlayer(userName: String): Boolean = if (!isStarted && players.size < rules.playerCount) {
+        val newPlayer = Player(this, rules.playerStartingStack)
+        newPlayer.userName = userName
+        players.add(newPlayer)
+        true
+    } else
+        false
 
     fun startGame() {
         isStarted = true
@@ -25,7 +26,7 @@ class Table(val settings: TableSettings) {
     }
 
     fun newTurn() {
-        if (turnCount % settings.doubleBlindsAfterTurnCount == 0)
+        if (turnCount % rules.doubleBlindsAfterTurnCount == 0)
             bigBlindAmount*=2
         turnCount++
         TODO("Start new turn")
@@ -35,9 +36,29 @@ class Table(val settings: TableSettings) {
         TODO("End turn")
     }
 
+    fun eliminatePlayer(playerId: Int) {
+        TODO("Player elimination")
+    }
+
+    override fun onAction(playerId: Int, action: Action) {
+        TODO("Not yet implemented")
+    }
+
+    fun declareWinner() {
+        TODO("Declare winner, then close the Table")
+    }
+
     fun evaluateHand(fromCards: MutableList<Card>) = HandEvaluator.evaluateHand(fromCards)
+
+    private suspend fun getAction(toCall: Int, player: Player) = player.askForAction(toCall)
+
+    fun isOpen() = rules.isOpen
 
     companion object {
         var lastTableId = AtomicInteger(100)
     }
+}
+
+interface PokerActionListener {
+    fun onAction(playerId: Int, action: Action)
 }
