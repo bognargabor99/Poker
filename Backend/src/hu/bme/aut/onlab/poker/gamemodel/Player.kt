@@ -1,10 +1,11 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
 import hu.bme.aut.onlab.poker.network.UserCollection
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 class Player(
-    val table: Table,
     startingStack: Int
 ) {
     val id = lastTableId.getAndIncrement()
@@ -13,12 +14,14 @@ class Player(
     var inPot: Int = 0
     lateinit var userName: String
 
-    suspend fun askForAction(toCall: Int) {
-        UserCollection.askForAction(userName, toCall)
-    }
+    fun askForAction(toCall: Int) =
+        GlobalScope.launch {
+            UserCollection.askForAction(userName, toCall)
+        }
 
-    fun handCard(card: Card) {
-        inHandCards.add(card)
+    fun handCards(cards: List<Card>) {
+        inHandCards.clear()
+        inHandCards.addAll(cards)
     }
 
     companion object {

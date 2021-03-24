@@ -1,7 +1,6 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
 import hu.bme.aut.onlab.poker.network.ActionIncomingMessage
-import hu.bme.aut.onlab.poker.network.AskActionMessage
 
 object Game {
     private val tables = mutableListOf<Table>()

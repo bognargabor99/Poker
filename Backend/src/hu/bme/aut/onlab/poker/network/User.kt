@@ -25,6 +25,10 @@ class User(private val session: DefaultWebSocketSession) {
 
     suspend fun askForAction(toCall: Int) = sendToClient(Json.encodeToString(AskActionMessage(toCall)))
 
+    fun notifyGameStarted() {
+        TODO("Not yet implemented")
+    }
+
     companion object {
         var lastId = AtomicInteger(1)
     }

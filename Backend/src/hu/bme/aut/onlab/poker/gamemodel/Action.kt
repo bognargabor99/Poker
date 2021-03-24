@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Action(
-    val type: ActionType,
+    var type: ActionType,
     val amount: Int
 )

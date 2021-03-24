@@ -7,6 +7,5 @@ enum class ActionType {
     FOLD,
     CHECK,
     CALL,
-    RAISE,
-    BET;
+    RAISE;
 }

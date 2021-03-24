@@ -26,4 +26,11 @@ object UserCollection {
         users.single { it.name == userName }
             .askForAction(toCall)
     }
+
+    fun notifyGameStarted(usersInTable: List<String>) {
+        users.filter { usersInTable.contains(it.name) }
+            .forEach { user ->
+                user.notifyGameStarted()
+            }
+    }
 }
