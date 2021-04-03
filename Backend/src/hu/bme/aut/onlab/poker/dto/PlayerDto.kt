@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class PlayerDto(
     val userName: String,
     val chipStack: Int,
-    val inPotThisRound: Int
+    val inPotThisRound: Int,
+    val isInTurn: Boolean
 )

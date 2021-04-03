@@ -1,5 +1,8 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Hand(
     val type: HandType,
     val values: List<Int>

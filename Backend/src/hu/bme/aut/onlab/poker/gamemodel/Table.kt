@@ -1,15 +1,15 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
 import hu.bme.aut.onlab.poker.dto.PlayerDto
+import hu.bme.aut.onlab.poker.dto.TurnEndMsgPlayerDto
 import hu.bme.aut.onlab.poker.network.ActionIncomingMessage
 import hu.bme.aut.onlab.poker.network.GameStateMessage
+import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.network.UserCollection
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.atomic.AtomicInteger
 
-//TODO("SpreadGameState with last Action")
-//TODO("OnFold edge-cases")
 //TODO("All-in except one edge-case")
 class Table(private val rules: TableRules) : PokerActionListener{
     val id: Int = lastTableId.getAndIncrement()
@@ -84,7 +84,6 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     override fun onFold() {
-        players.single { id == nextPlayerId }.actedThisRound = true
         val toRemove = nextPlayerId
         if (playersInTurn.size > 2)
             setNextPlayer()
@@ -191,7 +190,30 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun showdown() {
-        TODO("Showdown at the end of the turn, determine winner(s).")
+        val handsOfPlayers: MutableList<Pair<Int, Hand>> = mutableListOf()
+        playersInTurn.forEach {
+            val cardsToUse = cardsOnTable
+            cardsToUse.addAll(players.single { p -> p.id == it }.inHandCards)
+            val handOfPlayer = HandEvaluator.evaluateHand(cardsToUse)
+            handsOfPlayers.add(Pair(it, handOfPlayer))
+        }
+        val winnings = getWinnersList(handsOfPlayers)
+
+        val playerOrder: MutableList<TurnEndMsgPlayerDto> = mutableListOf()
+        TODO("Send out messages, and add winning chips to players.")
+    }
+
+    // Returns Pairs of <playerId, chipsWon>
+    private fun getWinnersList(hands: MutableList<Pair<Int, Hand>>): List<Pair<Int, Int>> {
+        hands.sortBy { it.second }
+        var sameHandCount = 1
+        for (i in 1 until hands.size) {
+            if (hands.first().second == hands[i].second)
+                sameHandCount++
+            else
+                break
+        }
+        return listOf()
     }
 
     private fun validateAction(actionMsg: ActionIncomingMessage): Boolean {
@@ -230,10 +252,12 @@ class Table(private val rules: TableRules) : PokerActionListener{
             TurnState.AFTER_RIVER -> showdown()
             else -> cardsOnTable.addAll(deck.getCards(1))
         }
-        turnState++
-        nextPlayerId = playersInTurn.last()
-        setNextPlayer()
-        spreadGameState()
+        if (turnState != TurnState.AFTER_RIVER) {
+            turnState++
+            nextPlayerId = playersInTurn.last()
+            setNextPlayer()
+            spreadGameState()
+        }
     }
 
     fun evaluateHand(fromCards: MutableList<Card>) = HandEvaluator.evaluateHand(fromCards)
@@ -243,7 +267,8 @@ class Table(private val rules: TableRules) : PokerActionListener{
     private fun Player.toDto() = PlayerDto(
         this.userName,
         this.chipStack,
-        this.inPotThisRound
+        this.inPotThisRound,
+        playersInTurn.contains(this.id)
     )
 
     companion object {
