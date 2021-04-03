@@ -1,8 +1,5 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
-import hu.bme.aut.onlab.poker.network.UserCollection
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 class Player(
@@ -12,16 +9,36 @@ class Player(
     var inHandCards: MutableList<Card> = mutableListOf()
     var chipStack: Int = startingStack
     var inPot: Int = 0
+    var inPotThisRound: Int = 0
+    var actedThisRound = false
     lateinit var userName: String
-
-    fun askForAction(toCall: Int) =
-        GlobalScope.launch {
-            UserCollection.askForAction(userName, toCall)
-        }
 
     fun handCards(cards: List<Card>) {
         inHandCards.clear()
         inHandCards.addAll(cards)
+    }
+
+    fun newTurn() {
+        inPot = 0
+        inPotThisRound = 0
+        actedThisRound = false
+    }
+
+    fun nextRound() {
+        inPotThisRound = 0
+        actedThisRound = false
+    }
+
+    fun putInPot(amount: Int) {
+        var toPut = amount
+        if (toPut > chipStack)
+            toPut = chipStack
+
+        (toPut - inPotThisRound).also {
+            inPot += it
+            chipStack -= it
+        }
+        inPotThisRound = toPut
     }
 
     companion object {

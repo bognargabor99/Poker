@@ -1,6 +1,8 @@
 package hu.bme.aut.onlab.poker.network
 
+import hu.bme.aut.onlab.poker.dto.PlayerDto
 import hu.bme.aut.onlab.poker.gamemodel.Action
+import hu.bme.aut.onlab.poker.gamemodel.Card
 import hu.bme.aut.onlab.poker.gamemodel.TableRules
 import kotlinx.serialization.Serializable
 
@@ -35,6 +37,11 @@ data class ActionIncomingMessage( // 4
 )
 
 @Serializable
-data class AskActionMessage(
-    val toCall: Int
+data class GameStateMessage(
+    val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
+    val tableCards: List<Card>, // cards on the table
+    val players: List<PlayerDto>, // players with name, chip stack, and this rounds betsize
+    val receiverCards: MutableList<Card>, // cards in hand of the receiver
+    val nextPlayer: String, // username of next player
+    val lastAction: ActionIncomingMessage?
 )

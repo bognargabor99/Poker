@@ -8,7 +8,6 @@ object Game {
     fun startTable(rules: TableRules): Int {
         val newTable = Table(rules)
         tables.add(newTable)
-        println("new Table created")
         return newTable.id
     }
 
@@ -22,7 +21,7 @@ object Game {
 
     fun performAction(actionMessage: ActionIncomingMessage) {
         tables.find { it.id == actionMessage.tableId }
-            ?.onAction(actionMessage.playerId, actionMessage.action)
+            ?.onAction(actionMessage)
     }
 
     fun getOpenTables(): List<Int> =

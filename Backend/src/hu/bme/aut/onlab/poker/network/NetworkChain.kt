@@ -2,6 +2,7 @@ package hu.bme.aut.onlab.poker.network
 
 import hu.bme.aut.onlab.poker.gamemodel.Game
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class NetworkChain {
@@ -15,17 +16,17 @@ class NetworkChain {
         chain = StartTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(null))))
     }
 
-    suspend fun process(request: NetworkRequest) = chain.process(request)
+    fun process(request: NetworkRequest) = chain.process(request)
 }
 
 abstract class Processor(private val processor: Processor?) {
-    open suspend fun process(request: NetworkRequest?) {
+    open fun process(request: NetworkRequest?) {
         processor?.process(request)
     }
 }
 
 class StartTableProcessor(processor: Processor?) : Processor(processor) {
-    override suspend fun process(request: NetworkRequest?) =
+    override fun process(request: NetworkRequest?) =
         if (request?.messageCode == 1) {
             val startMessage = Json.decodeFromString<StartTableMessage>(request.data)
             println("decoded JSON request data")
@@ -37,7 +38,7 @@ class StartTableProcessor(processor: Processor?) : Processor(processor) {
 }
 
 class JoinTableProcessor(processor: Processor?) : Processor(processor) {
-    override suspend fun process(request: NetworkRequest?) =
+    override fun process(request: NetworkRequest?) =
         if (request?.messageCode == 2) {
             val joinMessage = Json.decodeFromString<JoinTableMessage>(request.data)
             Game.joinTable(joinMessage.tableId, joinMessage.userName)
@@ -47,18 +48,18 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
 }
 
 class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
-    override suspend fun process(request: NetworkRequest?) =
+    override fun process(request: NetworkRequest?) =
         if (request?.messageCode == 3) {
             val getTablesMessage = Json.decodeFromString<GetOpenTablesMessage>(request.data)
             val tables = Game.getOpenTables()
-            UserCollection.sendToClient(getTablesMessage.userName, tables)
+            UserCollection.sendToClient(getTablesMessage.userName, Json.encodeToString(tables))
         }
         else
             super.process(request)
 }
 
 class ActionProcessor(processor: Processor?) : Processor(processor) {
-    override suspend fun process(request: NetworkRequest?) =
+    override fun process(request: NetworkRequest?) =
         if (request?.messageCode == 4) {
             val actionMessage = Json.decodeFromString<ActionIncomingMessage>(request.data)
             Game.performAction(actionMessage)
