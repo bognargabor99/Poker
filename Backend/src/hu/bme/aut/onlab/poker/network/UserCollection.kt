@@ -1,5 +1,7 @@
 package hu.bme.aut.onlab.poker.network
 
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.*
 
 object UserCollection {
@@ -23,5 +25,16 @@ object UserCollection {
             .forEach { user ->
                 user.notifyGameStarted(tableId)
             }
+    }
+
+    fun eliminateFromTable(tableId: Int, toEliminate: List<String>) {
+        toEliminate.forEach {
+            users.single { user -> user.name == it }
+                .sendToClient(Json.encodeToString(EliminationMessage(tableId)))
+        }
+    }
+
+    fun tableJoined(user: String, tableId: Int) {
+        users.single { it.name == user }.tableIds.add(tableId)
     }
 }

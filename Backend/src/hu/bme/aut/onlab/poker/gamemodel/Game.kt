@@ -27,4 +27,15 @@ object Game {
     fun getOpenTables(): List<Int> =
         tables.filter { table -> table.isOpen() && !table.isStarted }
             .map { it.id }
+
+    fun removePlayerFromTables(user: String, tableIds: MutableList<Int>) {
+        tables.filter { tableIds.contains(it.id) }
+            .forEach { table ->
+                table.playerDisconnected(user)
+            }
+    }
+
+    fun closeTable(tableId: Int) {
+        tables.removeIf { it.id == tableId }
+    }
 }

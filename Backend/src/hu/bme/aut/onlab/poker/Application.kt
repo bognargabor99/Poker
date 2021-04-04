@@ -1,17 +1,12 @@
 package hu.bme.aut.onlab.poker
 
-import hu.bme.aut.onlab.poker.gamemodel.Card
-import hu.bme.aut.onlab.poker.gamemodel.Suit
 import hu.bme.aut.onlab.poker.network.User
 import hu.bme.aut.onlab.poker.network.UserCollection
 import io.ktor.application.*
 import io.ktor.routing.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.time.*
-import java.util.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -27,7 +22,7 @@ fun Application.module(testing: Boolean = false) {
         webSocket("/poker") {
             val thisUser = User(this)
             UserCollection += thisUser
-            thisUser.sendToClient("You're connected")
+            thisUser.sendNameToClient()
             try {
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue
@@ -38,6 +33,7 @@ fun Application.module(testing: Boolean = false) {
                 println(e.localizedMessage)
             } finally {
                 println("Removing $thisUser!")
+                thisUser.disconnect()
                 UserCollection -= thisUser
             }
         }

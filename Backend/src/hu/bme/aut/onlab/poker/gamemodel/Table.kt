@@ -2,16 +2,12 @@ package hu.bme.aut.onlab.poker.gamemodel
 
 import hu.bme.aut.onlab.poker.dto.PlayerDto
 import hu.bme.aut.onlab.poker.dto.TurnEndMsgPlayerDto
-import hu.bme.aut.onlab.poker.network.ActionIncomingMessage
-import hu.bme.aut.onlab.poker.network.GameStateMessage
-import hu.bme.aut.onlab.poker.network.TurnEndMessage
-import hu.bme.aut.onlab.poker.network.UserCollection
+import hu.bme.aut.onlab.poker.network.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
-//TODO("All-in except one edge-case")
 class Table(private val rules: TableRules) : PokerActionListener{
     val id: Int = lastTableId.getAndIncrement()
     private var bigBlindAmount = rules.bigBlindStartingAmount
@@ -107,6 +103,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             }
             else -> spreadGameState()
         }
+        TODO("Check all-in except one")
     }
 
     override fun onCheck() {
@@ -136,6 +133,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             setNextPlayer()
             spreadGameState()
         }
+        TODO("Check all-in except one")
     }
 
     /*
@@ -150,6 +148,11 @@ class Table(private val rules: TableRules) : PokerActionListener{
         }
         setNextPlayer()
         spreadGameState()
+        TODO("Check all-in except one")
+    }
+
+    private fun allinExceptOne(): Boolean {
+        return false
     }
 
     private fun handCardsToPlayers() {
@@ -191,7 +194,38 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun eliminatePlayers() {
-        TODO("Player elimination")
+        val toEliminate = players.filter { it.chipStack == 0 }
+            .map { it.userName }
+        players.removeIf { it.chipStack == 0 }
+        UserCollection.eliminateFromTable(id, toEliminate)
+        if (players.size <= 1)
+            declareWinner()
+    }
+
+    private fun declareWinner() {
+        players.first().apply {
+            UserCollection.sendToClient(userName, Json.encodeToString(WinnerDeclarationMessage(this@Table.id)))
+        }
+        Game.closeTable(id)
+    }
+
+    fun playerDisconnected(name: String) {
+        val index = players.indexOf(players.single { it.userName == name })
+        if (players.size - 1 > 1) {
+            if (players[index].id == nextPlayerId) {
+                nextPlayerId = previousAction?.playerId ?: playersInTurn.last()
+                setNextPlayer()
+            }
+            playersInTurn.remove(players[index].id)
+            players.removeAt(index)
+            players.forEach {
+                UserCollection.sendToClient(it.userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)))
+            }
+            spreadGameState()
+        } else {
+            players.removeAt(index)
+            declareWinner()
+        }
     }
 
     private fun showdown() {
@@ -229,6 +263,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
         newTurn()
     }
 
+    // Parameter: Pairs of <playerId, handOfPlayer>
     // Returns Pairs of <playerId, chipsWon>
     private fun getWinners(hands: MutableList<Pair<Int, Hand>>): List<Pair<Int, Int>> {
         hands.sortBy { it.second }
@@ -236,33 +271,22 @@ class Table(private val rules: TableRules) : PokerActionListener{
         val winningList: MutableList<Pair<Int, Int>> = mutableListOf()
 
         while (pot != 0) { // loop until there are no side-pots
+            hands.removeIf { players.single { p -> p.id == it.first }.inPot == 0 }
             val winnerCount = getWinnerCount(hands)
-            if (!anyWinnerBetZero(hands.take(winnerCount).map { it.first })) {
-                val (maxBetOfWinners, winnerBetSum) = getMaxAndSumBetOfWinners(hands.take(winnerCount).map { it.first })
-                val sidePot = players.map { it.inPot }.sumOf { min(it, maxBetOfWinners) }
+            val (maxBetOfWinners, winnerBetSum) = getMaxAndSumBetOfWinners(hands.take(winnerCount).map { it.first })
+            val sidePot = players.map { it.inPot }.sumOf { min(it, maxBetOfWinners) }
 
-                repeat(winnerCount) {
-                    val winningOfPlayer: Int = (players.single { it.id == hands.first().first }.inPot / winnerBetSum) * sidePot
-                    winningList.add(Pair(hands.first().first, winningOfPlayer))
-                    hands.removeFirstOrNull()
-                }
+            repeat(winnerCount) {
+                val winningOfPlayer: Int = (players.single { it.id == hands.first().first }.inPot / winnerBetSum) * sidePot
+                winningList.add(Pair(hands.first().first, winningOfPlayer))
+                hands.removeFirstOrNull()
+            }
 
-                players.forEach { it.inPot -= min(it.inPot, maxBetOfWinners) }
-                pot -= sidePot
-            }
-            else {
-                hands.forEach {
-                    val winAmount = players.single {p->p.id==it.first}.inPot
-                    winningList.add(Pair(it.first, winAmount))
-                    pot -= winAmount
-                }
-            }
+            players.forEach { it.inPot -= min(it.inPot, maxBetOfWinners) }
+            pot -= sidePot
         }
         return winningList
     }
-
-    private fun anyWinnerBetZero(playerIds: List<Int>): Boolean =
-        players.filter { playerIds.contains(it.id) }.any { it.inPot == 0 }
 
     private fun getMaxAndSumBetOfWinners(playerIds: List<Int>): Pair<Int, Int> {
         /*
