@@ -11,6 +11,7 @@ class Player(
     var inPot: Int = 0
     var inPotThisRound: Int = 0
     var actedThisRound = false
+    var isInTurn = false
     lateinit var userName: String
 
     fun handCards(cards: List<Card>) {
@@ -22,6 +23,7 @@ class Player(
         inPot = 0
         inPotThisRound = 0
         actedThisRound = false
+        isInTurn = true
     }
 
     fun nextRound() {

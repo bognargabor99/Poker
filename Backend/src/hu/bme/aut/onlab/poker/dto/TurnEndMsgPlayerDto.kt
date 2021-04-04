@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TurnEndMsgPlayerDto(
     val userName: String,
-    val inHandCards: List<Card>,
-    val hand: Hand,
+    val inHandCards: List<Card>?,
+    val hand: Hand?,
     val winAmount: Int
 )

@@ -158,4 +158,17 @@ class HandEvaluatorTest {
         assertEquals(7, hand.values[3])
         assertEquals(6, hand.values[4])
     }
+
+    @Test
+    fun handEqualityTest() {
+        val hand1 = Hand(HandType.THREE_OF_A_KIND, listOf(3, 14, 9))
+        val hand2 = Hand(HandType.THREE_OF_A_KIND, listOf(3, 14, 9))
+        val hand3 = Hand(HandType.FLUSH, listOf(12, 9, 8, 6, 3))
+        val hand4 = Hand(HandType.FLUSH, listOf(12, 9, 8, 6, 3))
+        val hand5 = Hand(HandType.STRAIGHT, listOf(7))
+        val hand6 = Hand(HandType.STRAIGHT, listOf(7))
+        assert(hand1 == hand2)
+        assert(hand3 == hand4)
+        assert(hand5 == hand6)
+    }
 }
