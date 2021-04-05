@@ -52,6 +52,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
         players.forEach { it.newTurn() }
         playersInTurn.clear()
         playersInTurn.addAll(players.map { it.id })
+        cardsOnTable.clear()
         handCardsToPlayers()
         players[players.size - 1].apply {
             inPot = minOf(bigBlindAmount, this.chipStack)
@@ -169,15 +170,18 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
     private fun fastForwardTurn() {
         cardsOnTable.addAll(deck.getCards(5 - cardsOnTable.size))
+        nextPlayerId=0
         spreadGameState()
         showdown()
+        eliminatePlayers()
+        newTurn()
     }
 
     private fun allinExceptOne(): Boolean {
         var noAllInCount = 0
         players.filter { playersInTurn.contains(it.id) }
             .forEach {
-                if (it.chipStack >= 0) {
+                if (it.chipStack > 0) {
                     if (it.inPotThisRound < maxRaiseThisRound)
                         return false
                     noAllInCount++
@@ -209,7 +213,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             gameStateMessage.receiverPID = it.id
             gameStateMessage.receiverCards.clear()
             gameStateMessage.receiverCards.addAll(it.inHandCards)
-            UserCollection.sendToClient(it.userName, Json.encodeToString(gameStateMessage))
+            UserCollection.sendToClient(it.userName, Json.encodeToString(gameStateMessage), GameStateMessage.MESSAGE_CODE)
         }
     }
 
@@ -237,7 +241,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
     private fun declareWinner() {
         players.first().apply {
-            UserCollection.sendToClient(userName, Json.encodeToString(WinnerDeclarationMessage(this@Table.id)))
+            UserCollection.sendToClient(userName, Json.encodeToString(WinnerAnnouncerMessage(this@Table.id)), WinnerAnnouncerMessage.MESSAGE_CODE)
         }
         Game.closeTable(id)
     }
@@ -252,7 +256,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             playersInTurn.remove(players[index].id)
             players.removeAt(index)
             players.forEach {
-                UserCollection.sendToClient(it.userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)))
+                UserCollection.sendToClient(it.userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
             spreadGameState()
         } else {
@@ -291,11 +295,8 @@ class Table(private val rules: TableRules) : PokerActionListener{
             playerOrder
         )
         players.forEach {
-            UserCollection.sendToClient(it.userName, Json.encodeToString(turnEndMessage))
+            UserCollection.sendToClient(it.userName, Json.encodeToString(turnEndMessage), TurnEndMessage.MESSAGE_CODE)
         }
-
-        eliminatePlayers()
-        newTurn()
     }
 
     // Parameter: Pairs of <playerId, handOfPlayer>
@@ -375,8 +376,9 @@ class Table(private val rules: TableRules) : PokerActionListener{
         val turnEndMsg = TurnEndMessage(id, cardsOnTable, listOf(TurnEndMsgPlayerDto(winnerName, null, null, pot)))
 
         players.forEach {
-            UserCollection.sendToClient(it.userName, Json.encodeToString(turnEndMsg))
+            UserCollection.sendToClient(it.userName, Json.encodeToString(turnEndMsg), TurnEndMessage.MESSAGE_CODE)
         }
+        newTurn()
     }
 
     private fun isOneLeftInTurn(): Boolean = playersInTurn.size == 1
@@ -393,6 +395,8 @@ class Table(private val rules: TableRules) : PokerActionListener{
             TurnState.PREFLOP -> cardsOnTable.addAll(deck.getCards(3))
             TurnState.AFTER_RIVER -> {
                 showdown()
+                eliminatePlayers()
+                newTurn()
                 return
             }
             else -> cardsOnTable.addAll(deck.getCards(1))

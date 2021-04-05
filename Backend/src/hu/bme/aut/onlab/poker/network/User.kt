@@ -20,12 +20,13 @@ class User(private val session: DefaultWebSocketSession) {
 
     fun sendNameToClient() {
         GlobalScope.launch {
-            session.send(Json.encodeToString(ConnectionInfoMessage(name)))
+            val networkMsg = NetworkMessage(ConnectionInfoMessage.MESSAGE_CODE, Json.encodeToString(ConnectionInfoMessage(name)))
+            session.send(Json.encodeToString(networkMsg))
         }
     }
 
     fun receiveFromClient(receivedText: String) {
-        val request = Json.decodeFromString<NetworkRequest>(receivedText)
+        val request = Json.decodeFromString<NetworkMessage>(receivedText)
         println("decoded JSON request")
         chain.process(request)
     }

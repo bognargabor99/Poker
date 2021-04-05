@@ -1,4 +1,4 @@
 {
     "messageCode":1,
-    "data":"{\"userName\":\"user1\",\"rules\":{\"isOpen\":true,\"playerCount\":3,\"bigBlindStartingAmount\":40,\"doubleBlindsAfterTurnCount\":5,\"playerStartingStack\":3000}}"
+    "data":"{\"userName\":\"user1\",\"rules\":{\"isOpen\":true,\"playerCount\":2,\"bigBlindStartingAmount\":40,\"doubleBlindsAfterTurnCount\":5,\"playerStartingStack\":3000}}"
 }
