@@ -111,7 +111,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     override fun onCheck() {
-        players.single { id == nextPlayerId }.actedThisRound = true
+        players.single { it.id == nextPlayerId }.actedThisRound = true
         if (isEndOfRound()) {
             nextPlayerId = 0
             spreadGameState()
@@ -124,7 +124,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     override fun onCall() {
-        players.single { id == nextPlayerId }.apply {
+        players.single { it.id == nextPlayerId }.apply {
             putInPot(maxRaiseThisRound)
             actedThisRound = true
         }
@@ -152,7 +152,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
     */
     override fun onRaise(amount: Int) {
         maxRaiseThisRound = amount
-        players.single { id == nextPlayerId }.apply {
+        players.single { it.id == nextPlayerId }.apply {
             putInPot(amount)
             actedThisRound = true
         }
@@ -199,12 +199,14 @@ class Table(private val rules: TableRules) : PokerActionListener{
             id,
             cardsOnTable,
             playerDtos,
+            0,
             mutableListOf(),
-            players.find { id == nextPlayerId }?.userName ?: "",
+            players.singleOrNull { it.id == nextPlayerId }?.userName ?: "",
             previousAction
         )
 
         players.forEach {
+            gameStateMessage.receiverPID = it.id
             gameStateMessage.receiverCards.clear()
             gameStateMessage.receiverCards.addAll(it.inHandCards)
             UserCollection.sendToClient(it.userName, Json.encodeToString(gameStateMessage))
@@ -217,7 +219,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
         while (!done) {
             thisPlayerIndex = (thisPlayerIndex+1) % playersInTurn.size
             // check if the next player went all-in
-            if (players.single { id == playersInTurn[thisPlayerIndex] }.run { chipStack != 0 }) {
+            if (players.single { it.id == playersInTurn[thisPlayerIndex] }.run { chipStack != 0 }) {
                 nextPlayerId = playersInTurn[thisPlayerIndex]
                 return
             }
@@ -260,14 +262,16 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun showdown() {
+        pot = players.map { it.inPot }.sum()
         val handsOfPlayers: MutableList<Pair<Int, Hand>> = mutableListOf()
         playersInTurn.forEach {
-            val cardsToUse = cardsOnTable
+            val cardsToUse = mutableListOf<Card>()
+            cardsToUse.addAll(cardsOnTable)
             cardsToUse.addAll(players.single { p -> p.id == it }.inHandCards)
             val handOfPlayer = evaluateHand(cardsToUse)
             handsOfPlayers.add(Pair(it, handOfPlayer))
         }
-        val winnings = getWinners(handsOfPlayers)
+        val winnings = getWinners(MutableList(handsOfPlayers.size) { handsOfPlayers[it]})
 
         val playerOrder: MutableList<TurnEndMsgPlayerDto> = mutableListOf()
         winnings.forEach { win ->
@@ -363,6 +367,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
     private fun oneLeft() {
         var winnerName: String
+        pot = players.map { it.inPot }.sum()
         players.single { it.id == playersInTurn.first() }.apply {
             chipStack += pot
             winnerName = userName
@@ -386,15 +391,16 @@ class Table(private val rules: TableRules) : PokerActionListener{
         previousAction = null
         when (turnState) {
             TurnState.PREFLOP -> cardsOnTable.addAll(deck.getCards(3))
-            TurnState.AFTER_RIVER -> showdown()
+            TurnState.AFTER_RIVER -> {
+                showdown()
+                return
+            }
             else -> cardsOnTable.addAll(deck.getCards(1))
         }
-        if (turnState != TurnState.AFTER_RIVER) {
-            turnState++
-            nextPlayerId = playersInTurn.last()
-            setNextPlayer()
-            spreadGameState()
-        }
+        turnState++
+        nextPlayerId = playersInTurn.last()
+        setNextPlayer()
+        spreadGameState()
     }
 
     private fun evaluateHand(fromCards: MutableList<Card>) = HandEvaluator.evaluateHand(fromCards)
