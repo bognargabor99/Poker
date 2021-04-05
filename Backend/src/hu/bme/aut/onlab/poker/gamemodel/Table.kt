@@ -96,6 +96,11 @@ class Table(private val rules: TableRules) : PokerActionListener{
                 spreadGameState()
                 oneLeft()
             }
+            allinExceptOne() -> {
+                nextPlayerId = 0
+                spreadGameState()
+                fastForwardTurn()
+            }
             isEndOfRound() -> {
                 nextPlayerId = 0
                 spreadGameState()
@@ -103,7 +108,6 @@ class Table(private val rules: TableRules) : PokerActionListener{
             }
             else -> spreadGameState()
         }
-        TODO("Check all-in except one")
     }
 
     override fun onCheck() {
@@ -124,16 +128,22 @@ class Table(private val rules: TableRules) : PokerActionListener{
             putInPot(maxRaiseThisRound)
             actedThisRound = true
         }
-        if (isEndOfRound()) {
-            nextPlayerId = 0
-            spreadGameState()
-            nextRound()
+        when {
+            allinExceptOne() -> {
+                nextPlayerId = 0
+                spreadGameState()
+                fastForwardTurn()
+            }
+            isEndOfRound() -> {
+                nextPlayerId = 0
+                spreadGameState()
+                nextRound()
+            }
+            else -> {
+                setNextPlayer()
+                spreadGameState()
+            }
         }
-        else {
-            setNextPlayer()
-            spreadGameState()
-        }
-        TODO("Check all-in except one")
     }
 
     /*
@@ -146,13 +156,31 @@ class Table(private val rules: TableRules) : PokerActionListener{
             putInPot(amount)
             actedThisRound = true
         }
-        setNextPlayer()
+        if (allinExceptOne()) {
+            nextPlayerId = 0
+            spreadGameState()
+            fastForwardTurn()
+        }
+        else {
+            setNextPlayer()
+            spreadGameState()
+        }
+    }
+
+    private fun fastForwardTurn() {
+        cardsOnTable.addAll(deck.getCards(5 - cardsOnTable.size))
         spreadGameState()
-        TODO("Check all-in except one")
+        showdown()
     }
 
     private fun allinExceptOne(): Boolean {
-        return false
+        var noAllInCount = 0
+        players.filter { playersInTurn.contains(it.id) }
+            .forEach {
+                if (it.chipStack >= 0)
+                    noAllInCount++
+            }
+        return noAllInCount <= 1
     }
 
     private fun handCardsToPlayers() {
