@@ -177,8 +177,11 @@ class Table(private val rules: TableRules) : PokerActionListener{
         var noAllInCount = 0
         players.filter { playersInTurn.contains(it.id) }
             .forEach {
-                if (it.chipStack >= 0)
+                if (it.chipStack >= 0) {
+                    if (it.inPotThisRound < maxRaiseThisRound)
+                        return false
                     noAllInCount++
+                }
             }
         return noAllInCount <= 1
     }
@@ -345,13 +348,16 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun validateAction(actionMsg: ActionIncomingMessage): Boolean {
-        if (actionMsg.playerId != nextPlayerId)
+        if (actionMsg.playerId != nextPlayerId) // if action not from next player
             return false
-        if (actionMsg.action.type == ActionType.CHECK && maxRaiseThisRound != players.single { it.id == nextPlayerId }.inPotThisRound)
+        if (actionMsg.action.type == ActionType.CHECK && maxRaiseThisRound != players.single { it.id == nextPlayerId }.inPotThisRound) // if checked but has to fold/raise
             return false
-        if (actionMsg.action.type == ActionType.RAISE && actionMsg.action.amount - maxRaiseThisRound < bigBlindAmount)
-            if (players.single { it.id == actionMsg.playerId }.chipStack < actionMsg.action.amount)
+        if (actionMsg.action.type == ActionType.RAISE) {
+            if ((actionMsg.action.amount - maxRaiseThisRound < bigBlindAmount) && actionMsg.action.amount == players.single { it.id == nextPlayerId }.chipStack)
+                return true
+            if (players.single { it.id == nextPlayerId }.chipStack < actionMsg.action.amount)
                 return false
+        }
         return true
     }
 
