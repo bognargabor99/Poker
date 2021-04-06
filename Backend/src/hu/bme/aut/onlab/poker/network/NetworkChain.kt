@@ -1,19 +1,20 @@
 package hu.bme.aut.onlab.poker.network
 
 import hu.bme.aut.onlab.poker.gamemodel.Game
+import hu.bme.aut.onlab.poker.gamemodel.Table
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class NetworkChain {
-    lateinit var chain: Processor
+    private lateinit var chain: Processor
 
     init {
         buildChain()
     }
 
     private fun buildChain() {
-        chain = StartTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(null))))
+        chain = CreateTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(null))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -25,12 +26,14 @@ abstract class Processor(private val processor: Processor?) {
     }
 }
 
-class StartTableProcessor(processor: Processor?) : Processor(processor) {
+class CreateTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-        if (message?.messageCode == StartTableMessage.MESSAGE_CODE) {
-            val startMessage = Json.decodeFromString<StartTableMessage>(message.data)
+        if (message?.messageCode == CreateTableMessage.MESSAGE_CODE) {
+            val startMessage = Json.decodeFromString<CreateTableMessage>(message.data)
             val tableId = Game.startTable(startMessage.rules)
             Game.joinTable(tableId, startMessage.userName)
+            val answer = TableCreatedMessage(tableId)
+            UserCollection.sendToClient(startMessage.userName, Json.encodeToString(answer), TableCreatedMessage.MESSAGE_CODE)
         }
         else
             super.process(message)

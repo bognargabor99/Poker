@@ -14,7 +14,7 @@ data class NetworkMessage(
 )
 
 @Serializable
-data class StartTableMessage( // 1
+data class CreateTableMessage(
     val userName: String,
     val rules: TableRules
 ) {
@@ -24,7 +24,7 @@ data class StartTableMessage( // 1
 }
 
 @Serializable
-data class JoinTableMessage( // 2
+data class JoinTableMessage(
     val userName: String,
     val tableId: Int
 ) {
@@ -34,7 +34,7 @@ data class JoinTableMessage( // 2
 }
 
 @Serializable
-data class GetOpenTablesMessage( // 3
+data class GetOpenTablesMessage(
     val userName: String
 ) {
     companion object {
@@ -43,7 +43,7 @@ data class GetOpenTablesMessage( // 3
 }
 
 @Serializable
-data class ActionIncomingMessage( // 4
+data class ActionIncomingMessage(
     val tableId: Int,
     val playerId: Int,
     val action: Action
@@ -54,7 +54,7 @@ data class ActionIncomingMessage( // 4
 }
 
 @Serializable
-data class GameStateMessage( // 5
+data class GameStateMessage(
     val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
     val tableCards: List<Card>, // cards on the table
     val players: List<PlayerDto>, // players with name, chip stack, and this rounds betsize
@@ -69,7 +69,7 @@ data class GameStateMessage( // 5
 }
 
 @Serializable
-data class TurnEndMessage( // 6
+data class TurnEndMessage(
     val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
     val tableCards: List<Card>, // cards on the table
     val playerOrder: List<TurnEndMsgPlayerDto>, // players' hands + winnings in the last turn
@@ -80,8 +80,8 @@ data class TurnEndMessage( // 6
 }
 
 @Serializable
-data class EliminationMessage( // 7
-    val tableId: Int // id of table the client id eliminated from
+data class EliminationMessage(
+    val tableId: Int // id of table the client is eliminated from
 ) {
     companion object {
         const val MESSAGE_CODE = 7
@@ -89,7 +89,7 @@ data class EliminationMessage( // 7
 }
 
 @Serializable
-data class ConnectionInfoMessage( // 8
+data class ConnectionInfoMessage(
     val userName: String
 ) {
     companion object {
@@ -98,7 +98,7 @@ data class ConnectionInfoMessage( // 8
 }
 
 @Serializable
-data class DisconnectedPlayerMessage( // 9
+data class DisconnectedPlayerMessage(
     val tableId: Int,
     val userName: String
 ) {
@@ -108,7 +108,7 @@ data class DisconnectedPlayerMessage( // 9
 }
 
 @Serializable
-data class WinnerAnnouncerMessage( // 10
+data class WinnerAnnouncerMessage(
     val tableId: Int
 ) {
     companion object {
@@ -117,10 +117,19 @@ data class WinnerAnnouncerMessage( // 10
 }
 
 @Serializable
-data class SendOpenTablesMessage( // 11
+data class SendOpenTablesMessage(
     val tableIds: List<Int>
 ) {
     companion object {
         const val MESSAGE_CODE = 11
+    }
+}
+
+@Serializable
+data class TableCreatedMessage(
+    val tableId: Int
+) {
+    companion object {
+        const val MESSAGE_CODE = 12
     }
 }

@@ -191,7 +191,10 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun handCardsToPlayers() {
-        deck.shuffle()
+        with(deck) {
+            reset()
+            shuffle()
+        }
         players.forEach {
             it.handCards(deck.getCards(2))
         }
