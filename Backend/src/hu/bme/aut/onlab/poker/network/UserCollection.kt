@@ -24,7 +24,8 @@ object UserCollection {
     fun notifyGameStarted(tableId: Int, usersInTable: List<String>) {
         users.filter { usersInTable.contains(it.name) }
             .forEach { user ->
-                user.notifyGameStarted(tableId)
+                val msg = GameStartedMessage(tableId)
+                sendToClient(user.name, Json.encodeToString(msg), GameStartedMessage.MESSAGE_CODE)
             }
     }
 

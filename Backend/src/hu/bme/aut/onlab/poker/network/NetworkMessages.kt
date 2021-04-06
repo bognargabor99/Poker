@@ -133,3 +133,21 @@ data class TableCreatedMessage(
         const val MESSAGE_CODE = 12
     }
 }
+
+@Serializable
+data class TableJoinedMessage(
+    val tableId: Int
+) {
+    companion object {
+        const val MESSAGE_CODE = 13
+    }
+}
+
+@Serializable
+data class GameStartedMessage(
+    val tableId: Int
+) {
+    companion object {
+        const val MESSAGE_CODE = 14
+    }
+}

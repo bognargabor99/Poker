@@ -1,7 +1,6 @@
 package hu.bme.aut.onlab.poker.network
 
 import hu.bme.aut.onlab.poker.gamemodel.Game
-import hu.bme.aut.onlab.poker.gamemodel.Table
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -33,7 +32,11 @@ class CreateTableProcessor(processor: Processor?) : Processor(processor) {
             val tableId = Game.startTable(startMessage.rules)
             Game.joinTable(tableId, startMessage.userName)
             val answer = TableCreatedMessage(tableId)
-            UserCollection.sendToClient(startMessage.userName, Json.encodeToString(answer), TableCreatedMessage.MESSAGE_CODE)
+            with(UserCollection) {
+                tableJoined(startMessage.userName, tableId)
+                sendToClient(startMessage.userName, Json.encodeToString(answer), TableCreatedMessage.MESSAGE_CODE)
+                sendToClient(startMessage.userName, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
+            }
         }
         else
             super.process(message)
@@ -44,7 +47,11 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
         if (message?.messageCode == JoinTableMessage.MESSAGE_CODE) {
             val joinMessage = Json.decodeFromString<JoinTableMessage>(message.data)
             Game.joinTable(joinMessage.tableId, joinMessage.userName)
-            UserCollection.tableJoined(joinMessage.userName, joinMessage.tableId)
+            val answer = TableJoinedMessage(joinMessage.tableId)
+            with(UserCollection) {
+                tableJoined(joinMessage.userName, joinMessage.tableId)
+                sendToClient(joinMessage.userName, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
+            }
         }
         else
             super.process(message)

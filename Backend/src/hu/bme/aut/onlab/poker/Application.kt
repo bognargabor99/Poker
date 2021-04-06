@@ -32,7 +32,7 @@ fun Application.module(testing: Boolean = false) {
             } catch (e: Exception) {
                 println(e.localizedMessage)
             } finally {
-                println("Removing $thisUser!")
+                println("Removing ${thisUser.name}!")
                 thisUser.disconnect()
                 UserCollection -= thisUser
             }

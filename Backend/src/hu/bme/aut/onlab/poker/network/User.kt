@@ -33,12 +33,6 @@ class User(private val session: DefaultWebSocketSession) {
 
     fun sendToClient(textToSend: String) = GlobalScope.launch { session.send(textToSend) }
 
-    fun notifyGameStarted(tableId: Int) {
-        GlobalScope.launch {
-            session.send("Table $tableId started")
-        }
-    }
-
     fun disconnect() {
         Game.removePlayerFromTables(name, tableIds)
     }
