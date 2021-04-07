@@ -19,7 +19,7 @@ fun Application.module(testing: Boolean = false) {
         masking = false
     }
     routing {
-        webSocket("/poker") {
+        webSocket("/") {
             val thisUser = User(this)
             UserCollection += thisUser
             thisUser.sendNameToClient()
