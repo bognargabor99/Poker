@@ -1,4 +1,4 @@
-user1: {     "messageCode":1,     "data":"{\"userName\":\"user1\",\"rules\":{\"isOpen\":true,\"playerCount\":2,\"bigBlindStartingAmount\":40,\"doubleBlindsAfterTurnCount\":5,\"playerStartingStack\":3000}}" }
+user1: {     "messageCode":1,     "data":"{\"userName\":\"user1\",\"rules\":{\"isOpen\":true,\"playerCount\":2,\"bigBlindStartingAmount\":40,\"doubleBlindsAfterTurnCount\":1,\"playerStartingStack\":3000}}" }
 
 user2: {"messageCode":2,"data":"{\"userName\":\"user2\",\"tableId\":100}"}
 

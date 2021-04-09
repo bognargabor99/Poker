@@ -9,4 +9,8 @@ data class TableRules(
     val bigBlindStartingAmount: Int,
     val doubleBlindsAfterTurnCount: Int,
     val playerStartingStack: Int
-)
+) {
+    init {
+        require(playerCount >= 2)
+    }
+}

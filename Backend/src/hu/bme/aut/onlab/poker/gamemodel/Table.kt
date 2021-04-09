@@ -174,7 +174,9 @@ class Table(private val rules: TableRules) : PokerActionListener{
         spreadGameState()
         showdown()
         eliminatePlayers()
-        newTurn()
+        if (players.size > 1) {
+            newTurn()
+        }
     }
 
     private fun allinExceptOne(): Boolean {
@@ -268,15 +270,17 @@ class Table(private val rules: TableRules) : PokerActionListener{
             }
             else
                 spreadGameState()
-        } else {
+        } else if (players.size == 2 && isStarted) {
             players.removeAt(index)
             UserCollection.sendToClient(players.first().userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)), DisconnectedPlayerMessage.MESSAGE_CODE)
             declareWinner()
         }
+        else
+            players.removeAt(index)
     }
 
     private fun showdown() {
-        pot = players.map { it.inPot }.sum()
+        pot = players.sumOf { it.inPot }
         val handsOfPlayers: MutableList<Pair<Int, Hand>> = mutableListOf()
         playersInTurn.forEach {
             val cardsToUse = mutableListOf<Card>()
@@ -368,17 +372,22 @@ class Table(private val rules: TableRules) : PokerActionListener{
         if (actionMsg.action.type == ActionType.CHECK && maxRaiseThisRound != players.single { it.id == nextPlayerId }.inPotThisRound) // if checked but has to fold/raise
             return false
         if (actionMsg.action.type == ActionType.RAISE) {
-            if ((actionMsg.action.amount - maxRaiseThisRound < bigBlindAmount) && actionMsg.action.amount == players.single { it.id == nextPlayerId }.chipStack)
-                return true
-            if (players.single { it.id == nextPlayerId }.chipStack < actionMsg.action.amount)
+            val (stack, inThisRound) = players.single { it.id == nextPlayerId }.run { Pair(chipStack, inPotThisRound) }
+            if (stack < bigBlindAmount) {
+                if (stack + inThisRound == actionMsg.action.amount)
+                    return true
                 return false
+            }
+            if (actionMsg.action.amount <= stack + inThisRound)
+                return true
+            return false
         }
         return true
     }
 
     private fun oneLeft() {
         var winnerName: String
-        pot = players.map { it.inPot }.sum()
+        pot = players.sumOf { it.inPot }
         players.single { it.id == playersInTurn.first() }.apply {
             chipStack += pot
             winnerName = userName
