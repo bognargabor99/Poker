@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Poker</string>
+    <string name="open">Open for anyone</string>
+    <string name="size">Size</string>
+    <string name="initial_big_blind">Initial big blind</string>
+    <string name="btnCreate">Create</string>
+    <string name="doubleBigBlind">Big blind double after # turns</string>
+    <string name="btnCancel">Cancel</string>
+    <string name="cbOpenToolTip">If set, anyone will be able to join your table.</string>
+    <string name="spSizeToolTip">How many players do you want to play with?</string>
+    <string name="spInitial_blindToolTip">Table will start with this big blind amount</string>
+    <string name="starting_stack">Starting stack</string>
+    <string name="spStartStackToolTip">Each player will start with this amount of chips</string>
+    <string name="spDoubleBlind">Big blind will be doubled after this amount of turns</string>
+    <string name="fragment_create_title">Create a table</string>
 </resources>

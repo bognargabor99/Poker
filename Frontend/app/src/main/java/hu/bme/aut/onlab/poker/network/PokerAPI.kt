@@ -1,5 +1,6 @@
 package hu.bme.aut.onlab.poker.network
 
+import android.os.MessageQueue
 import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.features.websocket.*
@@ -12,13 +13,11 @@ object PokerAPI {
         install(WebSockets)
     }
 
-    fun connect(block: () -> Unit) {
+    fun connect(domain: String) {
         GlobalScope.launch {
-            client.webSocket(method = HttpMethod.Get, host = "bf3ca77d6aca.ngrok.io", path = "/") {
+            client.webSocket(method = HttpMethod.Get, host = "$domain.ngrok.io", path = "/") {
+                PokerClient.session = this
                 val messageOutputRoutine = launch { outputMessages() }
-                //val userInputRoutine = launch { inputMessages() }
-                block()
-                //userInputRoutine.join() // Wait for completion; either "exit" or error
                 messageOutputRoutine.join()
             }
         }
@@ -30,23 +29,12 @@ object PokerAPI {
             for (message in incoming) {
                 message as? Frame.Text ?: continue
                 val receivedBytes = message.readBytes()
-                Log.d("pokerWebSocket", String(receivedBytes))
+                val text = String(receivedBytes)
+                Log.d("pokerWebSocket", text)
+                PokerClient.receiveText(text)
             }
         } catch (e: Exception) {
             println("Error while receiving: " + e.localizedMessage)
         }
     }
-
-    /*private suspend fun DefaultClientWebSocketSession.inputMessages() {
-        while (true) {
-            val message = readLine() ?: ""
-            if (message.equals("exit", true)) return
-            try {
-                send(message)
-            } catch (e: Exception) {
-                println("Error while sending: " + e.localizedMessage)
-                return
-            }
-        }
-    }*/
 }
