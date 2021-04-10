@@ -1,15 +1,15 @@
 package hu.bme.aut.onlab.poker
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
-import androidx.appcompat.app.AlertDialog
 import hu.bme.aut.onlab.poker.databinding.ActivityMainBinding
 import hu.bme.aut.onlab.poker.model.TableRules
 import hu.bme.aut.onlab.poker.network.PokerAPI
 import hu.bme.aut.onlab.poker.network.PokerClient
 
-class MainActivity : AppCompatActivity(), TableCreateFragment.TableCreationListener{
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,15 +18,10 @@ class MainActivity : AppCompatActivity(), TableCreateFragment.TableCreationListe
         setContentView(binding.root)
 
         binding.btnConnect.setOnClickListener {
-            PokerAPI.connect("14d8c61b8a39")
+            PokerAPI.connect("07cac1152aa1")
         }
         binding.btnStartTable.setOnClickListener {
-            val tableCreateFragment = TableCreateFragment()
-            tableCreateFragment.show(supportFragmentManager, "TAG")
+            startActivity(Intent(this, TableCreateActivity::class.java))
         }
-    }
-
-    override fun onTableCreated(rules: TableRules) {
-        PokerClient.startTable(rules)
     }
 }
