@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -19,12 +18,12 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvOpen"
+                android:labelFor="@id/cbOpen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
@@ -44,9 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="8dp"
-            android:hint="@string/size"
-            app:spinnerMode="dropdown"
-            tools:text="@string/spSizeToolTip" />
+            android:hint="@string/spSizeToolTip"/>
 
         <com.tiper.MaterialSpinner
             android:id="@+id/mspInitialBlind"
@@ -54,10 +51,7 @@
             android:paddingVertical="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:spinnerMode="bottomsheet"
-            android:hint="@string/initial_big_blind"
-            android:prompt="@string/app_name"
-            tools:text="@string/spInitial_blindToolTip" />
+            android:hint="@string/spInitial_blindToolTip" />
 
         <com.tiper.MaterialSpinner
             android:id="@+id/mspDoubleBlind"
@@ -65,9 +59,7 @@
             android:layout_width="match_parent"
             android:paddingVertical="8dp"
             android:layout_height="wrap_content"
-            android:hint="@string/doubleBigBlind"
-            android:prompt="@string/app_name"
-            tools:text="@string/spDoubleBlind" />
+            android:hint="@string/spDoubleBlind" />
 
         <com.tiper.MaterialSpinner
             android:id="@+id/mspStartStack"
@@ -75,9 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="8dp"
-            android:hint="@string/starting_stack"
-            android:prompt="@string/app_name"
-            tools:text="@string/spStartStackToolTip" />
+            android:hint="@string/starting_stack" />
 
     </LinearLayout>
 </ScrollView>
