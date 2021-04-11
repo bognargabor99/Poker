@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="PokerCardView">
+        <attr name="isUpside" format="boolean" />
         <attr name="value" format="integer" />
         <attr name="symbol" format="enum">
             <enum name="heart" value="0" />

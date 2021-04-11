@@ -9,7 +9,8 @@
     <string name="starting_stack">Starting stack</string>
     <string name="spDoubleBlind">Big blind will be doubled after this amount of turns</string>
     <string name="table_create_title">Create table</string>
-    <string name="item_create_table">Create</string>
+    <string name="create">Create</string>
     <string name="start_table">Start table</string>
     <string name="connect">Connect</string>
+    <string name="cancel">Cancel</string>
 </resources>

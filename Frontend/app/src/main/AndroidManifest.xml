@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_poker"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Poker">
+        android:theme="@style/Theme.Poker.Material">
         <activity
             android:name=".TableCreateActivity"
             android:label="@string/table_create_title"

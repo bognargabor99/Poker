@@ -5,13 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import hu.bme.aut.onlab.poker.databinding.ActivityMainBinding
-import hu.bme.aut.onlab.poker.model.TableRules
 import hu.bme.aut.onlab.poker.network.PokerAPI
-import hu.bme.aut.onlab.poker.network.PokerClient
-import hu.bme.aut.onlab.poker.view.PokerCardView
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

@@ -5,12 +5,14 @@ import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import hu.bme.aut.onlab.poker.R
 
 class PokerCardView : View {
     var value: Int = 2
     var symbol: Int = SYMBOL_HEART
+    var isUpside: Boolean = false
     private var paintText = Paint()
     private val paintBg = Paint()
     private lateinit var attributes: TypedArray
@@ -21,24 +23,19 @@ class PokerCardView : View {
             return
         }
 
-        paintText.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+        paintText.typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
 
         attributes = context.obtainStyledAttributes(attrs, R.styleable.PokerCardView)
         try {
             symbol = attributes.getInt(R.styleable.PokerCardView_symbol, SYMBOL_HEART)
             value = attributes.getInt(R.styleable.PokerCardView_value, 2)
+            isUpside = attributes.getBoolean(R.styleable.PokerCardView_isUpside, false)
         } finally {
             attributes.recycle()
         }
     }
 
     override fun onDraw(canvas: Canvas) {
-        /*try {
-            symbol = attributes.getInt(R.styleable.PokerCardView_symbol, SYMBOL_HEART)
-            value = attributes.getInt(R.styleable.PokerCardView_value, 2)
-        } finally {
-            attributes.recycle()
-        }*/
         paintBg.color = Color.WHITE
         paintBg.style = Paint.Style.FILL
         canvas.drawRoundRect(0F, 0F, width.toFloat(), height.toFloat(), 10.0F, 10.0F, paintBg)
@@ -46,12 +43,21 @@ class PokerCardView : View {
         paintBg.strokeWidth = 2F
         paintBg.style = Paint.Style.STROKE
         canvas.drawRoundRect(0F, 0F, width.toFloat(), height.toFloat(), 10.0F, 10.0F, paintBg)
-        drawValue(canvas)
-        drawSymbol(canvas)
+        if (isUpside) {
+            drawValue(canvas)
+            drawSymbol(canvas)
+        }
+        else
+            drawDownSide(canvas)
+    }
+
+    private fun drawDownSide(canvas: Canvas) {
+        val bitmapDownSide = BitmapFactory.decodeResource(resources, R.drawable.back)
+        canvas.drawBitmap(bitmapDownSide, null, RectF(width.toFloat()*0.10F, height.toFloat()*0.06F, width.toFloat()*0.90F, height.toFloat()*0.94F), null)
     }
 
     private fun drawValue(canvas: Canvas) {
-        paintText.textSize = (height*3/7).toFloat()
+        paintText.textSize = (height*11/28).toFloat()
         paintText.color = when (symbol) {
             SYMBOL_HEART -> redColor
             SYMBOL_DIAMOND -> redColor
@@ -62,7 +68,9 @@ class PokerCardView : View {
     }
 
     private fun getTextOfValue(): String {
-        if (value < 11)
+        if (value <= 2)
+            return 2.toString()
+        else if (value < 11)
             return value.toString()
 
         return when (value) {
@@ -83,7 +91,7 @@ class PokerCardView : View {
             else -> R.drawable.heart
         }
         val startX = (width*4/9).toFloat()
-        val startY = (height*14/27).toFloat()
+        val startY = (height*15/27).toFloat()
         val bitmapSymBol = BitmapFactory.decodeResource(resources, imageResource)
         canvas.drawBitmap(bitmapSymBol, null, RectF(startX, startY, width.toFloat() -15.0F, height.toFloat()-20.0F), null)
     }
@@ -93,6 +101,14 @@ class PokerCardView : View {
         val h = MeasureSpec.getSize(heightMeasureSpec)
 
         setMeasuredDimension(w, h)
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean = performClick()
+
+    override fun performClick(): Boolean {
+        isUpside = !isUpside
+        invalidate()
+        return super.performClick()
     }
 
     companion object {
