@@ -1,6 +1,5 @@
 package hu.bme.aut.onlab.poker.network
 
-import android.os.MessageQueue
 import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.features.websocket.*
@@ -17,14 +16,14 @@ object PokerAPI {
         GlobalScope.launch {
             client.webSocket(method = HttpMethod.Get, host = "$domain.ngrok.io", path = "/") {
                 PokerClient.session = this
-                val messageOutputRoutine = launch { outputMessages() }
-                messageOutputRoutine.join()
+                val messageReceivingRoutine = launch { receiveMessages() }
+                messageReceivingRoutine.join()
             }
         }
         
     }
 
-    private suspend fun DefaultClientWebSocketSession.outputMessages() {
+    private suspend fun DefaultClientWebSocketSession.receiveMessages() {
         try {
             for (message in incoming) {
                 message as? Frame.Text ?: continue

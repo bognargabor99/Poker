@@ -14,25 +14,56 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Connect"/>
+        android:text="@string/connect"/>
 
     <Button
         android:id="@+id/btnStartTable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/imgClub"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnConnect"
-        android:text="Start table"/>
+        android:text="@string/start_table"/>
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/imgClub"
+        android:layout_width="96dp"
+        android:layout_height="140dp"
+        app:value="2"
+        app:symbol="heart"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/imgDiamond"
+        app:layout_constraintBottom_toTopOf="@id/btnConnect" />
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/imgDiamond"
+        android:layout_width="48dp"
+        android:layout_height="70dp"
+        app:value="12"
+        app:symbol="diamond"
+        app:layout_constraintLeft_toRightOf="@id/imgClub"
+        app:layout_constraintRight_toLeftOf="@id/imgHeart"
+        app:layout_constraintBottom_toTopOf="@id/btnConnect" />
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/imgHeart"
+        android:layout_width="48dp"
+        android:layout_height="70dp"
+        app:value="13"
+        app:symbol="heart"
+        app:layout_constraintLeft_toRightOf="@id/imgDiamond"
+        app:layout_constraintRight_toRightOf="@id/imgSpade"
+        app:layout_constraintBottom_toTopOf="@id/btnConnect" />
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/imgSpade"
+        android:layout_width="48dp"
+        android:layout_height="70dp"
+        app:value="14"
+        app:symbol="spade"
+        app:layout_constraintLeft_toRightOf="@id/imgHeart"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnStartTable" />
+        app:layout_constraintBottom_toTopOf="@id/btnConnect" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
