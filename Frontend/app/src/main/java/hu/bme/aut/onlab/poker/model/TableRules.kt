@@ -12,5 +12,6 @@ data class TableRules(
 ) {
     init {
         require(playerCount >= 2)
+        require(playerCount <= 5)
     }
 }

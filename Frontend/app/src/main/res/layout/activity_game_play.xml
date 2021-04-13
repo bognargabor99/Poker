@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/table"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/poker_table" />
+
+    <TextView
+        android:id="@+id/tvTableId"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/bangers"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/playerCard1"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        app:symbol="spade"
+        app:value="13"
+        android:rotation="-10"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginVertical="40dp"
+        android:layout_alignEnd="@id/playerCard2"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/playerCard2"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        app:symbol="club"
+        app:value="12"
+        android:rotation="10"
+        android:layout_marginVertical="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

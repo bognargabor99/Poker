@@ -1,6 +1,7 @@
 package hu.bme.aut.onlab.poker.network
 
 import android.util.Log
+import hu.bme.aut.onlab.poker.MainActivity
 import hu.bme.aut.onlab.poker.model.TableRules
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
@@ -15,11 +16,13 @@ object PokerClient {
     lateinit var userName: String
     private var tables = mutableListOf<Int>()
     private val chain = NetworkChain()
+    lateinit var listener: TableJoinedListener
 
     fun receiveText(text: String) {
         val message: NetworkMessage
         try {
             message = Json.decodeFromString(text)
+            Log.d("pokerWebSocket", text)
         } catch (e: Exception) {
             Log.d("receive", "Couldn't decode text from server:\n$text")
             return
@@ -53,5 +56,26 @@ object PokerClient {
     fun startTable(rules: TableRules) {
         val createMessage = CreateTableMessage(userName, rules)
         sendToServer(Json.encodeToString(createMessage), CreateTableMessage.MESSAGE_CODE)
+    }
+
+    fun tableJoined(tableId: Int) {
+        if (tableId != 0 && !tables.contains(tableId)) {
+            tables.add(tableId)
+            listener.tableJoined(tableId)
+        }
+    }
+
+    fun tryJoin(tableId: Int?) {
+        val joinMessage = JoinTableMessage(userName, tableId)
+        sendToServer(Json.encodeToString(joinMessage), JoinTableMessage.MESSAGE_CODE)
+    }
+
+    fun leaveTable(tableId: Int) {
+        val leaveMessage = LeaveTableMessage(userName, tableId)
+        sendToServer(Json.encodeToString(leaveMessage), LeaveTableMessage.MESSAGE_CODE)
+    }
+
+    interface TableJoinedListener {
+        fun tableJoined(tableId: Int)
     }
 }

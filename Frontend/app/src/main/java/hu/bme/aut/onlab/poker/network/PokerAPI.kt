@@ -2,6 +2,7 @@ package hu.bme.aut.onlab.poker.network
 
 import android.util.Log
 import io.ktor.client.*
+import io.ktor.client.features.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
@@ -11,16 +12,20 @@ object PokerAPI {
     private val client = HttpClient {
         install(WebSockets)
     }
+    private lateinit var messageReceivingRoutine: Job
 
-    fun connect(domain: String) {
+    fun connect(domain: String, onError: () -> Unit) {
         GlobalScope.launch {
-            client.webSocket(method = HttpMethod.Get, host = "$domain.ngrok.io", path = "/") {
-                PokerClient.session = this
-                val messageReceivingRoutine = launch { receiveMessages() }
-                messageReceivingRoutine.join()
+            try {
+                client.webSocket(method = HttpMethod.Get, host = "$domain.ngrok.io", path = "/") {
+                    PokerClient.session = this
+                    messageReceivingRoutine = launch { receiveMessages() }
+                    messageReceivingRoutine.join()
+                }
+            } catch (cre: ClientRequestException) {
+                onError()
             }
         }
-        
     }
 
     private suspend fun DefaultClientWebSocketSession.receiveMessages() {
@@ -29,11 +34,17 @@ object PokerAPI {
                 message as? Frame.Text ?: continue
                 val receivedBytes = message.readBytes()
                 val text = String(receivedBytes)
-                Log.d("pokerWebSocket", text)
                 PokerClient.receiveText(text)
             }
         } catch (e: Exception) {
             println("Error while receiving: " + e.localizedMessage)
+        }
+    }
+
+    fun disConnect() {
+        GlobalScope.launch {
+            if (PokerAPI::messageReceivingRoutine.isInitialized)
+                messageReceivingRoutine.cancelAndJoin()
         }
     }
 }

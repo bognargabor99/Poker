@@ -11,7 +11,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = GameStateProcessor(ConnectionInfoProcessor(TurnEndProcessor(EliminationProcessor(null))))
+        chain = GameStateProcessor(ConnectionInfoProcessor(TableCreatedProcessor(TurnEndProcessor(EliminationProcessor(null)))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -57,4 +57,13 @@ class EliminationProcessor(processor: Processor?) : Processor(processor) {
             }
             else
                 super.process(message)
+}
+
+class TableCreatedProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == TableCreatedMessage.MESSAGE_CODE || message?.messageCode == TableJoinedMessage.MESSAGE_CODE) {
+            PokerClient.tableJoined(Json.decodeFromString<TableJoinedMessage>(message.data).tableId)
+        }
+        else
+            super.process(message)
 }

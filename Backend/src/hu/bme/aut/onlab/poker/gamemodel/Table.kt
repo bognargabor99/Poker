@@ -275,8 +275,10 @@ class Table(private val rules: TableRules) : PokerActionListener{
             UserCollection.sendToClient(players.first().userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)), DisconnectedPlayerMessage.MESSAGE_CODE)
             declareWinner()
         }
-        else
+        else {
             players.removeAt(index)
+            Game.closeTable(id)
+        }
     }
 
     private fun showdown() {

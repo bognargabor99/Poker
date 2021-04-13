@@ -26,7 +26,7 @@ data class CreateTableMessage(
 @Serializable
 data class JoinTableMessage(
         val userName: String,
-        val tableId: Int
+        val tableId: Int?
 ) {
     companion object {
         const val MESSAGE_CODE = 2
@@ -149,5 +149,15 @@ data class GameStartedMessage(
 ) {
     companion object {
         const val MESSAGE_CODE = 14
+    }
+}
+
+@Serializable
+data class LeaveTableMessage(
+        val userName: String,
+        val tableId: Int
+) {
+    companion object {
+        const val MESSAGE_CODE = 15
     }
 }

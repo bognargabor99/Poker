@@ -1,5 +1,6 @@
 package hu.bme.aut.onlab.poker.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
@@ -12,7 +13,7 @@ import hu.bme.aut.onlab.poker.R
 class PokerCardView : View {
     var value: Int = 2
     var symbol: Int = SYMBOL_HEART
-    var isUpside: Boolean = false
+    var isUpside: Boolean = true
     private var paintText = Paint()
     private val paintBg = Paint()
     private lateinit var attributes: TypedArray
@@ -29,7 +30,7 @@ class PokerCardView : View {
         try {
             symbol = attributes.getInt(R.styleable.PokerCardView_symbol, SYMBOL_HEART)
             value = attributes.getInt(R.styleable.PokerCardView_value, 2)
-            isUpside = attributes.getBoolean(R.styleable.PokerCardView_isUpside, false)
+            isUpside = attributes.getBoolean(R.styleable.PokerCardView_isUpside, true)
         } finally {
             attributes.recycle()
         }
@@ -64,7 +65,6 @@ class PokerCardView : View {
             else -> Color.BLACK
         }
         canvas.drawText(getTextOfValue(), width.toFloat() * 0.1F, paintText.textSize+height.toFloat() * 0.01F, paintText)
-        Log.d("pokerWebSocket", "value: $value")
     }
 
     private fun getTextOfValue(): String {
@@ -103,12 +103,16 @@ class PokerCardView : View {
         setMeasuredDimension(w, h)
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean = performClick()
+    override fun onTouchEvent(event: MotionEvent?): Boolean = when (event?.action) {
+        MotionEvent.ACTION_DOWN -> performClick()
+        else -> super.onTouchEvent(event)
+    }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun performClick(): Boolean {
         isUpside = !isUpside
         invalidate()
-        return super.performClick()
+        return true
     }
 
     companion object {

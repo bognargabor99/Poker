@@ -11,6 +11,8 @@
         android:roundIcon="@mipmap/ic_poker"
         android:supportsRtl="true"
         android:theme="@style/Theme.Poker.Material">
+        <activity android:name=".GamePlayActivity"
+            android:screenOrientation="landscape"/>
         <activity
             android:name=".TableCreateActivity"
             android:label="@string/table_create_title"
