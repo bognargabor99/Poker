@@ -22,6 +22,7 @@ fun Application.module(testing: Boolean = false) {
         webSocket("/") {
             val thisUser = User(this)
             UserCollection += thisUser
+            println("adding ${thisUser.name}")
             thisUser.sendNameToClient()
             try {
                 for (frame in incoming) {

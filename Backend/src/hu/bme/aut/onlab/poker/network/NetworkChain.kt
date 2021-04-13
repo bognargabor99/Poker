@@ -13,7 +13,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = CreateTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(null))))
+        chain = CreateTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(LeaveTableProcessor(null)))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -46,10 +46,11 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == JoinTableMessage.MESSAGE_CODE) {
             val joinMessage = Json.decodeFromString<JoinTableMessage>(message.data)
-            Game.joinTable(joinMessage.tableId, joinMessage.userName)
-            val answer = TableJoinedMessage(joinMessage.tableId)
+            val joinedId = Game.joinTable(joinMessage.tableId, joinMessage.userName)
+            val answer = TableJoinedMessage(joinedId)
             with(UserCollection) {
-                tableJoined(joinMessage.userName, joinMessage.tableId)
+                if (joinedId != 0)
+                    tableJoined(joinMessage.userName, joinedId)
                 sendToClient(joinMessage.userName, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
             }
         }
@@ -74,6 +75,16 @@ class ActionProcessor(processor: Processor?) : Processor(processor) {
         if (message?.messageCode == ActionIncomingMessage.MESSAGE_CODE) {
             val actionMessage = Json.decodeFromString<ActionIncomingMessage>(message.data)
             Game.performAction(actionMessage)
+        }
+        else
+            super.process(message)
+}
+
+class LeaveTableProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == LeaveTableMessage.MESSAGE_CODE) {
+            val leaveMessage = Json.decodeFromString<LeaveTableMessage>(message.data)
+            Game.removePlayerFromTables(leaveMessage.userName, mutableListOf(leaveMessage.tableId))
         }
         else
             super.process(message)
