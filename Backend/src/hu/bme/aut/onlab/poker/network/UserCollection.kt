@@ -35,7 +35,14 @@ object UserCollection {
         }
     }
 
+    fun tableCreated(user: String, tableId: Int) {
+        val answer = TableCreatedMessage(tableId)
+        sendToClient(user, Json.encodeToString(answer), TableCreatedMessage.MESSAGE_CODE)
+    }
+
     fun tableJoined(user: String, tableId: Int) {
+        val answer = TableJoinedMessage(tableId)
+        sendToClient(user, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
         users.single { it.name == user }.tableIds.add(tableId)
     }
 }

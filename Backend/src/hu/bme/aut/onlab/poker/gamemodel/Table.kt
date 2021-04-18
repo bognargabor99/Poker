@@ -29,6 +29,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             val newPlayer = Player(rules.playerStartingStack)
             newPlayer.userName = userName
             players.add(newPlayer)
+            UserCollection.tableJoined(userName, id)
             if (players.size == rules.playerCount)
                 startGame()
             true

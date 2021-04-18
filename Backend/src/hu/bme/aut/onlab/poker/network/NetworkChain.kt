@@ -30,13 +30,8 @@ class CreateTableProcessor(processor: Processor?) : Processor(processor) {
         if (message?.messageCode == CreateTableMessage.MESSAGE_CODE) {
             val startMessage = Json.decodeFromString<CreateTableMessage>(message.data)
             val tableId = Game.startTable(startMessage.rules)
+            UserCollection.tableCreated(startMessage.userName, tableId)
             Game.joinTable(tableId, startMessage.userName)
-            val answer = TableCreatedMessage(tableId)
-            with(UserCollection) {
-                tableJoined(startMessage.userName, tableId)
-                sendToClient(startMessage.userName, Json.encodeToString(answer), TableCreatedMessage.MESSAGE_CODE)
-                sendToClient(startMessage.userName, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
-            }
         }
         else
             super.process(message)
@@ -46,13 +41,7 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == JoinTableMessage.MESSAGE_CODE) {
             val joinMessage = Json.decodeFromString<JoinTableMessage>(message.data)
-            val joinedId = Game.joinTable(joinMessage.tableId, joinMessage.userName)
-            val answer = TableJoinedMessage(joinedId)
-            with(UserCollection) {
-                if (joinedId != 0)
-                    tableJoined(joinMessage.userName, joinedId)
-                sendToClient(joinMessage.userName, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
-            }
+            Game.joinTable(joinMessage.tableId, joinMessage.userName)
         }
         else
             super.process(message)

@@ -11,19 +11,16 @@ object Game {
         return newTable.id
     }
 
-    fun joinTable(tableId: Int?, userName: String) : Int {
+    fun joinTable(tableId: Int?, userName: String) {
         if (tableId == null) {
             val toJoin = getOpenTables().first()
             tables.single { it.id == toJoin }.addPlayer(userName)
-            return toJoin
         }
         val success = tables.single { t -> t.id == tableId }
             .addPlayer(userName)
         if (success) {
             println("$userName added to table")
-            return tableId
         }
-        return 0
     }
 
     fun performAction(actionMessage: ActionIncomingMessage) {
@@ -43,6 +40,7 @@ object Game {
     }
 
     fun closeTable(tableId: Int) {
+        println("closing table $tableId")
         tables.removeIf { it.id == tableId }
     }
 }
