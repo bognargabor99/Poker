@@ -254,7 +254,11 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
     fun playerDisconnected(name: String) {
         val index = players.indexOf(players.single { it.userName == name })
-        if (players.size > 2) {
+        if (!isStarted) {
+            players.removeAt(index)
+            if (players.size == 0)
+                Game.closeTable(id)
+        } else if (players.size > 2) {
             if (players[index].id == nextPlayerId) {
                 nextPlayerId = previousAction?.playerId ?: playersInTurn.last()
                 setNextPlayer()
@@ -271,13 +275,12 @@ class Table(private val rules: TableRules) : PokerActionListener{
             }
             else
                 spreadGameState()
-        } else if (players.size == 2 && isStarted) {
+        } else if (players.size == 2) {
             players.removeAt(index)
             UserCollection.sendToClient(players.first().userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)), DisconnectedPlayerMessage.MESSAGE_CODE)
             declareWinner()
         }
         else {
-            players.removeAt(index)
             Game.closeTable(id)
         }
     }
