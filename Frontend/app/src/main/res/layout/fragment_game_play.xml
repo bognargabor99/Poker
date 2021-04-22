@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -11,6 +12,16 @@
         android:src="@drawable/table"
         android:scaleType="fitXY"
         android:contentDescription="@string/poker_table" />
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/secondaryDarkColor"
+        android:src="@drawable/ic_arrow_forward"
+        android:contentDescription="@string/leave_table" />
 
     <ProgressBar
         android:id="@+id/progressbar"
@@ -39,7 +50,8 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/bangers"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        tools:ignore="RelativeOverlap" />
 
     <hu.bme.aut.onlab.poker.view.PokerCardView
         android:id="@+id/playerCard1"

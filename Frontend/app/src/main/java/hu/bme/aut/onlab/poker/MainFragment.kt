@@ -12,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import hu.bme.aut.onlab.poker.databinding.FragmentMainBinding
 import hu.bme.aut.onlab.poker.network.PokerClient
 
@@ -23,6 +22,7 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        MainActivity.backPressDisabled = false
         binding = FragmentMainBinding.inflate(LayoutInflater.from(requireContext()))
         PokerClient.listener = this
 
@@ -71,8 +71,6 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
 
     override fun tableJoined(tableId: Int) {
         Log.d("pokerWeb", "Got join message for table $tableId")
-        val bundle = Bundle()
-        bundle.putInt("tableId", tableId)
-        view?.findNavController()?.navigate(R.id.action_mainFragment_to_gamePlayFragment, bundle)
+        view?.findNavController()?.navigate(MainFragmentDirections.actionMainFragmentToGamePlayFragment(tableId))
     }
 }

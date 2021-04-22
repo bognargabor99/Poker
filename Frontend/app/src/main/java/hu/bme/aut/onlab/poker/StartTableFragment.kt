@@ -18,6 +18,7 @@ class StartTableFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        MainActivity.backPressDisabled = true
         binding = FragmentStartTableBinding.inflate(LayoutInflater.from(requireContext()))
 
         binding.mspSize.adapter = ArrayAdapter(

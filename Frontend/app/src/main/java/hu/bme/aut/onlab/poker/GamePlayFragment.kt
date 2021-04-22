@@ -7,26 +7,37 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import hu.bme.aut.onlab.poker.databinding.FragmentGamePlayBinding
 import hu.bme.aut.onlab.poker.network.PokerClient
 
 class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var binding: FragmentGamePlayBinding
-    private var tableId = 0
+
+    private val args: GamePlayFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         PokerClient.receiver = this
+        MainActivity.backPressDisabled = true
         binding = FragmentGamePlayBinding.inflate(LayoutInflater.from(requireContext()))
 
-        arguments?.let {
-            tableId = it.getInt("tableId")
+        binding.tvTableId.text = getString(R.string.game_play_table_id, args.tableId)
+        binding.btnBack.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.leave_table_alert)
+                    .setPositiveButton(R.string.yes) { _, _ ->
+                        PokerClient.leaveTable(args.tableId)
+                        view?.findNavController()?.popBackStack()
+                    }
+                    .setNegativeButton(R.string.no, null)
+                    .show()
         }
-
-        binding.tvTableId.text = getString(R.string.game_play_table_id, tableId.toString())
 
         binding.background.setOnClickListener {
             AnimationUtils.loadAnimation(requireContext(), R.anim.card_animation).also {
@@ -39,17 +50,6 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
 
         return binding.root
     }
-
-    /*override fun onBackPressed() {
-        AlertDialog.Builder(this)
-            .setMessage(R.string.leave_table_alert)
-            .setPositiveButton(R.string.yes) { _, _ ->
-                PokerClient.leaveTable(tableId)
-                super.onBackPressed()
-            }
-            .setNegativeButton(R.string.no, null)
-            .show()
-    }*/
 
     override fun receiveMessage(text: String) {
         Log.d("pokerWebSocket", "GamePlayActivity: $text")

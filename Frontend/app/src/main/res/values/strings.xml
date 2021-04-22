@@ -16,7 +16,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="join_table">Join a table</string>
-    <string name="game_play_table_id">Table code: %1$s</string>
+    <string name="game_play_table_id">Table code: %1$d</string>
     <string name="poker_table">A poker table</string>
     <string name="leave_table_alert">Do you wish to leave the table? You won\'t be able to join again.</string>
     <string name="waiting_for_others">Waiting for others</string>
@@ -27,4 +27,5 @@
     <string name="enter_id">Enter ID of table</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="leave_table">Leave table</string>
 </resources>

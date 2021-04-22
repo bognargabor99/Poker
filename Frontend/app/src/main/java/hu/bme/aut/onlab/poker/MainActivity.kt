@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        PokerAPI.connect("6319c58828b6") {
+        PokerAPI.connect("4c18c5055d1c") {
             runOnUiThread {
                 toast("Couldn't connect to server")
             }
@@ -27,13 +27,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        AlertDialog.Builder(this)
-            .setMessage(R.string.exit_alert)
-            .setPositiveButton(R.string.yes) { _, _ ->
-                PokerAPI.disConnect()
-                super.onBackPressed()
-            }
-            .setNegativeButton(R.string.no, null)
-            .show()
+        if (!backPressDisabled)
+            AlertDialog.Builder(this)
+                .setMessage(R.string.exit_alert)
+                .setPositiveButton(R.string.yes) { _, _ ->
+                    PokerAPI.disConnect()
+                    super.onBackPressed()
+                }
+                .setNegativeButton(R.string.no, null)
+                .show()
+    }
+
+    companion object {
+        var backPressDisabled = false
     }
 }
