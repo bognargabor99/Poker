@@ -12,6 +12,25 @@
         android:scaleType="fitXY"
         android:contentDescription="@string/poker_table" />
 
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/white"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/tvWaitForOthers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/waiting_for_others"
+        android:textColor="@color/white"
+        android:textStyle="italic"
+        android:textAlignment="center"
+        android:layout_below="@id/progressbar"
+        android:layout_centerHorizontal="true"/>
+
     <TextView
         android:id="@+id/tvTableId"
         android:layout_alignParentTop="true"
@@ -28,6 +47,7 @@
         android:layout_height="46dp"
         app:symbol="spade"
         app:value="13"
+        android:visibility="invisible"
         android:rotation="-10"
         android:layout_marginHorizontal="30dp"
         android:layout_marginVertical="40dp"
@@ -41,6 +61,7 @@
         android:layout_height="46dp"
         app:symbol="club"
         app:value="12"
+        android:visibility="invisible"
         android:rotation="10"
         android:layout_marginVertical="40dp"
         android:layout_centerHorizontal="true"

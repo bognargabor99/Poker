@@ -1,7 +1,6 @@
 package hu.bme.aut.onlab.poker.network
 
 import android.util.Log
-import hu.bme.aut.onlab.poker.MainActivity
 import hu.bme.aut.onlab.poker.model.TableRules
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
@@ -17,12 +16,12 @@ object PokerClient {
     private var tables = mutableListOf<Int>()
     private val chain = NetworkChain()
     lateinit var listener: TableJoinedListener
+    lateinit var receiver: GamePlayReceiver
 
     fun receiveText(text: String) {
         val message: NetworkMessage
         try {
             message = Json.decodeFromString(text)
-            Log.d("pokerWebSocket", text)
         } catch (e: Exception) {
             Log.d("receive", "Couldn't decode text from server:\n$text")
             return
@@ -39,6 +38,7 @@ object PokerClient {
 
     fun setGameState(stateMessage: GameStateMessage) {
         //TODO("Not yet implemented")
+        receiver.receiveMessage(stateMessage.toString())
     }
 
     fun setConnectionInfo(name: String) {
@@ -77,5 +77,9 @@ object PokerClient {
 
     interface TableJoinedListener {
         fun tableJoined(tableId: Int)
+    }
+
+    interface GamePlayReceiver {
+        fun receiveMessage(text: String)
     }
 }

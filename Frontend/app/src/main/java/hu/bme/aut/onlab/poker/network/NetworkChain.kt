@@ -63,6 +63,7 @@ class TableCreatedProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == TableCreatedMessage.MESSAGE_CODE || message?.messageCode == TableJoinedMessage.MESSAGE_CODE) {
             PokerClient.tableJoined(Json.decodeFromString<TableJoinedMessage>(message.data).tableId)
+            Thread.sleep(1000) //TODO("Handle this!")
         }
         else
             super.process(message)

@@ -34,10 +34,11 @@ object PokerAPI {
                 message as? Frame.Text ?: continue
                 val receivedBytes = message.readBytes()
                 val text = String(receivedBytes)
+                Log.d("pokerWeb", text)
                 PokerClient.receiveText(text)
             }
         } catch (e: Exception) {
-            println("Error while receiving: " + e.localizedMessage)
+            Log.d("pokerWeb","Error while receiving: " + e.localizedMessage)
         }
     }
 

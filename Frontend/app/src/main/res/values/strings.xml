@@ -18,4 +18,13 @@
     <string name="join_table">Join a table</string>
     <string name="game_play_table_id">Table code: %1$s</string>
     <string name="poker_table">A poker table</string>
+    <string name="leave_table_alert">Do you wish to leave the table? You won\'t be able to join again.</string>
+    <string name="waiting_for_others">Waiting for others</string>
+    <string name="random">Random</string>
+    <string name="alert_join_table">Do you want to join a random table or a specific?</string>
+    <string name="specific">Specific</string>
+    <string name="ok">OK</string>
+    <string name="enter_id">Enter ID of table</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

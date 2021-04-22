@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="hu.bme.aut.onlab.poker.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_startTableFragment"
+            app:destination="@id/startTableFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_gamePlayFragment"
+            app:destination="@id/gamePlayFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_in_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_in_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/startTableFragment"
+        android:name="hu.bme.aut.onlab.poker.StartTableFragment"
+        android:label="fragment_start_table"
+        tools:layout="@layout/fragment_start_table" />
+    <fragment
+        android:id="@+id/gamePlayFragment"
+        android:name="hu.bme.aut.onlab.poker.GamePlayFragment"
+        android:label="fragment_game_play"
+        tools:layout="@layout/fragment_game_play" />
+</navigation>
