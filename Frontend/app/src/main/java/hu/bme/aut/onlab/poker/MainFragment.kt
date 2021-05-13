@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.navigation.findNavController
 import hu.bme.aut.onlab.poker.databinding.FragmentMainBinding
 import hu.bme.aut.onlab.poker.network.PokerClient
+import hu.bme.aut.onlab.poker.network.TableJoinedMessage
 
 class MainFragment : Fragment(), PokerClient.TableJoinedListener {
     private lateinit var binding: FragmentMainBinding
@@ -23,7 +24,7 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
         savedInstanceState: Bundle?
     ): View {
         MainActivity.backPressDisabled = false
-        binding = FragmentMainBinding.inflate(LayoutInflater.from(requireContext()))
+        binding = FragmentMainBinding.inflate(layoutInflater, container, false)
         PokerClient.listener = this
 
         binding.btnStartTable.setOnClickListener {
@@ -64,13 +65,13 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
                 if (table >= 100)
                     PokerClient.tryJoin(table)
                 else
-                    toast("No such table")
+                    toast("Please enter a valid ID")
             }
             .show()
     }
 
-    override fun tableJoined(tableId: Int) {
-        Log.d("pokerWeb", "Got join message for table $tableId")
-        view?.findNavController()?.navigate(MainFragmentDirections.actionMainFragmentToGamePlayFragment(tableId))
+    override fun tableJoined(joinedMessage: TableJoinedMessage) {
+        Log.d("pokerWeb", "Got join message for table ${joinedMessage.tableId}")
+        view?.findNavController()?.navigate(MainFragmentDirections.actionMainFragmentToGamePlayFragment(joinedMessage.tableId, joinedMessage.rules))
     }
 }

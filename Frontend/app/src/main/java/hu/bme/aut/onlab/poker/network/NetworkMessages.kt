@@ -1,10 +1,6 @@
 package hu.bme.aut.onlab.poker.network
 
-import hu.bme.aut.onlab.poker.model.Player
-import hu.bme.aut.onlab.poker.model.WinningPlayer
-import hu.bme.aut.onlab.poker.model.Action
-import hu.bme.aut.onlab.poker.model.Card
-import hu.bme.aut.onlab.poker.model.TableRules
+import hu.bme.aut.onlab.poker.model.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -43,9 +39,9 @@ data class GetOpenTablesMessage(
 }
 
 @Serializable
-data class ActionIncomingMessage(
+data class ActionMessage(
         val tableId: Int,
-        val playerId: Int,
+        val name: String,
         val action: Action
 ) {
     companion object {
@@ -55,13 +51,16 @@ data class ActionIncomingMessage(
 
 @Serializable
 data class GameStateMessage(
-        val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
-        val tableCards: List<Card>, // cards on the table
-        val players: List<Player>, // players with name, chip stack, and this rounds betsize
-        var receiverPID: Int, // receiver's playerId in the Game
-        val receiverCards: MutableList<Card>, // cards in hand of the receiver
-        val nextPlayer: String, // username of next player
-        val lastAction: ActionIncomingMessage?
+    val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
+    val tableCards: List<Card>, // cards on the table
+    val players: MutableList<Player>, // players with name, chip stack, and this rounds betsize
+    val maxRaiseThisRound: Int,
+    var receiverPID: Int, // receiver's playerId in the Game
+    val receiverCards: MutableList<Card>, // cards in hand of the receiver
+    val nextPlayer: String, // username of next player
+    val turnState: TurnState,
+    val bigBlind: Int,
+    val lastAction: ActionMessage?
 ) {
     companion object {
         const val MESSAGE_CODE = 5
@@ -136,7 +135,8 @@ data class TableCreatedMessage(
 
 @Serializable
 data class TableJoinedMessage(
-        val tableId: Int
+        val tableId: Int,
+        val rules: TableRules
 ) {
     companion object {
         const val MESSAGE_CODE = 13

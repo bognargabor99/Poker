@@ -12,14 +12,18 @@
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_startTableFragment"
-            app:destination="@id/startTableFragment" />
+            app:destination="@id/startTableFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
         <action
             android:id="@+id/action_mainFragment_to_gamePlayFragment"
             app:destination="@id/gamePlayFragment"
-            app:enterAnim="@android:anim/slide_in_left"
-            app:exitAnim="@android:anim/slide_in_left"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_in_left" />
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
     </fragment>
     <fragment
         android:id="@+id/startTableFragment"
@@ -35,5 +39,8 @@
             android:name="tableId"
             android:defaultValue="0"
             app:argType="integer"/>
+        <argument
+            android:name="rules"
+            app:argType="hu.bme.aut.onlab.poker.model.TableRules"/>
     </fragment>
 </navigation>

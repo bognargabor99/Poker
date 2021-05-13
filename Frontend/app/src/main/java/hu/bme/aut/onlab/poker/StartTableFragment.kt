@@ -19,7 +19,7 @@ class StartTableFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         MainActivity.backPressDisabled = true
-        binding = FragmentStartTableBinding.inflate(LayoutInflater.from(requireContext()))
+        binding = FragmentStartTableBinding.inflate(layoutInflater, container, false)
 
         binding.mspSize.adapter = ArrayAdapter(
             requireContext(), android.R.layout.simple_spinner_dropdown_item, (2..5).map { it }

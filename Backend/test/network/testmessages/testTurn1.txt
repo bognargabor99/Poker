@@ -2,10 +2,10 @@ user1: {     "messageCode":1,     "data":"{\"userName\":\"user1\",\"rules\":{\"i
 
 user2: {"messageCode":2,"data":"{\"userName\":\"user2\",\"tableId\":100}"}
 
-user2: {"messageCode":4,"data":"{\"tableId\":100,\"playerId\":1001,\"action\":{\"type\":\"CALL\",\"amount\":0}}"}
+user2: {"messageCode":4,"data":"{\"tableId\":100,\"name\":\"user2\",\"action\":{\"type\":\"CALL\",\"amount\":0}}"}
 
-user1: {"messageCode":4,"data":"{\"tableId\":100,\"playerId\":1000,\"action\":{\"type\":\"CHECK\",\"amount\":0}}"}
+user1: {"messageCode":4,"data":"{\"tableId\":100,\"name\":\"user1\",\"action\":{\"type\":\"CHECK\",\"amount\":0}}"}
 
-user2: {"messageCode":4,"data":"{\"tableId\":100,\"playerId\":1001,\"action\":{\"type\":\"CHECK\",\"amount\":0}}"}
+user2: {"messageCode":4,"data":"{\"tableId\":100,\"name\":\"user2\",\"action\":{\"type\":\"CHECK\",\"amount\":0}}"}
 
-user1: {"messageCode":4,"data":"{\"tableId\":100,\"playerId\":1000,\"action\":{\"type\":\"CHECK\",\"amount\":0}}"}
+user1: {"messageCode":4,"data":"{\"tableId\":100,\"name\":\"user1\",\"action\":{\"type\":\"CHECK\",\"amount\":0}}"}

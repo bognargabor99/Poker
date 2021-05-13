@@ -29,7 +29,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             val newPlayer = Player(rules.playerStartingStack)
             newPlayer.userName = userName
             players.add(newPlayer)
-            UserCollection.tableJoined(userName, id)
+            UserCollection.tableJoined(userName, id, rules)
             if (players.size == rules.playerCount)
                 startGame()
             true
@@ -44,7 +44,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun newTurn() {
-        if (turnCount % rules.doubleBlindsAfterTurnCount == 0)
+        if (turnCount != 0 && turnCount % rules.doubleBlindsAfterTurnCount == 0)
             bigBlindAmount*=2
         maxRaiseThisRound = bigBlindAmount
         turnCount++
@@ -209,9 +209,12 @@ class Table(private val rules: TableRules) : PokerActionListener{
             id,
             cardsOnTable,
             playerDtos,
+            maxRaiseThisRound,
             0,
             mutableListOf(),
             players.singleOrNull { it.id == nextPlayerId }?.userName ?: "",
+            turnState,
+            bigBlindAmount,
             previousAction
         )
 
@@ -260,7 +263,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
                 Game.closeTable(id)
         } else if (players.size > 2) {
             if (players[index].id == nextPlayerId) {
-                nextPlayerId = previousAction?.playerId ?: playersInTurn.last()
+                nextPlayerId = players.find { player -> player.userName == previousAction?.name }?.id ?: playersInTurn.last()
                 setNextPlayer()
             }
             playersInTurn.remove(players[index].id)
@@ -373,7 +376,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun validateAction(actionMsg: ActionIncomingMessage): Boolean {
-        if (actionMsg.playerId != nextPlayerId) // if action not from next player
+        if (actionMsg.name != players.single { nextPlayerId == it.id }.userName) // if action not from next player
             return false
         if (actionMsg.action.type == ActionType.CHECK && maxRaiseThisRound != players.single { it.id == nextPlayerId }.inPotThisRound) // if checked but has to fold/raise
             return false
@@ -399,7 +402,6 @@ class Table(private val rules: TableRules) : PokerActionListener{
             winnerName = userName
         }
         val turnEndMsg = TurnEndMessage(id, cardsOnTable, listOf(TurnEndMsgPlayerDto(winnerName, null, null, pot)))
-
         players.forEach {
             UserCollection.sendToClient(it.userName, Json.encodeToString(turnEndMsg), TurnEndMessage.MESSAGE_CODE)
         }

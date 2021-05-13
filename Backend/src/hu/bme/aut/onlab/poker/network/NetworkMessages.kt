@@ -5,6 +5,7 @@ import hu.bme.aut.onlab.poker.dto.TurnEndMsgPlayerDto
 import hu.bme.aut.onlab.poker.gamemodel.Action
 import hu.bme.aut.onlab.poker.gamemodel.Card
 import hu.bme.aut.onlab.poker.gamemodel.TableRules
+import hu.bme.aut.onlab.poker.gamemodel.TurnState
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -45,7 +46,7 @@ data class GetOpenTablesMessage(
 @Serializable
 data class ActionIncomingMessage(
     val tableId: Int,
-    val playerId: Int,
+    val name: String,
     val action: Action
 ) {
     companion object {
@@ -58,9 +59,12 @@ data class GameStateMessage(
     val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
     val tableCards: List<Card>, // cards on the table
     val players: List<PlayerDto>, // players with name, chip stack, and this rounds betsize
+    val maxRaiseThisRound: Int,
     var receiverPID: Int, // receiver's playerId in the Game
     val receiverCards: MutableList<Card>, // cards in hand of the receiver
     val nextPlayer: String, // username of next player
+    val turnState: TurnState,
+    val bigBlind: Int,
     val lastAction: ActionIncomingMessage?
 ) {
     companion object {
@@ -136,7 +140,8 @@ data class TableCreatedMessage(
 
 @Serializable
 data class TableJoinedMessage(
-    val tableId: Int
+    val tableId: Int,
+    val rules: TableRules
 ) {
     companion object {
         const val MESSAGE_CODE = 13

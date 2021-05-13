@@ -1,5 +1,6 @@
 package hu.bme.aut.onlab.poker.network
 
+import hu.bme.aut.onlab.poker.gamemodel.TableRules
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
@@ -17,7 +18,7 @@ object UserCollection {
 
     fun sendToClient(userName: String, data: String, code: Int) {
         val networkMsg = NetworkMessage(code, data)
-        users.single { it.name == userName }
+        users.find { it.name == userName }
             ?.sendToClient(Json.encodeToString(networkMsg))
     }
 
@@ -40,8 +41,8 @@ object UserCollection {
         sendToClient(user, Json.encodeToString(answer), TableCreatedMessage.MESSAGE_CODE)
     }
 
-    fun tableJoined(user: String, tableId: Int) {
-        val answer = TableJoinedMessage(tableId)
+    fun tableJoined(user: String, tableId: Int, rules: TableRules) {
+        val answer = TableJoinedMessage(tableId, rules)
         sendToClient(user, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
         users.single { it.name == user }.tableIds.add(tableId)
     }

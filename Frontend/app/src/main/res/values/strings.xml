@@ -25,7 +25,14 @@
     <string name="specific">Specific</string>
     <string name="ok">OK</string>
     <string name="enter_id">Enter ID of table</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="leave_table">Leave table</string>
+    <string name="table_join_success">Successfully joined table</string>
+    <string name="table_started">Table Started</string>
+    <string name="eliminated_alert">You\'ve been eliminated from table</string>
+    <string name="congratulation">Congratulations!\nYou won the table!</string>
+    <string name="avatar">Avatar</string>
+    <string name="call_action">Call %1$d</string>
+    <string name="raise">Raise</string>
+    <string name="check">Check</string>
+    <string name="fold">Fold</string>
 </resources>

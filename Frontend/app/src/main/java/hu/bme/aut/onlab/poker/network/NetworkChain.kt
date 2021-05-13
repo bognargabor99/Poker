@@ -11,7 +11,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = GameStateProcessor(ConnectionInfoProcessor(TableCreatedProcessor(TurnEndProcessor(EliminationProcessor(null)))))
+        chain = GameStateProcessor(ConnectionInfoProcessor(TableJoinedProcessor(TurnEndProcessor(EliminationProcessor(GameStartedProcessor(DisconnectedPlayerProcessor(WinnerAnnouncementProcessor(null))))))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -53,17 +53,44 @@ class TurnEndProcessor(processor: Processor?) : Processor(processor) {
 class EliminationProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
             if (message?.messageCode == EliminationMessage.MESSAGE_CODE) {
-                PokerClient.eliminated(Json.decodeFromString<EliminationMessage>(message.data).tableId)
+                PokerClient.eliminatedFromTable(Json.decodeFromString<EliminationMessage>(message.data).tableId)
             }
             else
                 super.process(message)
 }
 
-class TableCreatedProcessor(processor: Processor?) : Processor(processor) {
+class TableJoinedProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-        if (message?.messageCode == TableCreatedMessage.MESSAGE_CODE || message?.messageCode == TableJoinedMessage.MESSAGE_CODE) {
-            PokerClient.tableJoined(Json.decodeFromString<TableJoinedMessage>(message.data).tableId)
-            Thread.sleep(1000) //TODO("Handle this!")
+        if (message?.messageCode == TableJoinedMessage.MESSAGE_CODE) {
+            PokerClient.tableJoined(Json.decodeFromString<TableJoinedMessage>(message.data))
+            Thread.sleep(1000)
+        }
+        else
+            super.process(message)
+}
+
+class GameStartedProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == GameStartedMessage.MESSAGE_CODE) {
+            PokerClient.tableStarted(Json.decodeFromString<GameStartedMessage>(message.data).tableId)
+        }
+        else
+            super.process(message)
+}
+
+class DisconnectedPlayerProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == DisconnectedPlayerMessage.MESSAGE_CODE) {
+            PokerClient.playerDisconnectedFromTable(Json.decodeFromString<DisconnectedPlayerMessage>(message.data).userName)
+        }
+        else
+            super.process(message)
+}
+
+class WinnerAnnouncementProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == WinnerAnnouncerMessage.MESSAGE_CODE) {
+            PokerClient.tableWon(Json.decodeFromString<WinnerAnnouncerMessage>(message.data).tableId)
         }
         else
             super.process(message)

@@ -1,6 +1,8 @@
 package hu.bme.aut.onlab.poker.network
 
 import android.util.Log
+import hu.bme.aut.onlab.poker.model.Action
+import hu.bme.aut.onlab.poker.model.ActionType
 import hu.bme.aut.onlab.poker.model.TableRules
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
@@ -29,7 +31,7 @@ object PokerClient {
         chain.process(message)
     }
 
-    fun sendToServer(data: String, code: Int) {
+    private fun sendToServer(data: String, code: Int) {
         val message = NetworkMessage(code, data)
         GlobalScope.launch {
             session.send(Frame.Text(Json.encodeToString(message)))
@@ -37,8 +39,7 @@ object PokerClient {
     }
 
     fun setGameState(stateMessage: GameStateMessage) {
-        //TODO("Not yet implemented")
-        receiver.receiveMessage(stateMessage.toString())
+        receiver.onNewGameState(stateMessage)
     }
 
     fun setConnectionInfo(name: String) {
@@ -46,11 +47,13 @@ object PokerClient {
     }
 
     fun turnEnded(turnEndMessage: TurnEndMessage) {
-        //TODO("Not yet implemented")
+        Log.d("pokerWeb", "Turn ended: ${turnEndMessage.toString()}")
+        receiver.onTurnEnd(turnEndMessage)
+        Thread.sleep(1000)
     }
 
-    fun eliminated(table: Int) {
-        //TODO("Not yet implemented")
+    fun eliminatedFromTable(table: Int) {
+        receiver.onGetEliminated(table)
     }
 
     fun startTable(rules: TableRules) {
@@ -58,10 +61,10 @@ object PokerClient {
         sendToServer(Json.encodeToString(createMessage), CreateTableMessage.MESSAGE_CODE)
     }
 
-    fun tableJoined(tableId: Int) {
-        if (tableId != 0 && !tables.contains(tableId)) {
-            tables.add(tableId)
-            listener.tableJoined(tableId)
+    fun tableJoined(joinedMessage: TableJoinedMessage) {
+        if (joinedMessage.tableId != 0 && !tables.contains(joinedMessage.tableId)) {
+            tables.add(joinedMessage.tableId)
+            listener.tableJoined(joinedMessage)
         }
     }
 
@@ -75,11 +78,33 @@ object PokerClient {
         sendToServer(Json.encodeToString(leaveMessage), LeaveTableMessage.MESSAGE_CODE)
     }
 
+    fun tableStarted(tableId: Int) {
+        receiver.onTableStarted(tableId)
+    }
+
+    fun playerDisconnectedFromTable(userName: String) {
+        receiver.onPlayerDisconnection(userName)
+    }
+
+    fun tableWon(tableId: Int) {
+        receiver.onTableWin(tableId)
+    }
+
+    fun action(action: Action) {
+        val actionMessage = ActionMessage(tables.first(), userName, action)
+        sendToServer(Json.encodeToString(actionMessage), ActionMessage.MESSAGE_CODE)
+    }
+
     interface TableJoinedListener {
-        fun tableJoined(tableId: Int)
+        fun tableJoined(joinedMessage: TableJoinedMessage)
     }
 
     interface GamePlayReceiver {
-        fun receiveMessage(text: String)
+        fun onTableStarted(tableId: Int)
+        fun onNewGameState(stateMessage: GameStateMessage)
+        fun onTurnEnd(turnEndMessage: TurnEndMessage)
+        fun onGetEliminated(tableId: Int)
+        fun onPlayerDisconnection(name: String)
+        fun onTableWin(tableId: Int)
     }
 }
