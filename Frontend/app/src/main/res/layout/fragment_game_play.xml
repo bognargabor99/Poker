@@ -33,7 +33,7 @@
 
         <Button
             android:id="@+id/btn_fold"
-            android:background="@drawable/btn_action"
+            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:shadowRadius="10"
             android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
 
         <Button
             android:id="@+id/btn_check"
-            android:background="@drawable/btn_action"
+            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:layout_toEndOf="@id/btn_fold"
             android:layout_width="wrap_content"
@@ -51,7 +51,7 @@
 
         <Button
             android:id="@+id/btn_call"
-            android:background="@drawable/btn_action"
+            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:layout_toEndOf="@id/btn_fold"
             android:layout_width="wrap_content"
@@ -60,7 +60,7 @@
 
         <Button
             android:id="@+id/btn_raise"
-            android:background="@drawable/btn_action"
+            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:layout_toEndOf="@id/btn_call"
             android:layout_width="wrap_content"
@@ -112,6 +112,28 @@
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/table_card4"
         android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/tvPot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_textview"
+        android:textColor="@color/white"
+        android:layout_above="@id/table_card3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:id="@+id/btn_last_turn"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignBottom="@id/tvPot"
+        android:layout_toEndOf="@id/tvPot"
+        android:scaleType="fitXY"
+        android:visibility="invisible"
+        android:background="@drawable/bulleted_list"
+        android:contentDescription="@string/last_turn_results" />
 
     <include
         android:id="@+id/avatar_self"

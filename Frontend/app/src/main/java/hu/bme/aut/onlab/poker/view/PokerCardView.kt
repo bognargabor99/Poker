@@ -14,6 +14,7 @@ class PokerCardView : View {
     var value: Int = 2
     var symbol: Int = SYMBOL_HEART
     var isUpside: Boolean = true
+    var isDisabled: Boolean = false
     private var paintText = Paint()
     private val paintBg = Paint()
     private lateinit var attributes: TypedArray
@@ -31,6 +32,7 @@ class PokerCardView : View {
             symbol = attributes.getInt(R.styleable.PokerCardView_symbol, SYMBOL_HEART)
             value = attributes.getInt(R.styleable.PokerCardView_value, 2)
             isUpside = attributes.getBoolean(R.styleable.PokerCardView_isUpside, true)
+            isDisabled = attributes.getBoolean(R.styleable.PokerCardView_isDisabled, false)
         } finally {
             attributes.recycle()
         }
@@ -110,8 +112,10 @@ class PokerCardView : View {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun performClick(): Boolean {
-        isUpside = !isUpside
-        invalidate()
+        if (!isDisabled) {
+            isUpside = !isUpside
+            invalidate()
+        }
         return true
     }
 

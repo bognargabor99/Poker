@@ -34,7 +34,7 @@ object PokerAPI {
                 message as? Frame.Text ?: continue
                 val receivedBytes = message.readBytes()
                 val text = String(receivedBytes)
-                delay(1000)
+                delay(600)
                 Log.d("pokerWeb", text)
                 PokerClient.receiveText(text)
             }

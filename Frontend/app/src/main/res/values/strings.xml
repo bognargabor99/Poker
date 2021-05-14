@@ -32,7 +32,9 @@
     <string name="congratulation">Congratulations!\nYou won the table!</string>
     <string name="avatar">Avatar</string>
     <string name="call_action">Call %1$d</string>
+    <string name="pot">Pot: %1$d</string>
     <string name="raise">Raise</string>
     <string name="check">Check</string>
     <string name="fold">Fold</string>
+    <string name="last_turn_results">Last turn results</string>
 </resources>

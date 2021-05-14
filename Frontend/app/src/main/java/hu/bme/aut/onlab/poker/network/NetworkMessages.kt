@@ -1,6 +1,8 @@
 package hu.bme.aut.onlab.poker.network
 
+import android.os.Parcelable
 import hu.bme.aut.onlab.poker.model.*
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -60,6 +62,8 @@ data class GameStateMessage(
     val nextPlayer: String, // username of next player
     val turnState: TurnState,
     val bigBlind: Int,
+    val pot: Int,
+    val fastForwarded: Boolean,
     val lastAction: ActionMessage?
 ) {
     companion object {
@@ -67,12 +71,13 @@ data class GameStateMessage(
     }
 }
 
+@Parcelize
 @Serializable
 data class TurnEndMessage(
         val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
         val tableCards: List<Card>, // cards on the table
         val playerOrder: List<WinningPlayer>, // players' hands + winnings in the last turn
-) {
+) : Parcelable {
     companion object {
         const val MESSAGE_CODE = 6
     }

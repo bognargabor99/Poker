@@ -25,8 +25,6 @@ import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.view.PokerCardView
 
 // TODO: chips animations
-// TODO: view size of pot
-// TODO: handle turn end
 // TODO: view previous actions
 class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var binding: FragmentGamePlayBinding
@@ -34,7 +32,9 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private val args: GamePlayFragmentArgs by navArgs()
     private var tableStart = true
     private var newTurn = true
-    private lateinit var state: GameStateMessage
+    private lateinit var oldState: GameStateMessage
+    private lateinit var newState: GameStateMessage
+    private lateinit var lastTurnResults: TurnEndMessage
     private val avatarMap = mutableMapOf<String, AvatarBinding>()
 
     override fun onCreateView(
@@ -64,8 +64,9 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
         binding.btnFold.setOnClickListener { PokerClient.action(Action(ActionType.FOLD, 0)) }
         binding.btnCheck.setOnClickListener { PokerClient.action(Action(ActionType.CHECK, 0)) }
-        binding.btnCall.setOnClickListener { PokerClient.action(Action(ActionType.CALL, state.maxRaiseThisRound)) }
+        binding.btnCall.setOnClickListener { PokerClient.action(Action(ActionType.CALL, newState.maxRaiseThisRound)) }
         binding.btnRaise.setOnClickListener { askForAmount() }
+        binding.btnLastTurn.setOnClickListener { showTurnResults() }
     }
 
     override fun onTableStarted(tableId: Int) {
@@ -84,14 +85,16 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onNewGameState(stateMessage: GameStateMessage) {
-        state = stateMessage
+        if (this::newState.isInitialized)
+            oldState = newState
+        newState = stateMessage
         if (tableStart) mapAvatars()
         if (newTurn) {
             handCards()
             disableTableCards()
             newTurn = false
         }
-        if (state.lastAction == null)
+        if (newState.lastAction == null)
             putCardsOnTable()
         displayChipCounts()
         showActionButtonsIfNecessary()
@@ -102,26 +105,33 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     private fun putCardsOnTable() {
-        val range = when (state.turnState) {
+        val range = when (newState.turnState) {
             TurnState.AFTER_FLOP -> 0..2
             TurnState.AFTER_TURN -> 3..3
-            TurnState.AFTER_RIVER -> 4..4
+            TurnState.AFTER_RIVER -> (oldState.turnState.cardsOnTableCount + if (newState.fastForwarded) 0 else 1)..4
             else -> IntRange.EMPTY
         }
         activity?.runOnUiThread {
             val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.card_animation)
             range.forEach { i ->
                 tableCards[i].visibility = View.VISIBLE
-                tableCards[i].value = state.tableCards[i].value
-                tableCards[i].symbol = state.tableCards[i].suit.ordinal
+                tableCards[i].value = newState.tableCards[i].value
+                tableCards[i].symbol = newState.tableCards[i].suit.ordinal
                 tableCards[i].startAnimation(anim)
             }
         }
     }
 
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
+        lastTurnResults = turnEndMessage
+        activity?.runOnUiThread { binding.btnLastTurn.visibility = View.VISIBLE }
+        showTurnResults()
         gatherCards()
         newTurn = true
+    }
+
+    private fun showTurnResults() {
+        view?.findNavController()?.navigate(GamePlayFragmentDirections.actionGamePlayFragmentToResultsFragment(lastTurnResults))
     }
 
     override fun onGetEliminated(tableId: Int) {
@@ -155,8 +165,8 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private fun askForAmount() {
         activity?.runOnUiThread {
             val numPicker = NumberPicker(requireContext())
-            numPicker.minValue = state.maxRaiseThisRound + state.bigBlind
-            numPicker.maxValue = state.players.single { it.userName == PokerClient.userName }.chipStack
+            numPicker.minValue = newState.maxRaiseThisRound + newState.bigBlind
+            numPicker.maxValue = newState.players.single { it.userName == PokerClient.userName }.run { chipStack + inPotThisRound}
             AlertDialog.Builder(requireContext())
                 .setTitle("Raise to:")
                 .setView(numPicker)
@@ -168,10 +178,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
 
     private fun handCards() {
         activity?.runOnUiThread {
-            binding.playerCard1.value = state.receiverCards.first().value
-            binding.playerCard2.value = state.receiverCards.last().value
-            binding.playerCard1.symbol = state.receiverCards.first().suit.ordinal
-            binding.playerCard2.symbol = state.receiverCards.last().suit.ordinal
+            binding.playerCard1.value = newState.receiverCards.first().value
+            binding.playerCard2.value = newState.receiverCards.last().value
+            binding.playerCard1.symbol = newState.receiverCards.first().suit.ordinal
+            binding.playerCard2.symbol = newState.receiverCards.last().suit.ordinal
         }
         animatePlayerCards()
     }
@@ -188,13 +198,14 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     private fun gatherCards() {
-        val tableCardCount = when (state.turnState) {
+        val tableCardCount = when (newState.turnState) {
             TurnState.PREFLOP -> 0
             TurnState.AFTER_FLOP -> 3
             TurnState.AFTER_TURN -> 4
             TurnState.AFTER_RIVER -> 5
         }
         activity?.runOnUiThread {
+            binding.tvPot.visibility = View.INVISIBLE
             val cards = mutableListOf(binding.playerCard1, binding.playerCard2)
             cards.addAll(tableCards.take(tableCardCount))
             cards.forEachIndexed { index, card ->
@@ -216,20 +227,22 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private fun mapAvatars() {
         binding.let {
             avatarMap[PokerClient.userName] = it.avatarSelf
-            val self = state.players.single { self -> self.userName == PokerClient.userName }
-            state.players.removeIf { player -> player.userName == PokerClient.userName }
+            val self = newState.players.single { self -> self.userName == PokerClient.userName }
+            newState.players.removeIf { player -> player.userName == PokerClient.userName }
             val list = listOf(it.avatar1, it.avatar2, it.avatar3, it.avatar4)
-            state.players.forEachIndexed { index, player ->
+            newState.players.forEachIndexed { index, player ->
                 avatarMap[player.userName] = list[index]
             }
-            state.players.add(self)
+            newState.players.add(self)
         }
         tableStart = false
     }
 
     private fun displayChipCounts() {
         activity?.runOnUiThread {
-            state.players.forEach { player ->
+            binding.tvPot.visibility = View.VISIBLE
+            binding.tvPot.text = getString(R.string.pot, newState.pot)
+            newState.players.forEach { player ->
                 avatarMap[player.userName].let {
                     it?.chipStack?.text = player.chipStack.toString()
                     it?.inPotThisRound?.text = player.inPotThisRound.toString()
@@ -240,14 +253,14 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
 
     private fun showActionButtonsIfNecessary() {
         activity?.runOnUiThread { 
-            if (state.nextPlayer!=PokerClient.userName)
+            if (newState.nextPlayer!=PokerClient.userName)
                 binding.actionButtons.visibility = View.GONE
             else {
                 binding.actionButtons.visibility = View.VISIBLE
-                if (state.run { maxRaiseThisRound - players.single { it.userName == PokerClient.userName }.inPotThisRound } > 0) {
+                if (newState.run { maxRaiseThisRound - players.single { it.userName == PokerClient.userName }.inPotThisRound } > 0) {
                     binding.btnCheck.visibility = View.INVISIBLE
                     binding.btnCall.visibility = View.VISIBLE
-                    binding.btnCall.text = getString(R.string.call_action, state.maxRaiseThisRound)
+                    binding.btnCall.text = getString(R.string.call_action, newState.maxRaiseThisRound)
                 } else {
                     binding.btnCheck.visibility = View.VISIBLE
                     binding.btnCall.visibility = View.INVISIBLE
