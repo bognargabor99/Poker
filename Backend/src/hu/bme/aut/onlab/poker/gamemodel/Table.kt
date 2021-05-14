@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
 class Table(private val rules: TableRules) : PokerActionListener{
+    private var fastForwarding: Boolean = false
     val id: Int = lastTableId.getAndIncrement()
     private var bigBlindAmount = rules.bigBlindStartingAmount
     private val players: MutableList<Player> = mutableListOf()
@@ -171,7 +172,10 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
     private fun fastForwardTurn() {
         cardsOnTable.addAll(deck.getCards(5 - cardsOnTable.size))
-        nextPlayerId=0
+        fastForwarding = true
+        nextPlayerId = 0
+        turnState = TurnState.AFTER_RIVER
+        previousAction = null
         spreadGameState()
         showdown()
         eliminatePlayers()
@@ -215,6 +219,8 @@ class Table(private val rules: TableRules) : PokerActionListener{
             players.singleOrNull { it.id == nextPlayerId }?.userName ?: "",
             turnState,
             bigBlindAmount,
+            players.sumOf { it.inPot },
+            fastForwarding,
             previousAction
         )
 
@@ -224,6 +230,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             gameStateMessage.receiverCards.addAll(it.inHandCards)
             UserCollection.sendToClient(it.userName, Json.encodeToString(gameStateMessage), GameStateMessage.MESSAGE_CODE)
         }
+        fastForwarding = false
     }
 
     private fun setNextPlayer() {

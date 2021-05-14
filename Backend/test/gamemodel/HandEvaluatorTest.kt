@@ -197,7 +197,7 @@ class HandEvaluatorTest {
             Card(9, Suit.HEARTS),
             Card(11, Suit.SPADES))
 
-        // Arrange
+        // Act
         val hand = HandEvaluator.evaluateHand(handCards)
 
         // Assert
@@ -207,6 +207,33 @@ class HandEvaluatorTest {
         assertEquals(9, hand.values[2])
         assertEquals(7, hand.values[3])
         assertEquals(6, hand.values[4])
+    }
+
+    @Test
+    fun straightEqualityTest() {
+        //Arrange
+        val handCards1 = mutableListOf(Card(9, Suit.SPADES),
+            Card(8, Suit.SPADES),
+            Card(7, Suit.SPADES),
+            Card(10, Suit.CLUBS),
+            Card(6, Suit.DIAMONDS),
+            Card(10, Suit.DIAMONDS),
+            Card(14, Suit.CLUBS))
+
+        val handCards2 = mutableListOf(Card(9, Suit.SPADES),
+            Card(8, Suit.SPADES),
+            Card(7, Suit.SPADES),
+            Card(10, Suit.CLUBS),
+            Card(6, Suit.DIAMONDS),
+            Card(9, Suit.CLUBS),
+            Card(2, Suit.CLUBS))
+
+        // Act
+        val hand1 = HandEvaluator.evaluateHand(handCards1)
+        val hand2 = HandEvaluator.evaluateHand(handCards2)
+
+        // Assert
+        assert(hand1 == hand2)
     }
 
     @Test

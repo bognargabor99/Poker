@@ -34,7 +34,7 @@ class Player(
     fun putInPot(amount: Int) {
         var toPut = amount
         if (toPut > chipStack + inPotThisRound)
-            toPut = chipStack
+            toPut = chipStack + inPotThisRound
 
         (toPut - inPotThisRound).also {
             inPot += it

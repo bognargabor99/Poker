@@ -65,6 +65,8 @@ data class GameStateMessage(
     val nextPlayer: String, // username of next player
     val turnState: TurnState,
     val bigBlind: Int,
+    val pot: Int,
+    val fastForwarded: Boolean,
     val lastAction: ActionIncomingMessage?
 ) {
     companion object {

@@ -8,7 +8,7 @@ object HandEvaluator {
         if (flushHand!=null)
             return flushHand
         //Straight section
-        val straightStartValue = getStraightSequenceFrom(sortedCards.map { it.value })
+        val straightStartValue = getStraightSequenceFrom(sortedCards.map { it.value }.distinct())
         if (straightStartValue != -1)
             return Hand(HandType.STRAIGHT, listOf(straightStartValue))
         //Pairs
