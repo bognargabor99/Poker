@@ -62,7 +62,7 @@ class EliminationProcessor(processor: Processor?) : Processor(processor) {
 class TableJoinedProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == TableJoinedMessage.MESSAGE_CODE) {
-            PokerClient.tableJoined(Json.decodeFromString<TableJoinedMessage>(message.data))
+            PokerClient.tableJoined(Json.decodeFromString(message.data))
             Thread.sleep(1000)
         }
         else

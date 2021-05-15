@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import hu.bme.aut.onlab.poker.adapter.ResultsAdapter

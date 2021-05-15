@@ -2,7 +2,6 @@ package hu.bme.aut.onlab.poker.network
 
 import android.util.Log
 import hu.bme.aut.onlab.poker.model.Action
-import hu.bme.aut.onlab.poker.model.ActionType
 import hu.bme.aut.onlab.poker.model.TableRules
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
@@ -47,7 +46,7 @@ object PokerClient {
     }
 
     fun turnEnded(turnEndMessage: TurnEndMessage) {
-        Log.d("pokerWeb", "Turn ended: ${turnEndMessage.toString()}")
+        Log.d("pokerWeb", "Turn ended: $turnEndMessage")
         receiver.onTurnEnd(turnEndMessage)
         Thread.sleep(1000)
     }

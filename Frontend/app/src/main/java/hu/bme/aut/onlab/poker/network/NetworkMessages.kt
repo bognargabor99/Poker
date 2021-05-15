@@ -55,7 +55,7 @@ data class ActionMessage(
 data class GameStateMessage(
     val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
     val tableCards: List<Card>, // cards on the table
-    val players: MutableList<Player>, // players with name, chip stack, and this rounds betsize
+    val players: MutableList<Player>, // players with name, chip stack, and this round's size of bet
     val maxRaiseThisRound: Int,
     var receiverPID: Int, // receiver's playerId in the Game
     val receiverCards: MutableList<Card>, // cards in hand of the receiver

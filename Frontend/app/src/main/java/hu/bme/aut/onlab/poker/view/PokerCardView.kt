@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import hu.bme.aut.onlab.poker.R
@@ -14,7 +13,7 @@ class PokerCardView : View {
     var value: Int = 2
     var symbol: Int = SYMBOL_HEART
     var isUpside: Boolean = true
-    var isDisabled: Boolean = false
+    private var isDisabled: Boolean = false
     private var paintText = Paint()
     private val paintBg = Paint()
     private lateinit var attributes: TypedArray

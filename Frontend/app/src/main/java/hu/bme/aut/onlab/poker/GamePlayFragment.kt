@@ -63,8 +63,14 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
                 .show()
         }
         binding.btnFold.setOnClickListener { PokerClient.action(Action(ActionType.FOLD, 0)) }
-        binding.btnCheck.setOnClickListener { PokerClient.action(Action(ActionType.CHECK, 0)) }
-        binding.btnCall.setOnClickListener { PokerClient.action(Action(ActionType.CALL, newState.maxRaiseThisRound)) }
+        binding.btnCheck.setOnClickListener {
+            PokerClient.action(Action(ActionType.CHECK, 0))
+            binding.actionButtons.visibility = View.GONE
+        }
+        binding.btnCall.setOnClickListener {
+            PokerClient.action(Action(ActionType.CALL, newState.maxRaiseThisRound))
+            binding.actionButtons.visibility = View.GONE
+        }
         binding.btnRaise.setOnClickListener { askForAmount() }
         binding.btnLastTurn.setOnClickListener { showTurnResults() }
     }
@@ -165,12 +171,22 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private fun askForAmount() {
         activity?.runOnUiThread {
             val numPicker = NumberPicker(requireContext())
-            numPicker.minValue = newState.maxRaiseThisRound + newState.bigBlind
-            numPicker.maxValue = newState.players.single { it.userName == PokerClient.userName }.run { chipStack + inPotThisRound}
+            val minVal = newState.maxRaiseThisRound + newState.bigBlind
+            val myStack = newState.players.single { player -> player.userName == PokerClient.userName }.run { chipStack + inPotThisRound }
+            val displayed = (minVal..myStack step newState.bigBlind).toMutableList()
+            if (displayed.last() != myStack)
+                displayed.add(myStack)
+            val asArray = displayed.map { it.toString() }.toTypedArray()
+            numPicker.displayedValues = asArray
+            numPicker.maxValue = asArray.size - 1
+            numPicker.minValue = 0
             AlertDialog.Builder(requireContext())
                 .setTitle("Raise to:")
                 .setView(numPicker)
-                .setPositiveButton(R.string.ok) { _, _ -> PokerClient.action(Action(ActionType.RAISE, numPicker.value)) }
+                .setPositiveButton(R.string.ok) { _, _ ->
+                    PokerClient.action(Action(ActionType.RAISE, numPicker.displayedValues[numPicker.value].toInt()))
+                    binding.actionButtons.visibility = View.GONE
+                }
                 .setNegativeButton(R.string.cancel) { _, _ -> }
                 .show()
         }
