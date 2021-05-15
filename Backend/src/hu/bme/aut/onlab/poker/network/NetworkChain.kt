@@ -73,6 +73,7 @@ class LeaveTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == LeaveTableMessage.MESSAGE_CODE) {
             val leaveMessage = Json.decodeFromString<LeaveTableMessage>(message.data)
+            UserCollection.removePlayerFromTables(leaveMessage.userName, mutableListOf(leaveMessage.tableId))
             Game.removePlayerFromTables(leaveMessage.userName, mutableListOf(leaveMessage.tableId))
         }
         else

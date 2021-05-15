@@ -19,6 +19,7 @@ import hu.bme.aut.onlab.poker.databinding.FragmentGamePlayBinding
 import hu.bme.aut.onlab.poker.model.Action
 import hu.bme.aut.onlab.poker.model.ActionType
 import hu.bme.aut.onlab.poker.model.TurnState
+import hu.bme.aut.onlab.poker.network.ActionMessage
 import hu.bme.aut.onlab.poker.network.GameStateMessage
 import hu.bme.aut.onlab.poker.network.PokerClient
 import hu.bme.aut.onlab.poker.network.TurnEndMessage
@@ -100,10 +101,39 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
             disableTableCards()
             newTurn = false
         }
-        if (newState.lastAction == null)
+        if (newState.lastAction == null) {
             putCardsOnTable()
+            setDefaultAvatarThemes()
+        } else {
+            setAvatarTheme(newState.lastAction!!)
+        }
         displayChipCounts()
         showActionButtonsIfNecessary()
+    }
+
+    private fun setAvatarTheme(action: ActionMessage) {
+        activity?.runOnUiThread {
+            val resourceId = when (action.action.type) {
+                ActionType.CHECK -> R.drawable.avatar_background_check
+                ActionType.CALL -> R.drawable.avatar_background_call
+                ActionType.RAISE -> R.drawable.avatar_background_raise
+                else -> R.drawable.avatar_background_default
+            }
+            avatarMap[action.name].let {
+                it?.root?.setBackgroundResource(resourceId)
+                it?.tvLastAction?.visibility = View.VISIBLE
+                it?.tvLastAction?.text = action.action.type.name
+            }
+        }
+    }
+
+    private fun setDefaultAvatarThemes() {
+        activity?.runOnUiThread {
+            avatarMap.values.forEach {
+                it.tvLastAction.visibility = View.GONE
+                it.root.setBackgroundResource(R.drawable.avatar_background_default)
+            }
+        }
     }
 
     private fun disableTableCards() {
@@ -153,7 +183,11 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onPlayerDisconnection(name: String) {
-        // TODO("Not yet implemented")
+        activity?.runOnUiThread {
+            avatarMap[name]?.tvLastAction?.visibility = View.VISIBLE
+            avatarMap[name]?.tvLastAction?.text = getString(R.string.out)
+            avatarMap.remove(name)
+        }
     }
 
     override fun onTableWin(tableId: Int) {

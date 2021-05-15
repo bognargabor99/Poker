@@ -250,7 +250,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
         val toEliminate = players.filter { it.chipStack == 0 }
             .map { it.userName }
         players.removeIf { it.chipStack == 0 }
-        UserCollection.eliminateFromTable(id, toEliminate)
+        UserCollection.eliminateFromTable(id, toEliminate, players.map { player -> player.userName })
         if (players.size <= 1)
             declareWinner()
     }

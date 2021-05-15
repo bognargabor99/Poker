@@ -3,8 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/avatar_background"
-    android:weightSum="10">
+    android:background="@drawable/avatar_background_default"
+    android:weightSum="11">
+
+    <TextView
+        android:id="@+id/tv_last_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:layout_weight="1"
+        android:textStyle="bold"
+        android:visibility="gone"/>
 
     <ImageView
         android:layout_width="wrap_content"

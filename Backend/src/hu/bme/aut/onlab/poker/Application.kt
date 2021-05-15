@@ -28,6 +28,7 @@ fun Application.module(testing: Boolean = false) {
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue
                     val receivedText = frame.readText()
+                    println(receivedText)
                     thisUser.receiveFromClient(receivedText)
                 }
             } catch (e: Exception) {

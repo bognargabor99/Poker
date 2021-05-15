@@ -27,7 +27,6 @@ class User(private val session: DefaultWebSocketSession) {
 
     fun receiveFromClient(receivedText: String) {
         val request = Json.decodeFromString<NetworkMessage>(receivedText)
-        println("decoded JSON request")
         chain.process(request)
     }
 

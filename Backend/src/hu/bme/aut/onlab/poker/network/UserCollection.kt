@@ -30,9 +30,14 @@ object UserCollection {
             }
     }
 
-    fun eliminateFromTable(tableId: Int, toEliminate: List<String>) {
+    fun eliminateFromTable(tableId: Int, toEliminate: List<String>, toInform: List<String>) {
         toEliminate.forEach {
             sendToClient(it, Json.encodeToString(EliminationMessage(tableId)), EliminationMessage.MESSAGE_CODE)
+        }
+        toInform.forEach { informed ->
+            toEliminate.forEach { eliminated ->
+                sendToClient(informed, Json.encodeToString(DisconnectedPlayerMessage(tableId, eliminated)), EliminationMessage.MESSAGE_CODE)
+            }
         }
     }
 
@@ -45,5 +50,9 @@ object UserCollection {
         val answer = TableJoinedMessage(tableId, rules)
         sendToClient(user, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
         users.single { it.name == user }.tableIds.add(tableId)
+    }
+
+    fun removePlayerFromTables(userName: String, tables: MutableList<Int>) {
+        users.single { it.name == userName }.tableIds.removeAll(tables)
     }
 }
