@@ -36,7 +36,7 @@ object UserCollection {
         }
         toInform.forEach { informed ->
             toEliminate.forEach { eliminated ->
-                sendToClient(informed, Json.encodeToString(DisconnectedPlayerMessage(tableId, eliminated)), EliminationMessage.MESSAGE_CODE)
+                sendToClient(informed, Json.encodeToString(DisconnectedPlayerMessage(tableId, eliminated)), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
         }
     }
