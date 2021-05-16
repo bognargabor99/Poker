@@ -90,7 +90,7 @@ object PokerClient {
     }
 
     fun action(action: Action) {
-        val actionMessage = ActionMessage(tables.first(), userName, action)
+        val actionMessage = ActionMessage(tables.last(), userName, action)
         sendToServer(Json.encodeToString(actionMessage), ActionMessage.MESSAGE_CODE)
     }
 

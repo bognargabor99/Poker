@@ -180,9 +180,9 @@
             android:layout_width="70dp"
             android:layout_height="100dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
             android:layout_marginEnd="80dp"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginBottom="30dp"/>
 
         <include
             android:id="@+id/avatar4"
@@ -191,9 +191,9 @@
             android:layout_width="70dp"
             android:layout_height="100dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
             android:layout_marginEnd="80dp"
-            android:layout_marginBottom="30dp"/>
+            android:layout_marginTop="30dp"/>
 
     </RelativeLayout>
 

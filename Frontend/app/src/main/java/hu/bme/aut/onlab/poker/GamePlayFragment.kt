@@ -26,7 +26,6 @@ import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.view.PokerCardView
 
 // TODO: chips animations
-// TODO: view previous actions
 class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var binding: FragmentGamePlayBinding
     private lateinit var tableCards: List<PokerCardView>
@@ -208,7 +207,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
             val minVal = newState.maxRaiseThisRound + newState.bigBlind
             val myStack = newState.players.single { player -> player.userName == PokerClient.userName }.run { chipStack + inPotThisRound }
             val displayed = (minVal..myStack step newState.bigBlind).toMutableList()
-            if (displayed.last() != myStack)
+            if (displayed.isEmpty() || displayed.last() != myStack)
                 displayed.add(myStack)
             val asArray = displayed.map { it.toString() }.toTypedArray()
             numPicker.displayedValues = asArray
@@ -276,6 +275,11 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
 
     private fun mapAvatars() {
         binding.let {
+            if (newState.players.size >= 3) {
+                while (newState.players[2].userName != PokerClient.userName)
+                    newState.players.add(0, newState.players.removeLast())
+            }
+
             avatarMap[PokerClient.userName] = it.avatarSelf
             val self = newState.players.single { self -> self.userName == PokerClient.userName }
             newState.players.removeIf { player -> player.userName == PokerClient.userName }
