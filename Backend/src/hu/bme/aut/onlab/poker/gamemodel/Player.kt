@@ -31,6 +31,10 @@ class Player(
         actedThisRound = false
     }
 
+    fun fold() {
+        isInTurn = false
+    }
+
     fun putInPot(amount: Int) {
         var toPut = amount
         if (toPut > chipStack + inPotThisRound)

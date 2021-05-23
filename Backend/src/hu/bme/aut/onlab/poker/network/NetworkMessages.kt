@@ -60,13 +60,11 @@ data class GameStateMessage(
     val tableCards: List<Card>, // cards on the table
     val players: List<PlayerDto>, // players with name, chip stack, and this rounds betsize
     val maxRaiseThisRound: Int,
-    var receiverPID: Int, // receiver's playerId in the Game
     val receiverCards: MutableList<Card>, // cards in hand of the receiver
     val nextPlayer: String, // username of next player
     val turnState: TurnState,
     val bigBlind: Int,
     val pot: Int,
-    val fastForwarded: Boolean,
     val lastAction: ActionIncomingMessage?
 ) {
     companion object {

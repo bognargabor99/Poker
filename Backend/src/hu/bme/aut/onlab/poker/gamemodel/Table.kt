@@ -92,7 +92,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             setNextPlayer()
 
         playersInTurn.removeIf { it == toRemove }
-        players.single { it.id == toRemove }.isInTurn = false
+        players.single { it.id == toRemove }.fold()
         when {
             isOneLeftInTurn() -> {
                 nextPlayerId = 0
@@ -214,18 +214,15 @@ class Table(private val rules: TableRules) : PokerActionListener{
             cardsOnTable,
             playerDtos,
             maxRaiseThisRound,
-            0,
             mutableListOf(),
             players.singleOrNull { it.id == nextPlayerId }?.userName ?: "",
             turnState,
             bigBlindAmount,
             players.sumOf { it.inPot },
-            fastForwarding,
             previousAction
         )
 
         players.forEach {
-            gameStateMessage.receiverPID = it.id
             gameStateMessage.receiverCards.clear()
             gameStateMessage.receiverCards.addAll(it.inHandCards)
             UserCollection.sendToClient(it.userName, Json.encodeToString(gameStateMessage), GameStateMessage.MESSAGE_CODE)
@@ -343,7 +340,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             val sidePot = players.map { it.inPot }.sumOf { min(it, maxBetOfWinners) }
 
             repeat(winnerCount) {
-                val winningOfPlayer: Int = (players.single { it.id == hands.first().first }.inPot / winnerBetSum) * sidePot
+                val winningOfPlayer = ((players.single { it.id == hands.first().first }.inPot.toDouble() / winnerBetSum.toDouble()) * sidePot.toDouble()).toInt()
                 winningList.add(Pair(hands.first().first, winningOfPlayer))
                 hands.removeFirstOrNull()
             }
