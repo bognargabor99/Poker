@@ -12,18 +12,10 @@
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_startTableFragment"
-            app:destination="@id/startTableFragment"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_fade_exit" />
+            app:destination="@id/startTableFragment" />
         <action
             android:id="@+id/action_mainFragment_to_gamePlayFragment"
-            app:destination="@id/gamePlayFragment"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_fade_exit" />
+            app:destination="@id/gamePlayFragment" />
     </fragment>
     <fragment
         android:id="@+id/startTableFragment"

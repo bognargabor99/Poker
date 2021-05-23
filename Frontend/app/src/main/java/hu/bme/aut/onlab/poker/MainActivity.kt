@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        PokerAPI.connect("da07692bae66") {
+        PokerAPI.connect("34bd572635b5") {
             runOnUiThread {
                 toast("Couldn't connect to server")
             }

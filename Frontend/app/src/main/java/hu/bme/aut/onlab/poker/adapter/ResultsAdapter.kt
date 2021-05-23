@@ -19,17 +19,19 @@ class ResultsAdapter : ListAdapter<WinningPlayer, ResultsAdapter.ViewHolder>(Run
         val result = getItem(position)
         holder.result = result
 
-        holder.binding.tvName.text = if (result.userName == PokerClient.userName) "You" else "Opponent"
-        holder.binding.tvWinAmount.text = result.winAmount.toString()
-        if (result.hand != null) {
-            holder.binding.tvHandType.visibility = View.VISIBLE
-            holder.binding.handCard1.isUpside = true
-            holder.binding.handCard2.isUpside = true
-            holder.binding.handCard1.value = result.inHandCards?.first()?.value!!
-            holder.binding.handCard1.symbol = result.inHandCards.first().suit.ordinal
-            holder.binding.handCard2.value = result.inHandCards.last().value
-            holder.binding.handCard2.symbol = result.inHandCards.last().suit.ordinal
-            holder.binding.tvHandType.text = result.hand.type.asString
+        holder.binding.let {
+            it.tvName.text = if (result.userName == PokerClient.userName) "You" else "Opponent"
+            it.tvWinAmount.text = result.winAmount.toString()
+            if (result.hand != null) {
+                it.tvHandType.visibility = View.VISIBLE
+                it.handCard1.isUpside = true
+                it.handCard2.isUpside = true
+                it.handCard1.value = result.inHandCards?.first()?.value!!
+                it.handCard1.symbol = result.inHandCards.first().suit.ordinal
+                it.handCard2.value = result.inHandCards.last().value
+                it.handCard2.symbol = result.inHandCards.last().suit.ordinal
+                it.tvHandType.text = result.hand.type.asString
+            }
         }
     }
 

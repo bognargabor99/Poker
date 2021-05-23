@@ -25,7 +25,6 @@ import hu.bme.aut.onlab.poker.network.PokerClient
 import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.view.PokerCardView
 
-// TODO: chips animations
 class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var binding: FragmentGamePlayBinding
     private lateinit var tableCards: List<PokerCardView>
@@ -101,6 +100,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
             newTurn = false
         }
         if (newState.lastAction == null) {
+            Thread.sleep(600)
             putCardsOnTable()
             setDefaultAvatarThemes()
         } else {
@@ -143,7 +143,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         val range = when (newState.turnState) {
             TurnState.AFTER_FLOP -> 0..2
             TurnState.AFTER_TURN -> 3..3
-            TurnState.AFTER_RIVER -> (oldState.turnState.cardsOnTableCount + if (newState.fastForwarded) 0 else 1)..4
+            TurnState.AFTER_RIVER -> (oldState.tableCards.size)..4
             else -> IntRange.EMPTY
         }
         activity?.runOnUiThread {
