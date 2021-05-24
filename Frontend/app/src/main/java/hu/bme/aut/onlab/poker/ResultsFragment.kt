@@ -35,8 +35,18 @@ class ResultsFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
+        isShowing = true
         val params = dialog!!.window!!.attributes
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT
         dialog!!.window!!.attributes = params as WindowManager.LayoutParams
+    }
+
+    override fun onDestroy() {
+        isShowing = false
+        super.onDestroy()
+    }
+
+    companion object {
+        var isShowing = false
     }
 }

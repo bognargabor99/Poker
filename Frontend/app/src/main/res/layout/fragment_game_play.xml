@@ -235,7 +235,7 @@
         android:visibility="invisible"
         android:rotation="-10"
         android:layout_marginHorizontal="30dp"
-        android:layout_marginVertical="40dp"
+        android:layout_marginBottom="40dp"
         android:layout_alignEnd="@id/playerCard2"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"/>
@@ -248,8 +248,21 @@
         app:value="12"
         android:visibility="invisible"
         android:rotation="10"
-        android:layout_marginVertical="40dp"
+        android:layout_marginBottom="40dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:id="@+id/tv_current_hand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/playerCard1"
+        android:layout_alignStart="@id/playerCard1"
+        android:layout_alignEnd="@id/playerCard2"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:fontFamily="@font/bangers" />
 
 </RelativeLayout>

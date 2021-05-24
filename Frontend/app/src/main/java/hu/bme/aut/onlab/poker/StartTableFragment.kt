@@ -44,11 +44,12 @@ class StartTableFragment : Fragment() {
         binding.btnCreate.setOnClickListener {
             PokerClient.startTable(
                 TableRules(
-                binding.cbOpen.isChecked,
-                binding.mspSize.selectedItem.toString().toInt(),
-                binding.mspInitialBlind.selectedItem.toString().toInt(),
-                binding.mspDoubleBlind.selectedItem.toString().toInt(),
-                binding.mspStartStack.selectedItem.toString().toInt()
+                    binding.cbOpen.isChecked,
+                    if (binding.mspSize.selectedItem != null) binding.mspSize.selectedItem.toString().toInt() else 2,
+                    if (binding.mspInitialBlind.selectedItem != null) binding.mspInitialBlind.selectedItem.toString().toInt() else 40,
+                    if (binding.mspDoubleBlind.selectedItem != null) binding.mspDoubleBlind.selectedItem.toString().toInt() else 10,
+                    if (binding.mspStartStack.selectedItem != null) binding.mspStartStack.selectedItem.toString().toInt() else 5000,
+                    binding.cbRoyal.isChecked
             ))
             view?.findNavController()?.popBackStack()
         }

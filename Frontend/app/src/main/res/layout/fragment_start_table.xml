@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,30 +16,53 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/tvOpen"
-                android:labelFor="@id/cbOpen"
+                android:id="@+id/tv_open"
+                android:labelFor="@id/cb_open"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:layout_margin="8dp"
-                android:text="@string/open"
-                tools:ignore="RelativeOverlap" />
+                android:text="@string/open" />
 
             <CheckBox
-                android:id="@+id/cbOpen"
+                android:id="@+id/cb_open"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_open"
                 android:tooltipText="@string/cbOpenToolTip" />
-        </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_royal"
+                android:labelFor="@id/cb_royal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cb_royal"
+                android:layout_margin="8dp"
+                android:text="@string/royal_poker" />
+
+            <CheckBox
+                android:id="@+id/cb_royal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:tooltipText="@string/cbOpenToolTip" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.tiper.MaterialSpinner
-            android:id="@+id/mspSize"
+            android:id="@+id/msp_size"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,7 +70,7 @@
             android:hint="@string/spSizeToolTip"/>
 
         <com.tiper.MaterialSpinner
-            android:id="@+id/mspInitialBlind"
+            android:id="@+id/msp_initial_blind"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:paddingVertical="8dp"
             android:layout_width="match_parent"
@@ -54,7 +78,7 @@
             android:hint="@string/spInitial_blindToolTip" />
 
         <com.tiper.MaterialSpinner
-            android:id="@+id/mspDoubleBlind"
+            android:id="@+id/msp_double_blind"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:layout_width="match_parent"
             android:paddingVertical="8dp"
@@ -62,7 +86,7 @@
             android:hint="@string/spDoubleBlind" />
 
         <com.tiper.MaterialSpinner
-            android:id="@+id/mspStartStack"
+            android:id="@+id/msp_start_stack"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,14 +99,14 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnCancel"
+                android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="@string/cancel" />
 
             <Button
-                android:id="@+id/btnCreate"
+                android:id="@+id/btn_create"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"

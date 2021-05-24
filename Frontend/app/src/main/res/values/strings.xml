@@ -35,4 +35,5 @@
     <string name="fold">Fold</string>
     <string name="last_turn_results">Last turn results</string>
     <string name="out">Out</string>
+    <string name="royal_poker">Royal Poker?</string>
 </resources>

@@ -16,9 +16,7 @@ import androidx.navigation.fragment.navArgs
 import com.muddzdev.styleabletoast.StyleableToast
 import hu.bme.aut.onlab.poker.databinding.AvatarBinding
 import hu.bme.aut.onlab.poker.databinding.FragmentGamePlayBinding
-import hu.bme.aut.onlab.poker.model.Action
-import hu.bme.aut.onlab.poker.model.ActionType
-import hu.bme.aut.onlab.poker.model.TurnState
+import hu.bme.aut.onlab.poker.model.*
 import hu.bme.aut.onlab.poker.network.ActionMessage
 import hu.bme.aut.onlab.poker.network.GameStateMessage
 import hu.bme.aut.onlab.poker.network.PokerClient
@@ -61,7 +59,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
                 .setNegativeButton(R.string.no, null)
                 .show()
         }
-        binding.btnFold.setOnClickListener { PokerClient.action(Action(ActionType.FOLD, 0)) }
+        binding.btnFold.setOnClickListener {
+            PokerClient.action(Action(ActionType.FOLD, 0))
+            foldCards()
+        }
         binding.btnCheck.setOnClickListener {
             PokerClient.action(Action(ActionType.CHECK, 0))
             binding.actionButtons.visibility = View.GONE
@@ -100,13 +101,14 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
             newTurn = false
         }
         if (newState.lastAction == null) {
-            Thread.sleep(600)
             putCardsOnTable()
+            Thread.sleep(800)
             setDefaultAvatarThemes()
         } else {
             setAvatarTheme(newState.lastAction!!)
         }
         displayChipCounts()
+        displayCurrentHand()
         showActionButtonsIfNecessary()
     }
 
@@ -155,18 +157,33 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
                 tableCards[i].startAnimation(anim)
             }
         }
+        if (!range.isEmpty())
+            Thread.sleep(500)
     }
 
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
         lastTurnResults = turnEndMessage
         activity?.runOnUiThread { binding.btnLastTurn.visibility = View.VISIBLE }
-        showTurnResults()
+        if (!ResultsFragment.isShowing)
+            showTurnResults()
         gatherCards()
         newTurn = true
     }
 
     private fun showTurnResults() {
         view?.findNavController()?.navigate(GamePlayFragmentDirections.actionGamePlayFragmentToResultsFragment(lastTurnResults))
+    }
+
+
+    private fun displayCurrentHand() {
+        val cards = mutableListOf<Card>()
+        cards.addAll(newState.tableCards)
+        cards.addAll(newState.receiverCards)
+        val type = HandEvaluator.evaluateHand(cards).type.asString
+        activity?.runOnUiThread {
+            binding.tvCurrentHand.visibility = View.VISIBLE
+            binding.tvCurrentHand.text = type
+        }
     }
 
     override fun onGetEliminated(tableId: Int) {
@@ -227,21 +244,33 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
 
     private fun handCards() {
         activity?.runOnUiThread {
+            binding.playerCard1.alpha = 1f
+            binding.playerCard2.alpha = 1f
             binding.playerCard1.value = newState.receiverCards.first().value
             binding.playerCard2.value = newState.receiverCards.last().value
             binding.playerCard1.symbol = newState.receiverCards.first().suit.ordinal
             binding.playerCard2.symbol = newState.receiverCards.last().suit.ordinal
+            animatePlayerCards()
         }
-        animatePlayerCards()
     }
 
     private fun animatePlayerCards() {
+        AnimationUtils.loadAnimation(requireContext(), R.anim.card_animation).also {
+            binding.playerCard1.isVisible = true
+            binding.playerCard2.isVisible = true
+            binding.playerCard1.startAnimation(it)
+            binding.playerCard2.startAnimation(it)
+        }
+    }
+
+    private fun foldCards() {
         activity?.runOnUiThread {
-            AnimationUtils.loadAnimation(requireContext(), R.anim.card_animation).also {
-                binding.playerCard1.isVisible = true
-                binding.playerCard2.isVisible = true
+            AnimationUtils.loadAnimation(requireContext(), R.anim.reverse_card_animation).also {
+                it.fillAfter = false
                 binding.playerCard1.startAnimation(it)
                 binding.playerCard2.startAnimation(it)
+                binding.playerCard1.alpha = 0.5f
+                binding.playerCard2.alpha = 0.5f
             }
         }
     }
@@ -254,6 +283,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
             TurnState.AFTER_RIVER -> 5
         }
         activity?.runOnUiThread {
+            binding.tvCurrentHand.visibility = View.GONE
             binding.tvPot.visibility = View.INVISIBLE
             val cards = mutableListOf(binding.playerCard1, binding.playerCard2)
             cards.addAll(tableCards.take(tableCardCount))
