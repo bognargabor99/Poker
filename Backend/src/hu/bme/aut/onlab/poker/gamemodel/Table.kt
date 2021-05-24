@@ -15,7 +15,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
     private val players: MutableList<Player> = mutableListOf()
     var isStarted: Boolean = false
     private var turnCount = 0
-    private val deck = Deck()
+    private val deck: Deck = if (rules.isRoyal) RoyalDeck() else TraditionalDeck()
     private var turnState = TurnState.PREFLOP
     private var pot = 0
 
