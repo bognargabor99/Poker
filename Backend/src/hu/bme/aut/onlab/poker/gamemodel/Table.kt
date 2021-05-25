@@ -334,6 +334,9 @@ class Table(private val rules: TableRules) : PokerActionListener{
         val winningList: MutableList<Pair<Int, Int>> = mutableListOf()
 
         while (pot != 0) { // loop until there are no side-pots
+            hands.filter { players.single { p -> p.id == it.first }.inPot == 0 }.forEach {
+                winningList.add(Pair(it.first, 0))
+            }
             hands.removeIf { players.single { p -> p.id == it.first }.inPot == 0 }
             val winnerCount = getWinnerCount(hands)
             val (maxBetOfWinners, winnerBetSum) = getMaxAndSumBetOfWinners(hands.take(winnerCount).map { it.first })
@@ -347,6 +350,9 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
             players.forEach { it.inPot -= min(it.inPot, maxBetOfWinners) }
             pot -= sidePot
+        }
+        hands.forEach {
+            winningList.add(Pair(it.first, 0))
         }
         return winningList
     }
