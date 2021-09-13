@@ -8,7 +8,7 @@ object HandEvaluator {
         if (flushHand!=null)
             return flushHand
         //Straight section
-        val straightStartValue = getStraightSequenceFrom(sortedCards.map { it.value }.distinct())
+        val straightStartValue = getStraightSequenceFrom(sortedCards.map { it.value }.distinct().toMutableList())
         if (straightStartValue != -1)
             return Hand(HandType.STRAIGHT, listOf(straightStartValue))
         //Pairs
@@ -24,8 +24,6 @@ object HandEvaluator {
         if (indexOfFlush != -1) {
             val flushValues = sortedCards.filter { it.suit.ordinal == indexOfFlush }
                 .map { it.value } as MutableList<Int>
-            if (flushValues[0] == 14)
-                flushValues.add(1)
 
             val startValue = getStraightSequenceFrom(flushValues)
             if (startValue != -1) {
@@ -56,7 +54,9 @@ object HandEvaluator {
         }
     }
 
-    private fun getStraightSequenceFrom(values: List<Int>) : Int {
+    private fun getStraightSequenceFrom(values: MutableList<Int>) : Int {
+        if (values.first() == 14)
+            values.add(1)
         var startingValue = values[0]
         var straightCount = 1
         for (i in 1 until values.size) {

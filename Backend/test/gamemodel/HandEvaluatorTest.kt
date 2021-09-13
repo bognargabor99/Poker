@@ -123,6 +123,25 @@ class HandEvaluatorTest {
     }
 
     @Test
+    fun lowStraightTest() {
+        // Arrange
+        val handCards = mutableListOf(Card(11, Suit.HEARTS),
+            Card(14, Suit.CLUBS),
+            Card(5, Suit.CLUBS),
+            Card(2, Suit.SPADES),
+            Card(9, Suit.HEARTS),
+            Card(3, Suit.HEARTS),
+            Card(4, Suit.CLUBS))
+
+        // Act
+        val hand = HandEvaluator.evaluateHand(handCards)
+
+        // Assert
+        assertEquals(HandType.STRAIGHT, hand.type)
+        assertEquals(5, hand.values[0])
+    }
+
+    @Test
     fun threeOfKindTest() {
         // Arrange
         val handCards = mutableListOf(Card(5, Suit.DIAMONDS),

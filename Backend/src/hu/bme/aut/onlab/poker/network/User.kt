@@ -2,6 +2,7 @@ package hu.bme.aut.onlab.poker.network
 
 import hu.bme.aut.onlab.poker.gamemodel.Game
 import io.ktor.http.cio.websocket.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -9,6 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.atomic.AtomicInteger
 
+@DelicateCoroutinesApi
 class User(private val session: DefaultWebSocketSession) {
     val name = "user${lastId.getAndIncrement()}"
     val tableIds = mutableListOf<Int>()

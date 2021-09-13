@@ -3,11 +3,13 @@ package hu.bme.aut.onlab.poker.gamemodel
 import hu.bme.aut.onlab.poker.dto.PlayerDto
 import hu.bme.aut.onlab.poker.dto.TurnEndMsgPlayerDto
 import hu.bme.aut.onlab.poker.network.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
+@ExperimentalSerializationApi
 class Table(private val rules: TableRules) : PokerActionListener{
     private var fastForwarding: Boolean = false
     val id: Int = lastTableId.getAndIncrement()
