@@ -11,7 +11,7 @@ on:
 jobs:
   build_and_test:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -21,14 +21,12 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: gradle
-        
-    - name: Gradle Wrapper Validation
-      uses: gradle/wrapper-validation-action@v1.0.4
-    - name: list1
-      run: cmd.exe -C "cd Backend & gradle tasks --all"
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./Backend/gradlew
     - name: Build with Gradle
-      run: cmd.exe -C "cd Backend & gradle build"
-    - name: list2
-      run: gradle tasks --all
-    - name: Test with Gradle
-      run: cmd.exe -C "cd Backend & gradle test --info"
+      run: ./Backend/gradlew build
+    - name: list
+      run: ./Backend/gradlew tasks --all
+#    - name: Test with Gradle
+#      run: ./Backend/gradlew test --info
