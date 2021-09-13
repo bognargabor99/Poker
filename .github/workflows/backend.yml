@@ -18,17 +18,11 @@ jobs:
     - name: set up JDK 11
       uses: actions/setup-java@v2
       with:
-        java-version: '11'
-        distribution: 'adopt'
-        cache: gradle
-        
-    - name: Gradle Wrapper Validation
-      uses: gradle/wrapper-validation-action@v1.0.4
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./Backend/gradlew
-    - name: Build with Gradle
-      run: ./Backend/gradlew build
-    - name: list
-      run: ./Backend/gradlew tasks --all
-    - name: Test with Gradle
-      run: ./Backend/gradlew test --info
+        java-version: '8'
+    
+    - uses: eskatos/gradle-command-action@v1
+      with:
+          arguments: test --info
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
