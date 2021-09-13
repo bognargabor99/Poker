@@ -11,18 +11,24 @@ on:
 jobs:
   build_and_test:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
     - name: set up JDK 11
       uses: actions/setup-java@v2
       with:
-        java-version: '8'
+        java-version: '11'
         distribution: 'adopt'
-    - uses: eskatos/gradle-command-action@v1
-      with:
-          arguments: test --info
-          wrapper-cache-enabled: true
-          dependencies-cache-enabled: true
-          configuration-cache-enabled: true
+        cache: gradle
+        
+    - name: Gradle Wrapper Validation
+      uses: gradle/wrapper-validation-action@v1.0.4
+    - name: list1
+      run: cmd.exe -C "cd Backend & gradle tasks --all"
+    - name: Build with Gradle
+      run: cmd.exe -C "cd Backend & gradle build
+    - name: list2
+      run: gradle tasks --all
+    - name: Test with Gradle
+      run: cmd.exe -C "cd Backend & gradle test --info
