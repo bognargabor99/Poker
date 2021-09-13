@@ -27,6 +27,6 @@ jobs:
     - name: Build with Gradle
       run: ./Backend/gradlew build
     - name: list
-      run: ls -R
+      run: ./Backend/gradlew tasks --all
     - name: Test with Gradle
       run: ./Backend/gradlew test --info
