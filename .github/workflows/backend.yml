@@ -23,7 +23,7 @@ jobs:
         cache: gradle
 
     - name: Build with Gradle
-      run: gradle build --b ./Backend/build.gradle --info
+      run: gradle build --b ./Backend/build.gradle --info --continue
     - name: list
       run: gradle tasks --b ./Backend/build.gradle --all
     - name: JUnit Report Action
