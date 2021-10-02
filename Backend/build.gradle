@@ -30,6 +30,7 @@ repositories {
     mavenLocal()
     jcenter()
     maven { url 'https://kotlin.bintray.com/ktor' }
+    mavenCentral()
 }
 configurations {
 
@@ -37,13 +38,17 @@ configurations {
 
 test {
     reports {
-        //junitXml.outputLocation.set(layout.buildDirectory.dir("test-junit-xml"))
         junitXml.destination = file("$buildDir/test-junit-xml/testresult.xml")
         junitXml.outputPerTestCase = false
     }
 }
 
 dependencies {
+    // For SSL certificate
+    implementation "io.ktor:ktor-network-tls-certificates:$ktor_version"
+
+    implementation "io.ktor:ktor-auth:$ktor_version"
+    implementation "io.ktor:ktor-gson:$ktor_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
