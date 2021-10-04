@@ -17,7 +17,7 @@ apply plugin: 'kotlin'
 apply plugin: 'application'
 
 group 'hu.bme.aut.onlab.poker'
-version '0.0.1'
+version '1.0.0'
 
 sourceSets {
     main.kotlin.srcDirs = main.java.srcDirs = ['src']
@@ -32,9 +32,6 @@ repositories {
     maven { url 'https://kotlin.bintray.com/ktor' }
     mavenCentral()
 }
-configurations {
-
-}
 
 test {
     reports {
@@ -44,6 +41,11 @@ test {
 }
 
 dependencies {
+    // SQLite database connection
+    implementation "org.jetbrains.exposed:exposed-core:$exposedVersion"
+    implementation "org.jetbrains.exposed:exposed-jdbc:$exposedVersion"
+    implementation 'org.xerial:sqlite-jdbc:3.36.0.2'
+
     // For SSL certificate
     implementation "io.ktor:ktor-network-tls-certificates:$ktor_version"
 
