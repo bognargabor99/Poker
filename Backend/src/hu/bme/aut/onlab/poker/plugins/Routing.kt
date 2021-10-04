@@ -30,27 +30,5 @@ fun Application.configureRouting() {
             else
                 call.respond(HttpStatusCode.Conflict, "Username already in use: ${newUser.userName}")
         }
-
-        webSocket("/") {
-            println(call.request.headers.toMap().toString())
-            val thisUser = User(this)
-            UserCollection += thisUser
-            println("adding ${thisUser.name}")
-            thisUser.sendNameToClient()
-            try {
-                for (frame in incoming) {
-                    frame as? Frame.Text ?: continue
-                    val receivedText = frame.readText()
-                    println(receivedText)
-                    thisUser.receiveFromClient(receivedText)
-                }
-            } catch (e: Exception) {
-                println(e.localizedMessage)
-            } finally {
-                println("Removing ${thisUser.name}!")
-                thisUser.disconnect()
-                UserCollection -= thisUser
-            }
-        }
     }
 }
