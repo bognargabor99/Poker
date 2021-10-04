@@ -20,7 +20,7 @@ fun Application.configureAuthentication() {
     routing {
         authenticate("auth-basic") {
             get("/authenticate") {
-                call.respondText("Hello, ${call.principal<UserIdPrincipal>()?.name}!")
+                call.respond(HttpStatusCode.OK,"Hello, ${call.principal<UserIdPrincipal>()?.name}!")
             }
         }
     }

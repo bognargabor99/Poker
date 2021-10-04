@@ -6,22 +6,18 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.security.MessageDigest
 
 object DatabaseHelper {
-    val db by lazy {
+    private val db by lazy {
         Database.connect("jdbc:sqlite:resources/poker.db", "org.sqlite.JDBC")
     }
 
     init {
         transaction(db) {
             SchemaUtils.createMissingTablesAndColumns(Users)
-            /*Users.insert {
-                it[userName] = "admin"
-                it[passwordHash] = "admin".hash()
-            }*/
         }
     }
 
     private fun String.hash(): String {
-        val HEX_CHARS = "0123456789ABCDEF"
+        val hexChars = "0123456789ABCDEF"
         val bytes = MessageDigest
             .getInstance("SHA-256")
             .digest(this.toByteArray())
@@ -29,8 +25,8 @@ object DatabaseHelper {
 
         bytes.forEach {
             val i = it.toInt()
-            result.append(HEX_CHARS[i shr 4 and 0x0f])
-            result.append(HEX_CHARS[i and 0x0f])
+            result.append(hexChars[i shr 4 and 0x0f])
+            result.append(hexChars[i and 0x0f])
         }
 
         return result.toString()
@@ -56,6 +52,12 @@ object DatabaseHelper {
         }
 
         return@transaction Users.select { Users.userName eq newUser.userName }.count() == 1L
+    }
+
+    fun deleteUser(userToDelete: String) {
+        transaction {
+            Users.deleteWhere { Users.userName eq userToDelete }
+        }
     }
 }
 

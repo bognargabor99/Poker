@@ -20,6 +20,9 @@ fun Application.configureRouting() {
         gson()
     }
     routing {
+        get("/") {
+            call.respond(HttpStatusCode.OK, "it works!")
+        }
         get("/register") {
             val newUser = call.receive<UserAuthInfo>()
             if (DatabaseHelper.registerUser(newUser))
