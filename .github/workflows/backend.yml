@@ -24,8 +24,6 @@ jobs:
 
     - name: Build with Gradle
       run: gradle build --b ./Backend/build.gradle --info --continue
-    - name: list
-      run: gradle tasks --b ./Backend/build.gradle --all
     - name: JUnit Report Action
       if: ${{ always() }}
       uses: mikepenz/action-junit-report@v2.4.4
