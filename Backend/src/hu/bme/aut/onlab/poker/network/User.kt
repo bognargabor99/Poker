@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 @DelicateCoroutinesApi
-class User(private val session: DefaultWebSocketSession) {
-    val name = "user${lastId.getAndIncrement()}"
+class User(private val session: DefaultWebSocketSession, userName: String = "") {
+    var name = userName.ifBlank { "user${lastId.getAndIncrement()}" }
     val tablePlayingIds = mutableListOf<Int>()
     val tableSpectatingIds = mutableListOf<Int>()
     private val chain = NetworkChain()

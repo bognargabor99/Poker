@@ -60,7 +60,6 @@ class ApplicationTest {
                 val plainCredentials = "admin:admin"
                 val base64Credentials= String(Base64.getEncoder().encode(plainCredentials.toByteArray()))
                 addHeader(HttpHeaders.Authorization, "Basic $base64Credentials")
-                //setBody(Json.encodeToString(UserAuthInfo("admin", "admin")))
             }.let { call ->
                 assertEquals(HttpStatusCode.OK, call.response.status())
                 assertEquals("Hello, admin!", call.response.content)

@@ -1,6 +1,5 @@
 package hu.bme.aut.onlab.poker.network
 
-import com.google.gson.Gson
 import hu.bme.aut.onlab.poker.gamemodel.TableRules
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
@@ -69,4 +68,7 @@ object UserCollection {
             it.tableSpectatingIds.remove(tableId)
         }
     }
+
+    fun isAlreadyAuthenticated(user: String) =
+        users.any { it.name == user }
 }
