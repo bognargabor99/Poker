@@ -1,9 +1,9 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package hu.bme.aut.onlab.poker.network
 
+import com.google.gson.Gson
 import hu.bme.aut.onlab.poker.gamemodel.Game
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class NetworkChain {
     private lateinit var chain: Processor
@@ -13,7 +13,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = CreateTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(LeaveTableProcessor(null)))))
+        chain = CreateTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(LeaveTableProcessor(SpectatorSubscriptionProcessor(SpectatorUnsubscriptionProcessor(null)))))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -28,7 +28,7 @@ abstract class Processor(private val processor: Processor?) {
 class CreateTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == CreateTableMessage.MESSAGE_CODE) {
-            val startMessage = Json.decodeFromString<CreateTableMessage>(message.data)
+            val startMessage = Gson().fromJson(message.data, CreateTableMessage::class.java)
             val tableId = Game.startTable(startMessage.rules)
             UserCollection.tableCreated(startMessage.userName, tableId)
             Game.joinTable(tableId, startMessage.userName)
@@ -40,7 +40,7 @@ class CreateTableProcessor(processor: Processor?) : Processor(processor) {
 class JoinTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == JoinTableMessage.MESSAGE_CODE) {
-            val joinMessage = Json.decodeFromString<JoinTableMessage>(message.data)
+            val joinMessage = Gson().fromJson(message.data, JoinTableMessage::class.java)
             Game.joinTable(joinMessage.tableId, joinMessage.userName)
         }
         else
@@ -50,10 +50,10 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
 class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == GetOpenTablesMessage.MESSAGE_CODE) {
-            val getTablesMessage = Json.decodeFromString<GetOpenTablesMessage>(message.data)
+            val getTablesMessage = Gson().fromJson(message.data, GetOpenTablesMessage::class.java)
             val tableIds = Game.getOpenTables()
             val tablesMessage = SendOpenTablesMessage(tableIds)
-            UserCollection.sendToClient(getTablesMessage.userName, Json.encodeToString(tablesMessage), SendOpenTablesMessage.MESSAGE_CODE)
+            UserCollection.sendToClient(getTablesMessage.userName, tablesMessage.toJsonString(), SendOpenTablesMessage.MESSAGE_CODE)
         }
         else
             super.process(message)
@@ -62,7 +62,7 @@ class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
 class ActionProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == ActionIncomingMessage.MESSAGE_CODE) {
-            val actionMessage = Json.decodeFromString<ActionIncomingMessage>(message.data)
+            val actionMessage = Gson().fromJson(message.data, ActionIncomingMessage::class.java)
             Game.performAction(actionMessage)
         }
         else
@@ -72,9 +72,32 @@ class ActionProcessor(processor: Processor?) : Processor(processor) {
 class LeaveTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == LeaveTableMessage.MESSAGE_CODE) {
-            val leaveMessage = Json.decodeFromString<LeaveTableMessage>(message.data)
+            val leaveMessage = Gson().fromJson(message.data, LeaveTableMessage::class.java)
             UserCollection.removePlayerFromTables(leaveMessage.userName, mutableListOf(leaveMessage.tableId))
-            Game.removePlayerFromTables(leaveMessage.userName, mutableListOf(leaveMessage.tableId))
+            Game.removePlayerFromTables(leaveMessage.userName, leaveMessage.tableId)
+        }
+        else
+            super.process(message)
+}
+
+class SpectatorSubscriptionProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) {
+        if (message?.messageCode == SpectatorSubscriptionMessage.MESSAGE_CODE) {
+            val subMessage = Gson().fromJson(message.data, SpectatorSubscriptionMessage::class.java)
+            if (Game.addSpectator(subMessage.tableId, subMessage.userName)) {
+                UserCollection.tableSpectated(subMessage.tableId, subMessage.userName)
+            }
+        } else {
+            super.process(message)
+        }
+    }
+}
+
+class SpectatorUnsubscriptionProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == SpectatorUnsubscriptionMessage.MESSAGE_CODE) {
+            val unSubMessage = Gson().fromJson(message.data, SpectatorUnsubscriptionMessage::class.java)
+            Game.removeSpectator(unSubMessage.tableId, unSubMessage.userName)
         }
         else
             super.process(message)

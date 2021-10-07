@@ -7,8 +7,10 @@ import io.ktor.http.cio.websocket.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.Duration
 
+@DelicateCoroutinesApi
 fun Application.configureWebSockets() {
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)

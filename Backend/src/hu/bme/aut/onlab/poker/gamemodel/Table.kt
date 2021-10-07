@@ -1,20 +1,19 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
-import hu.bme.aut.onlab.poker.dto.PlayerDto
+import hu.bme.aut.onlab.poker.dto.InGamePlayerDto
 import hu.bme.aut.onlab.poker.dto.TurnEndMsgPlayerDto
 import hu.bme.aut.onlab.poker.network.*
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
-@ExperimentalSerializationApi
+@DelicateCoroutinesApi
 class Table(private val rules: TableRules) : PokerActionListener{
     private var fastForwarding: Boolean = false
     val id: Int = lastTableId.getAndIncrement()
     private var bigBlindAmount = rules.bigBlindStartingAmount
     private val players: MutableList<Player> = mutableListOf()
+    private val spectators: MutableList<Person> = mutableListOf()
     var isStarted: Boolean = false
     private var turnCount = 0
     private val deck: Deck = if (rules.isRoyal) RoyalDeck() else TraditionalDeck()
@@ -27,17 +26,31 @@ class Table(private val rules: TableRules) : PokerActionListener{
     private val cardsOnTable: MutableList<Card> = mutableListOf()
     private var previousAction: ActionIncomingMessage? = null
 
-    fun addPlayer(userName: String): Boolean =
-        if (!isStarted && players.size < rules.playerCount) {
-            val newPlayer = Player(rules.playerStartingStack)
-            newPlayer.userName = userName
-            players.add(newPlayer)
-            UserCollection.tableJoined(userName, id, rules)
-            if (players.size == rules.playerCount)
-                startGame()
-            true
-        } else
-            false
+    fun addInGamePlayer(userName: String): Boolean =
+        if (!isStarted && players.size < rules.playerCount &&
+            !players.any { it.userName == userName } &&
+            !spectators.any { it.userName == userName }) {
+                val newPlayer = Player(rules.playerStartingStack)
+                newPlayer.userName = userName
+                players.add(newPlayer)
+                UserCollection.tableJoined(userName, id, rules)
+                if (players.size == rules.playerCount)
+                    startGame()
+                true
+            } else
+                false
+
+    fun addSpectator(userName: String): Boolean {
+        if (players.any { it.userName == userName } ||
+            spectators.any { it.userName == userName })
+            return false
+        val newSpectator = Person()
+        newSpectator.userName = userName
+        spectators.add(newSpectator)
+        return true
+    }
+
+    fun removeSpectator(userName: String): Boolean = spectators.removeIf { it.userName == userName }
 
     private fun startGame() {
         isStarted = true
@@ -210,7 +223,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun spreadGameState() {
-        val playerDtos: List<PlayerDto> = List(players.size) { i -> players[i].toDto() }
+        val playerDtos: List<InGamePlayerDto> = List(players.size) { i -> players[i].toDto() }
         val gameStateMessage = GameStateMessage(
             id,
             cardsOnTable,
@@ -227,7 +240,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
         players.forEach {
             gameStateMessage.receiverCards.clear()
             gameStateMessage.receiverCards.addAll(it.inHandCards)
-            UserCollection.sendToClient(it.userName, Json.encodeToString(gameStateMessage), GameStateMessage.MESSAGE_CODE)
+            UserCollection.sendToClient(it.userName, gameStateMessage.toJsonString(), GameStateMessage.MESSAGE_CODE)
         }
         fastForwarding = false
     }
@@ -256,13 +269,16 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
     private fun declareWinner() {
         players.first().apply {
-            UserCollection.sendToClient(userName, Json.encodeToString(WinnerAnnouncerMessage(this@Table.id)), WinnerAnnouncerMessage.MESSAGE_CODE)
+            UserCollection.sendToClient(userName, WinnerAnnouncerMessage(this@Table.id).toJsonString(), WinnerAnnouncerMessage.MESSAGE_CODE)
         }
         Game.closeTable(id)
     }
 
     fun playerDisconnected(name: String) {
-        val index = players.indexOf(players.single { it.userName == name })
+        val index = players.indexOf(players.find { it.userName == name })
+        if (index == -1)
+            return
+
         if (!isStarted) {
             players.removeAt(index)
             if (players.size == 0)
@@ -275,7 +291,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             playersInTurn.remove(players[index].id)
             players.removeAt(index)
             players.forEach {
-                UserCollection.sendToClient(it.userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)), DisconnectedPlayerMessage.MESSAGE_CODE)
+                UserCollection.sendToClient(it.userName, DisconnectedPlayerMessage(id, name).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
             if (isEndOfRound()){
                 nextPlayerId = 0
@@ -286,7 +302,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
                 spreadGameState()
         } else if (players.size == 2) {
             players.removeAt(index)
-            UserCollection.sendToClient(players.first().userName, Json.encodeToString(DisconnectedPlayerMessage(id, name)), DisconnectedPlayerMessage.MESSAGE_CODE)
+            UserCollection.sendToClient(players.first().userName, DisconnectedPlayerMessage(id, name).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             declareWinner()
         }
         else {
@@ -324,7 +340,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
             playerOrder
         )
         players.forEach {
-            UserCollection.sendToClient(it.userName, Json.encodeToString(turnEndMessage), TurnEndMessage.MESSAGE_CODE)
+            UserCollection.sendToClient(it.userName, turnEndMessage.toJsonString(), TurnEndMessage.MESSAGE_CODE)
         }
     }
 
@@ -360,11 +376,6 @@ class Table(private val rules: TableRules) : PokerActionListener{
     }
 
     private fun getMaxAndSumBetOfWinners(playerIds: List<Int>): Pair<Int, Int> {
-        /*
-        return Pair(players.filter { playerIds.contains(it.id) }.map { it.inPot }.maxOrNull() ?: 0,
-            players.filter { playerIds.contains(it.id) }.map { it.inPot }.sum())
-
-         */
         var sum = 0
         var max = 0
         players.filter { playerIds.contains(it.id) }.map { it.inPot }.forEach {
@@ -415,7 +426,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
         }
         val turnEndMsg = TurnEndMessage(id, cardsOnTable, listOf(TurnEndMsgPlayerDto(winnerName, null, null, pot)))
         players.forEach {
-            UserCollection.sendToClient(it.userName, Json.encodeToString(turnEndMsg), TurnEndMessage.MESSAGE_CODE)
+            UserCollection.sendToClient(it.userName, turnEndMsg.toJsonString(), TurnEndMessage.MESSAGE_CODE)
         }
         newTurn()
     }
@@ -450,7 +461,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
 
     fun isOpen() = rules.isOpen
 
-    private fun Player.toDto() = PlayerDto(
+    private fun Player.toDto() = InGamePlayerDto(
         this.userName,
         this.chipStack,
         this.inPotThisRound,

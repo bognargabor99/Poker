@@ -1,18 +1,14 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
-import java.util.concurrent.atomic.AtomicInteger
-
 class Player(
     startingStack: Int
-) {
-    val id = lastTableId.getAndIncrement()
+) : Person() {
     var inHandCards: MutableList<Card> = mutableListOf()
     var chipStack: Int = startingStack
     var inPot: Int = 0
     var inPotThisRound: Int = 0
     var actedThisRound = false
     var isInTurn = false
-    lateinit var userName: String
 
     fun handCards(cards: List<Card>) {
         inHandCards.clear()
@@ -45,9 +41,5 @@ class Player(
             chipStack -= it
         }
         inPotThisRound = toPut
-    }
-
-    companion object {
-        var lastTableId = AtomicInteger(1000)
     }
 }

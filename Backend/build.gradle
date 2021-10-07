@@ -10,7 +10,6 @@ buildscript {
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.30'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30'
 }
 
 apply plugin: 'kotlin'
@@ -35,8 +34,8 @@ repositories {
 
 test {
     reports {
-        junitXml.destination = file("$buildDir/test-junit-xml/testresult.xml")
-        junitXml.outputPerTestCase = false
+        junitXml.outputLocation.set(layout.buildDirectory.dir("test-junit-xml/testresult.xml"))
+        junitXml.outputPerTestCase = true
     }
 }
 

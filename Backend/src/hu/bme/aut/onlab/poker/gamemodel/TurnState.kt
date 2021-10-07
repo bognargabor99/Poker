@@ -1,8 +1,5 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 enum class TurnState {
     PREFLOP,
     AFTER_FLOP,

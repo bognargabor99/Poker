@@ -1,10 +1,11 @@
 package hu.bme.aut.onlab.poker.network
 
+import com.google.gson.Gson
 import hu.bme.aut.onlab.poker.gamemodel.TableRules
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
+@DelicateCoroutinesApi
 object UserCollection {
     private val users = Collections.synchronizedSet<User?>(LinkedHashSet())
 
@@ -19,40 +20,53 @@ object UserCollection {
     fun sendToClient(userName: String, data: String, code: Int) {
         val networkMsg = NetworkMessage(code, data)
         users.find { it.name == userName }
-            ?.sendToClient(Json.encodeToString(networkMsg))
+            ?.sendToClient(networkMsg.toJsonString())
     }
 
     fun notifyGameStarted(tableId: Int, usersInTable: List<String>) {
         users.filter { usersInTable.contains(it.name) }
             .forEach { user ->
                 val msg = GameStartedMessage(tableId)
-                sendToClient(user.name, Json.encodeToString(msg), GameStartedMessage.MESSAGE_CODE)
+                sendToClient(user.name, msg.toJsonString(), GameStartedMessage.MESSAGE_CODE)
             }
     }
 
     fun eliminateFromTable(tableId: Int, toEliminate: List<String>, toInform: List<String>) {
         toEliminate.forEach {
-            sendToClient(it, Json.encodeToString(EliminationMessage(tableId)), EliminationMessage.MESSAGE_CODE)
+            sendToClient(it, EliminationMessage(tableId).toJsonString(), EliminationMessage.MESSAGE_CODE)
         }
         toInform.forEach { informed ->
             toEliminate.forEach { eliminated ->
-                sendToClient(informed, Json.encodeToString(DisconnectedPlayerMessage(tableId, eliminated)), DisconnectedPlayerMessage.MESSAGE_CODE)
+                sendToClient(informed, DisconnectedPlayerMessage(tableId, eliminated).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
         }
     }
 
     fun tableCreated(user: String, tableId: Int) {
         val answer = TableCreatedMessage(tableId)
-        sendToClient(user, Json.encodeToString(answer), TableCreatedMessage.MESSAGE_CODE)
+        sendToClient(user, answer.toJsonString(), TableCreatedMessage.MESSAGE_CODE)
     }
 
-    fun tableJoined(user: String, tableId: Int, rules: TableRules) {
+    fun tableJoined(userName: String, tableId: Int, rules: TableRules) {
         val answer = TableJoinedMessage(tableId, rules)
-        sendToClient(user, Json.encodeToString(answer), TableJoinedMessage.MESSAGE_CODE)
-        users.single { it.name == user }.tableIds.add(tableId)
+        sendToClient(userName, answer.toJsonString(), TableJoinedMessage.MESSAGE_CODE)
+        users.find { it.name == userName }?.tablePlayingIds?.add(tableId)
     }
 
     fun removePlayerFromTables(userName: String, tables: MutableList<Int>) {
-        users.single { it.name == userName }.tableIds.removeAll(tables)
+        users.find { it.name == userName }?.tablePlayingIds?.removeAll(tables)
+    }
+
+    fun tableSpectated(tableId: Int, userName: String) {
+        val answer = SubscriptionAcceptanceMessage(tableId)
+        sendToClient(userName, answer.toJsonString(), SubscriptionAcceptanceMessage.MESSAGE_CODE)
+        users.find { it.name == userName }?.tableSpectatingIds?.add(tableId)
+    }
+
+    fun removeTableFromPLayers(tableId: Int) {
+        users.forEach {
+            it.tablePlayingIds.remove(tableId)
+            it.tableSpectatingIds.remove(tableId)
+        }
     }
 }

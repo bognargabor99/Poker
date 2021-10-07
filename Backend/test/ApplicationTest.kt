@@ -1,18 +1,17 @@
 package hu.bme.aut.onlab.poker
 
+import com.google.gson.Gson
 import hu.bme.aut.onlab.poker.data.DatabaseHelper
 import hu.bme.aut.onlab.poker.data.UserAuthInfo
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 import kotlin.test.*
 
-@ExperimentalSerializationApi
+@DelicateCoroutinesApi
 class ApplicationTest {
     @Test
     fun testRootOnHttp() {
@@ -74,10 +73,10 @@ class ApplicationTest {
         withTestApplication {
             application.install(XForwardedHeaderSupport)
             application.module(testing = true)
-            handleRequest(HttpMethod.Get, "/register") {
+            handleRequest(HttpMethod.Post, "/register") {
                 addHeader(HttpHeaders.XForwardedProto, "https")
                 addHeader(HttpHeaders.ContentType, "application/json")
-                val body = Json.encodeToString(UserAuthInfo("admin", "admin"))
+                val body = Gson().toJson(UserAuthInfo("admin", "admin"))
                 setBody(body)
             }.let { call ->
                 assertEquals(HttpStatusCode.Conflict, call.response.status())
@@ -92,10 +91,10 @@ class ApplicationTest {
             DatabaseHelper.deleteUser("localadmin")
             application.install(XForwardedHeaderSupport)
             application.module(testing = true)
-            handleRequest(HttpMethod.Get, "/register") {
+            handleRequest(HttpMethod.Post, "/register") {
                 addHeader(HttpHeaders.XForwardedProto, "https")
                 addHeader(HttpHeaders.ContentType, "application/json")
-                setBody(Json.encodeToString(UserAuthInfo("localadmin", "localadmin")))
+                setBody(Gson().toJson(UserAuthInfo("localadmin", "localadmin")))
             }.let { call ->
                 assertEquals(HttpStatusCode.Created, call.response.status())
                 assertEquals("Registered new user: localadmin", call.response.content)

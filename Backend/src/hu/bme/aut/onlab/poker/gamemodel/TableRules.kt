@@ -1,8 +1,5 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class TableRules(
     val isOpen: Boolean,
     val playerCount: Int,
@@ -13,5 +10,14 @@ data class TableRules(
 ) {
     init {
         require(playerCount >= 2)
+    }
+    companion object {
+        val defaultRules = TableRules(
+            isOpen = true,
+            playerCount = 2,
+            bigBlindStartingAmount = 80,
+            doubleBlindsAfterTurnCount = 6,
+            playerStartingStack = 3000
+        )
     }
 }
