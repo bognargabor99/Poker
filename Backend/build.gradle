@@ -47,7 +47,7 @@ configurations {
 }
 
 tasks.register('integrationTest', Test) {
-    description = 'Runs integration tests.'
+    description = 'Runs integration tests'
     group = 'verification'
 
     testClassesDirs = sourceSets.intTest.output.classesDirs
