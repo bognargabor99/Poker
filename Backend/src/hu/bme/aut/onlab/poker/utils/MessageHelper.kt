@@ -1,4 +1,4 @@
-package hu.bme.aut.onlab.poker.websocket
+package hu.bme.aut.onlab.poker.utils
 
 import hu.bme.aut.onlab.poker.gamemodel.TableRules
 import hu.bme.aut.onlab.poker.network.*
@@ -33,4 +33,9 @@ object MessageHelper {
         NetworkMessage(
             messageCode = SendOpenTablesMessage.MESSAGE_CODE,
             data = SendOpenTablesMessage(tableIds).toJsonString()).toJsonString()
+
+    fun getLeaveTableMessage(userName: String, tableId: Int) : String =
+        NetworkMessage(
+            messageCode = LeaveTableMessage.MESSAGE_CODE,
+            data = LeaveTableMessage(userName, tableId).toJsonString()).toJsonString()
 }

@@ -15,10 +15,17 @@ group 'hu.bme.aut.onlab.poker'
 version '1.0.0'
 
 sourceSets {
+    intTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+
     main.kotlin.srcDirs = main.java.srcDirs = ['src']
     test.kotlin.srcDirs = test.java.srcDirs = ['test']
+    intTest.kotlin.srcDirs = intTest.java.srcDirs = ['integrationTest']
     main.resources.srcDirs = ['resources']
     test.resources.srcDirs = ['testresources']
+    intTest.resources.srcDirs = ['integrationtestresources']
 }
 
 repositories {
@@ -33,6 +40,22 @@ test {
         junitXml.outputPerTestCase = true
     }
 }
+
+configurations {
+    intTestImplementation.extendsFrom testImplementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest
 
 dependencies {
     // SQLite database connection
@@ -52,4 +75,5 @@ dependencies {
     implementation "io.ktor:ktor-websockets:$ktor_version"
     testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    intTestImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }

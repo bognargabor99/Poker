@@ -23,20 +23,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun testRootOnHttps() {
-        withTestApplication {
-            application.install(XForwardedHeaderSupport)
-            application.module(true)
-            handleRequest(HttpMethod.Get, "/")  {
-                addHeader(HttpHeaders.XForwardedProto, "https")
-            }.let { call ->
-                assertEquals(HttpStatusCode.OK, call.response.status())
-                assertEquals("it works!", call.response.content)
-            }
-        }
-    }
-
-    @Test
     fun testRedirectHttps() {
         withTestApplication {
             application.install(XForwardedHeaderSupport)
@@ -57,8 +43,7 @@ class ApplicationTest {
             application.module(testing = true)
             handleRequest(HttpMethod.Get, "/authenticate") {
                 addHeader(HttpHeaders.XForwardedProto, "https")
-                val plainCredentials = "admin:admin"
-                val base64Credentials= String(Base64.getEncoder().encode(plainCredentials.toByteArray()))
+                val base64Credentials = String(Base64.getEncoder().encode("admin:admin".toByteArray()))
                 addHeader(HttpHeaders.Authorization, "Basic $base64Credentials")
             }.let { call ->
                 assertEquals(HttpStatusCode.OK, call.response.status())

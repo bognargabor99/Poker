@@ -9,6 +9,7 @@ class Player(
     var inPotThisRound: Int = 0
     var actedThisRound = false
     var isInTurn = false
+    var handsWon = 0
 
     fun handCards(cards: List<Card>) {
         inHandCards.clear()

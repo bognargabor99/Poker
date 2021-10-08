@@ -356,6 +356,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
                     handsOfPlayers.single { it.first == this.id }.second,
                     win.second))
                 chipStack += win.second
+                handsWon++
             }
         }
 
@@ -447,6 +448,7 @@ class Table(private val rules: TableRules) : PokerActionListener{
         pot = players.sumOf { it.inPot }
         players.single { it.id == playersInTurn.first() }.apply {
             chipStack += pot
+            handsWon++
             winnerName = userName
         }
         val turnEndMsg = TurnEndMessage(id, cardsOnTable, listOf(TurnEndMsgPlayerDto(winnerName, null, null, pot)))

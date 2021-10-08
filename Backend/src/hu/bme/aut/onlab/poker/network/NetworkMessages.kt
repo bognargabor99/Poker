@@ -183,14 +183,6 @@ data class SubscriptionAcceptanceMessage(
     }
 }
 
-class UnsubscriptionAcceptanceMessage(
-    val tableId: Int
-) : Message {
-    companion object {
-        const val MESSAGE_CODE = 19
-    }
-}
-
 data class SpectatorGameStateMessage(
     val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
     val tableCards: List<Card>, // cards on the table
