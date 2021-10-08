@@ -36,7 +36,7 @@ repositories {
 
 test {
     reports {
-        junitXml.outputLocation.set(layout.buildDirectory.dir("test-junit-xml/testresult.xml"))
+        junitXml.outputLocation.set(layout.buildDirectory.dir("unit-test-results"))
         junitXml.outputPerTestCase = true
     }
 }
@@ -53,6 +53,11 @@ tasks.register('integrationTest', Test) {
     testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
     shouldRunAfter test
+
+    reports {
+        junitXml.outputLocation.set(layout.buildDirectory.dir("integration-test-results"))
+        junitXml.outputPerTestCase = true
+    }
 }
 
 check.dependsOn integrationTest
