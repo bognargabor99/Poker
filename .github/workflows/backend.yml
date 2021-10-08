@@ -28,4 +28,4 @@ jobs:
       if: ${{ always() }}
       uses: mikepenz/action-junit-report@v2.4.4
       with:
-        report_paths: /home/runner/work/Poker/Poker/Backend/build/(unit|integration)-test-results/TEST-*.xml
+        report_paths: /home/runner/work/Poker/Poker/Backend/build/*-test-results/TEST-*.xml
