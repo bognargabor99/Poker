@@ -2,8 +2,7 @@ name: Backend CI
 
 on:
   push:
-    paths:
-      - 'Backend/**'
+    branches: [ master ]
   pull_request:
     paths:
       - 'Backend/**'
@@ -25,14 +24,16 @@ jobs:
     - name: Build with Gradle
       run: gradle build --b ./Backend/build.gradle --info --continue
 
-    - name: Unit test report
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Unit test report 1
+        path: /home/runner/work/Poker/Poker/Backend/build/*-test-results/TEST-*.xml
+        reporter: jest-junit        
+    
+    - name: Unit test report 2
       if: ${{ always() }}
       uses: mikepenz/action-junit-report@v2.4.4
       with:
-        report_paths: /home/runner/work/Poker/Poker/Backend/build/unit-test-results/TEST-*.xml
-
-    - name: Integration test report
-      if: ${{ hashFiles('**/integration-test-results/TEST-*.xml') != '' }}
-      uses: mikepenz/action-junit-report@v2.4.4
-      with:
-        report_paths: /home/runner/work/Poker/Poker/Backend/build/integration-test-results/TEST-*.xml
+        report_paths: /home/runner/work/Poker/Poker/Backend/build/*-test-results/TEST-*.xml
