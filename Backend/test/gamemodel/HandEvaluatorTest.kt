@@ -95,7 +95,7 @@ class HandEvaluatorTest {
         val hand = HandEvaluator.evaluateHand(handCards)
 
         // Assert
-        assertEquals(HandType.FLUSH, hand.type)
+        assertEquals(HandType.ROYAL_FLUSH, hand.type)
         assertEquals(13, hand.values[0])
         assertEquals(11, hand.values[1])
         assertEquals(10, hand.values[2])
