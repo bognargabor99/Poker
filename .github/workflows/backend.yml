@@ -24,8 +24,15 @@ jobs:
 
     - name: Build with Gradle
       run: gradle build --b ./Backend/build.gradle --info --continue
-    - name: JUnit Report Action
+
+    - name: Unit test report
       if: ${{ always() }}
       uses: mikepenz/action-junit-report@v2.4.4
       with:
-        report_paths: /home/runner/work/Poker/Poker/Backend/build/*-test-results/TEST-*.xml
+        report_paths: /home/runner/work/Poker/Poker/Backend/build/unit-test-results/TEST-*.xml
+
+    - name: Integration test report
+      if: ${{ hashFiles('integration-test-results/TEST-*.xml') != '' }}
+      uses: mikepenz/action-junit-report@v2.4.4
+      with:
+        report_paths: /home/runner/work/Poker/Poker/Backend/build/integration-test-results/TEST-*.xml
