@@ -30,7 +30,7 @@ jobs:
       with:
         name: Unit test report 1
         path: /home/runner/work/Poker/Poker/Backend/build/*-test-results/TEST-*.xml
-        reporter: jest-junit        
+        reporter: java-junit        
     
     - name: Unit test report 2
       if: ${{ always() }}
