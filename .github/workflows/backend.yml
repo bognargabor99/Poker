@@ -40,3 +40,10 @@ jobs:
         name: Integration test reports
         path: /home/runner/work/Poker/Poker/Backend/build/integration-test-results/TEST-*.xml
         reporter: java-junit
+        
+    - name: Code coverage report
+      uses: codecov/codecov-action@v2
+      with:
+        files: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.xml
+        name: Code coverage report # optional
+        verbose: true # optional (default = false)
