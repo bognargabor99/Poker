@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
 @DelicateCoroutinesApi
-class Table(private val rules: TableRules) : PokerActionListener{
+class Table(val rules: TableRules) : PokerActionListener{
     private var fastForwarding: Boolean = false
     val id: Int = lastTableId.getAndIncrement()
     private var bigBlindAmount = rules.bigBlindStartingAmount

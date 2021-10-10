@@ -8,5 +8,11 @@ data class Card(
         check(value in 2..14)
     }
 
-    override fun compareTo(other: Card): Int = this.value.compareTo(other.value)
+    override fun compareTo(other: Card): Int {
+        val byValue = this.value.compareTo(other.value)
+        if (byValue != 0)
+            return byValue
+
+        return this.suit.compareTo(other.suit)
+    }
 }

@@ -6,6 +6,7 @@ buildscript {
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.31'
+    id 'jacoco'
 }
 
 apply plugin: 'kotlin'
@@ -41,6 +42,26 @@ test {
     }
 }
 
+jacocoTestReport {
+    executionData tasks.withType(Test).findAll { it.state.executed }
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+
+    getExecutionData().setFrom(fileTree(buildDir).include("/jacoco/*.exec"))
+}
+
+tasks.withType(Test) {
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+
 configurations {
     intTestImplementation.extendsFrom testImplementation
     intTestRuntimeOnly.extendsFrom runtimeOnly
@@ -61,6 +82,7 @@ tasks.register('integrationTest', Test) {
 }
 
 check.dependsOn integrationTest
+jacocoTestReport.dependsOn check
 
 dependencies {
     // SQLite database connection
