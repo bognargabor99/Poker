@@ -72,7 +72,6 @@ class ApplicationTest {
     @Test
     fun testRegistrationSuccess() {
         withTestApplication {
-            DatabaseHelper.deleteUser("localadmin")
             application.install(XForwardedHeaderSupport)
             application.module()
             handleRequest(HttpMethod.Post, "/register") {
@@ -83,6 +82,7 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.Created, call.response.status())
                 assertEquals("Registered new user: localadmin", call.response.content)
             }
+            DatabaseHelper.deleteUser("localadmin")
         }
     }
 }
