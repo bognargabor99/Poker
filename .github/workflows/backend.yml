@@ -64,6 +64,7 @@ jobs:
 
     - name: Commit coverage badge (if changed)
       run: |
+        git checkout @ -- Backend/resources/poker.db
         if [[ `git status --porcelain` ]]; then
           git config --global user.name 'bognargabor99'
           git config --global user.email '61208246@users.noreply.github.com'
