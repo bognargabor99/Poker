@@ -48,3 +48,4 @@ jobs:
         files: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.xml
         name: Code coverage report # optional
         verbose: true # optional (default = false)
+        dry_run: true
