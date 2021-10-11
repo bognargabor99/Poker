@@ -42,19 +42,11 @@ jobs:
         path: /home/runner/work/Poker/Poker/Backend/build/integration-test-results/TEST-*.xml
         reporter: java-junit
         
-    - name: Code coverage report
-      uses: codecov/codecov-action@v2
-      with:
-        files: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.xml
-        name: Code coverage report # optional
-        verbose: true # optional (default = false)
-        dry_run: true
-        
     - name: Add coverage to PR
       id: jacoco
       uses: madrapps/jacoco-report@v1.2
       with:
-        paths: ${{ github.workspace }}/build/customJacocoReportDir/test/jacocoTestReport.xml
+        paths: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.xml
         token: ${{ secrets.CODE_COV_SECRET }}
         min-coverage-overall: 40
         title: JaCoCo code coverage
