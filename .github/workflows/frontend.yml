@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - 'Frontend/**'
+  workflow_dispatch:
 
 jobs:
   build:
