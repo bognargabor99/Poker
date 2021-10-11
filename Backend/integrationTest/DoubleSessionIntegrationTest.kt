@@ -25,7 +25,7 @@ class DoubleSessionIntegrationTest {
                     assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
                     val ourName = connInfo.userName
 
-                    Thread.sleep(2000)
+                    Thread.sleep(2500)
                 }
             }
 
