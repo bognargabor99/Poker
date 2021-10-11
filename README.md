@@ -2,6 +2,8 @@
 
 ### Badges
 
+![Backend build](https://github.com/bognargabor99/poker/actions/workflows/backend.yml/badge.svg)
+![Frontend build](https://github.com/bognargabor99/poker/actions/workflows/frontend.yml/badge.svg)
 ![Code coverage](/.github/badges/jacoco.svg)
 ![Branch coverage](/.github/badges/branches.svg)
 
