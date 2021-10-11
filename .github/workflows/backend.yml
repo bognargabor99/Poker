@@ -43,7 +43,7 @@ jobs:
         reporter: java-junit
         
     - name: Check files
-      run: (cd /Backend && ls -R)
+      run: (ls -R /home/runner/work/Poker/Poker/Backend/build)
         
     - name: Generate JaCoCo Badge
       uses: cicirello/jacoco-badge-generator@v2
