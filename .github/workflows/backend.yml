@@ -41,6 +41,16 @@ jobs:
         name: Integration test reports
         path: /home/runner/work/Poker/Poker/Backend/build/integration-test-results/TEST-*.xml
         reporter: java-junit
+        
+    - name: Check files
+      run: (cd /Backend && ls -R)
+        
+    - name: Generate JaCoCo Badge
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        generate-branches-badge: true
+        jacoco-csv-file: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.csv
+        intervals: 80 70 60 50 40 0
 
     - name: Add coverage to PR
       id: jacoco
@@ -51,11 +61,3 @@ jobs:
         token: ${{ secrets.CODE_COV_SECRET }}
         min-coverage-overall: 40
         title: JaCoCo code coverage
-
-    - name: Generate JaCoCo Badge
-      uses: cicirello/jacoco-badge-generator@v2
-      #if: ${{ always() }}
-      with:
-        generate-branches-badge: true
-        jacoco-csv-file: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.csv
-        intervals: 80 70 60 50 40 0
