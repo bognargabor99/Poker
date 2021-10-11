@@ -32,14 +32,12 @@ object DatabaseHelper {
         return result.toString()
     }
 
-    fun authenticate(credentials: UserPasswordCredential): Principal? {
-        return transaction {
-            val query = Users.select { Users.userName eq credentials.name }
-            return@transaction if (query.count() == 1L && credentials.password.hash() == query.first()[Users.passwordHash])
-                UserIdPrincipal(credentials.name)
-            else
-                null
-        }
+    fun authenticate(credentials: UserPasswordCredential): Principal? = transaction {
+        val query = Users.select { Users.userName eq credentials.name }
+        return@transaction if (query.count() == 1L && credentials.password.hash() == query.first()[Users.passwordHash])
+            UserIdPrincipal(credentials.name)
+        else
+            null
     }
 
     fun registerUser(newUser: UserAuthInfo) : Boolean = transaction {

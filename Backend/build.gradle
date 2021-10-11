@@ -31,8 +31,8 @@ sourceSets {
 
 repositories {
     mavenLocal()
-    maven { url 'https://kotlin.bintray.com/ktor' }
     mavenCentral()
+    maven { url 'https://kotlin.bintray.com/ktor' }
 }
 
 test {

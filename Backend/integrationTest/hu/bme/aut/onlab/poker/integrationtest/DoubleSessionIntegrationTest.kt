@@ -1,12 +1,14 @@
-package hu.bme.aut.onlab.poker
+package hu.bme.aut.onlab.poker.integrationtest
 
 import com.google.gson.Gson
+import hu.bme.aut.onlab.poker.integrationtestutils.AggressiveBot
 import hu.bme.aut.onlab.poker.network.ConnectionInfoMessage
 import hu.bme.aut.onlab.poker.network.NetworkMessage
 import hu.bme.aut.onlab.poker.plugins.configureWebSockets
 import io.ktor.http.cio.websocket.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlin.concurrent.thread
 import kotlin.test.*
 
@@ -25,7 +27,7 @@ class DoubleSessionIntegrationTest {
                     assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
                     val ourName = connInfo.userName
 
-                    Thread.sleep(2000)
+                    delay(2000)
                 }
             }
 
@@ -38,7 +40,7 @@ class DoubleSessionIntegrationTest {
                     assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
                     val ourName = connInfo.userName
 
-                    Thread.sleep(2000)
+                    delay(2000)
                 }
             }
             user1Thread.start()
@@ -74,7 +76,7 @@ class DoubleSessionIntegrationTest {
                     assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
                     val ourName = connInfo.userName
 
-
+                    val bot = AggressiveBot(ourName)
                 }
             }
             user1Thread.start()

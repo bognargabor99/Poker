@@ -1,4 +1,4 @@
-package hu.bme.aut.onlab.poker
+package hu.bme.aut.onlab.poker.integrationtest
 
 import com.google.gson.Gson
 import hu.bme.aut.onlab.poker.gamemodel.*
@@ -9,7 +9,6 @@ import hu.bme.aut.onlab.poker.utils.MessageHelper
 import io.ktor.http.cio.websocket.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlin.concurrent.thread
 import kotlin.test.*
 
 @DelicateCoroutinesApi

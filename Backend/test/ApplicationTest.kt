@@ -26,7 +26,7 @@ class ApplicationTest {
     fun testRedirectHttps() {
         withTestApplication {
             application.install(XForwardedHeaderSupport)
-            application.module(testing = true)
+            application.module()
             handleRequest(HttpMethod.Get, "/") {
                 addHeader(HttpHeaders.XForwardedProto, "https")
             }.let { call ->
@@ -40,7 +40,7 @@ class ApplicationTest {
     fun testAuthentication() {
         withTestApplication {
             application.install(XForwardedHeaderSupport)
-            application.module(testing = true)
+            application.module()
             handleRequest(HttpMethod.Get, "/authenticate") {
                 addHeader(HttpHeaders.XForwardedProto, "https")
                 val base64Credentials = String(Base64.getEncoder().encode("admin:admin".toByteArray()))
@@ -56,7 +56,7 @@ class ApplicationTest {
     fun testRegistrationFailure() {
         withTestApplication {
             application.install(XForwardedHeaderSupport)
-            application.module(testing = true)
+            application.module()
             handleRequest(HttpMethod.Post, "/register") {
                 addHeader(HttpHeaders.XForwardedProto, "https")
                 addHeader(HttpHeaders.ContentType, "application/json")
@@ -74,7 +74,7 @@ class ApplicationTest {
         withTestApplication {
             DatabaseHelper.deleteUser("localadmin")
             application.install(XForwardedHeaderSupport)
-            application.module(testing = true)
+            application.module()
             handleRequest(HttpMethod.Post, "/register") {
                 addHeader(HttpHeaders.XForwardedProto, "https")
                 addHeader(HttpHeaders.ContentType, "application/json")

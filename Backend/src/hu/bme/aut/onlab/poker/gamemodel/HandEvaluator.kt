@@ -1,7 +1,7 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
 object HandEvaluator {
-    fun evaluateHand(fromCards: MutableList<Card>) : Hand {
+    fun evaluateHand(fromCards: List<Card>) : Hand {
         val sortedCards = fromCards.sortedDescending()
         //Flush section
         val flushHand = getFlushType(sortedCards)

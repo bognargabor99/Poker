@@ -7,8 +7,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
 @DelicateCoroutinesApi
-@kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
+fun Application.module() {
+    configureLogging()
     configureHttpsRedirect()
     configureWebSockets()
     configureRouting()
