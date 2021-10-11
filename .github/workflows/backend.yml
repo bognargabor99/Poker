@@ -49,7 +49,7 @@ jobs:
       uses: cicirello/jacoco-badge-generator@v2
       with:
         generate-branches-badge: true
-        jacoco-csv-file: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.csv
+        jacoco-csv-file: Backend/build/customJacocoReportDir/test/jacocoTestReport.csv
         intervals: 80 70 60 50 40 0
 
     - name: Add coverage to PR
