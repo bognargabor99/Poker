@@ -1,16 +1,16 @@
 package hu.bme.aut.onlab.poker.network
 
 import android.util.Log
+import com.google.gson.Gson
 import hu.bme.aut.onlab.poker.model.Action
 import hu.bme.aut.onlab.poker.model.TableRules
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
+@DelicateCoroutinesApi
 object PokerClient {
     lateinit var session: DefaultClientWebSocketSession
     lateinit var userName: String
@@ -22,7 +22,7 @@ object PokerClient {
     fun receiveText(text: String) {
         val message: NetworkMessage
         try {
-            message = Json.decodeFromString(text)
+            message = Gson().fromJson(text, NetworkMessage::class.java)
         } catch (e: Exception) {
             Log.d("receive", "Couldn't decode text from server:\n$text")
             return
@@ -33,7 +33,7 @@ object PokerClient {
     private fun sendToServer(data: String, code: Int) {
         val message = NetworkMessage(code, data)
         GlobalScope.launch {
-            session.send(Frame.Text(Json.encodeToString(message)))
+            session.send(Frame.Text(Gson().toJson(message)))
         }
     }
 
@@ -57,7 +57,7 @@ object PokerClient {
 
     fun startTable(rules: TableRules) {
         val createMessage = CreateTableMessage(userName, rules)
-        sendToServer(Json.encodeToString(createMessage), CreateTableMessage.MESSAGE_CODE)
+        sendToServer(Gson().toJson(createMessage), CreateTableMessage.MESSAGE_CODE)
     }
 
     fun tableJoined(joinedMessage: TableJoinedMessage) {
@@ -69,12 +69,12 @@ object PokerClient {
 
     fun tryJoin(tableId: Int?) {
         val joinMessage = JoinTableMessage(userName, tableId)
-        sendToServer(Json.encodeToString(joinMessage), JoinTableMessage.MESSAGE_CODE)
+        sendToServer(Gson().toJson(joinMessage), JoinTableMessage.MESSAGE_CODE)
     }
 
     fun leaveTable(tableId: Int) {
         val leaveMessage = LeaveTableMessage(userName, tableId)
-        sendToServer(Json.encodeToString(leaveMessage), LeaveTableMessage.MESSAGE_CODE)
+        sendToServer(Gson().toJson(leaveMessage), LeaveTableMessage.MESSAGE_CODE)
     }
 
     fun tableStarted(tableId: Int) {
@@ -91,7 +91,7 @@ object PokerClient {
 
     fun action(action: Action) {
         val actionMessage = ActionMessage(tables.last(), userName, action)
-        sendToServer(Json.encodeToString(actionMessage), ActionMessage.MESSAGE_CODE)
+        sendToServer(Gson().toJson(actionMessage), ActionMessage.MESSAGE_CODE)
     }
 
     interface TableJoinedListener {

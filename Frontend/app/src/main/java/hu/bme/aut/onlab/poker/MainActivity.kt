@@ -7,7 +7,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import hu.bme.aut.onlab.poker.databinding.ActivityMainBinding
 import hu.bme.aut.onlab.poker.network.PokerAPI
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
@@ -15,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        PokerAPI.connect("00815cc10803") {
+        PokerAPI.connect("831f-37-220-136-8") {
             runOnUiThread {
                 toast("Couldn't connect to server")
             }

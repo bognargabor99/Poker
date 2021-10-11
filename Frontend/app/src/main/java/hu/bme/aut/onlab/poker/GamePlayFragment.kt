@@ -22,7 +22,9 @@ import hu.bme.aut.onlab.poker.network.GameStateMessage
 import hu.bme.aut.onlab.poker.network.PokerClient
 import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.view.PokerCardView
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@OptIn(DelicateCoroutinesApi::class)
 class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var binding: FragmentGamePlayBinding
     private lateinit var tableCards: List<PokerCardView>

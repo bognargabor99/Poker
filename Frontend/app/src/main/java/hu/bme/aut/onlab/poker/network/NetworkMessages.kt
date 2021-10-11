@@ -3,15 +3,12 @@ package hu.bme.aut.onlab.poker.network
 import android.os.Parcelable
 import hu.bme.aut.onlab.poker.model.*
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class NetworkMessage(
         val messageCode: Int,
         val data: String
 )
 
-@Serializable
 data class CreateTableMessage(
         val userName: String,
         val rules: TableRules
@@ -21,7 +18,6 @@ data class CreateTableMessage(
     }
 }
 
-@Serializable
 data class JoinTableMessage(
         val userName: String,
         val tableId: Int?
@@ -31,7 +27,6 @@ data class JoinTableMessage(
     }
 }
 
-@Serializable
 data class GetOpenTablesMessage(
         val userName: String
 ) {
@@ -40,7 +35,6 @@ data class GetOpenTablesMessage(
     }
 }
 
-@Serializable
 data class ActionMessage(
         val tableId: Int,
         val name: String,
@@ -51,7 +45,6 @@ data class ActionMessage(
     }
 }
 
-@Serializable
 data class GameStateMessage(
     val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
     val tableCards: List<Card>, // cards on the table
@@ -70,7 +63,6 @@ data class GameStateMessage(
 }
 
 @Parcelize
-@Serializable
 data class TurnEndMessage(
         val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
         val tableCards: List<Card>, // cards on the table
@@ -81,7 +73,6 @@ data class TurnEndMessage(
     }
 }
 
-@Serializable
 data class EliminationMessage(
         val tableId: Int // id of table the client is eliminated from
 ) {
@@ -90,7 +81,6 @@ data class EliminationMessage(
     }
 }
 
-@Serializable
 data class ConnectionInfoMessage(
         val userName: String
 ) {
@@ -99,7 +89,6 @@ data class ConnectionInfoMessage(
     }
 }
 
-@Serializable
 data class DisconnectedPlayerMessage(
         val tableId: Int,
         val userName: String
@@ -109,7 +98,6 @@ data class DisconnectedPlayerMessage(
     }
 }
 
-@Serializable
 data class WinnerAnnouncerMessage(
         val tableId: Int
 ) {
@@ -118,7 +106,6 @@ data class WinnerAnnouncerMessage(
     }
 }
 
-@Serializable
 data class SendOpenTablesMessage(
         val tableIds: List<Int>
 ) {
@@ -127,7 +114,6 @@ data class SendOpenTablesMessage(
     }
 }
 
-@Serializable
 data class TableCreatedMessage(
         val tableId: Int
 ) {
@@ -136,7 +122,6 @@ data class TableCreatedMessage(
     }
 }
 
-@Serializable
 data class TableJoinedMessage(
         val tableId: Int,
         val rules: TableRules
@@ -146,7 +131,6 @@ data class TableJoinedMessage(
     }
 }
 
-@Serializable
 data class GameStartedMessage(
         val tableId: Int
 ) {
@@ -155,7 +139,6 @@ data class GameStartedMessage(
     }
 }
 
-@Serializable
 data class LeaveTableMessage(
         val userName: String,
         val tableId: Int
