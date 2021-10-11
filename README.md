@@ -1,5 +1,11 @@
 # Multiplayer Poker Game for Android
 
+### Badges
+
+![Code coverage](/.github/badges/jacoco.svg)
+![Branch coverage](/.github/badges/branches.svg)
+
+
 # Screenshots
 
 ## Table
