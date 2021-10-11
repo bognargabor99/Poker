@@ -49,3 +49,12 @@ jobs:
         name: Code coverage report # optional
         verbose: true # optional (default = false)
         dry_run: true
+        
+    - name: Add coverage to PR
+      id: jacoco
+      uses: madrapps/jacoco-report@v1.2
+      with:
+        path: ${{ github.workspace }}/build/customJacocoReportDir/test/jacocoTestReport.xml
+        token: ${{ secrets.CODE_COV_SECRET }}
+        min-coverage-overall: 40
+        title: JaCoCo code coverage
