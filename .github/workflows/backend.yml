@@ -53,6 +53,7 @@ jobs:
 
     - name: Generate JaCoCo Badge
       uses: cicirello/jacoco-badge-generator@v2
+      if: ${{ always() }}
       with:
         generate-branches-badge: true
         jacoco-csv-file: /home/runner/work/Poker/Poker/Backend/build/customJacocoReportDir/test/jacocoTestReport.csv
