@@ -48,7 +48,7 @@ object Game {
         tables.filter { table -> table.isOpen() && !table.isStarted }
             .map { it.id }
 
-    fun removePlayerFromTables(user: String, tableId: Int) {
+    fun removePlayerFromTable(user: String, tableId: Int) {
         tables.find { it.id == tableId }
             ?.let {
                 it.playerDisconnected(user)

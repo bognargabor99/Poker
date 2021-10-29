@@ -17,18 +17,17 @@ import com.muddzdev.styleabletoast.StyleableToast
 import hu.bme.aut.onlab.poker.databinding.AvatarBinding
 import hu.bme.aut.onlab.poker.databinding.FragmentGamePlayBinding
 import hu.bme.aut.onlab.poker.model.*
-import hu.bme.aut.onlab.poker.network.ActionMessage
-import hu.bme.aut.onlab.poker.network.GameStateMessage
-import hu.bme.aut.onlab.poker.network.PokerClient
-import hu.bme.aut.onlab.poker.network.TurnEndMessage
+import hu.bme.aut.onlab.poker.network.*
 import hu.bme.aut.onlab.poker.view.PokerCardView
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @OptIn(DelicateCoroutinesApi::class)
-class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
+class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.TableJoinedListener {
     private lateinit var binding: FragmentGamePlayBinding
     private lateinit var tableCards: List<PokerCardView>
     private val args: GamePlayFragmentArgs by navArgs()
+    private val tables: MutableList<Pair<Int, TableRules>> = mutableListOf()
+    private var currentTable: Int = args.tableId
     private var tableStart = true
     private var newTurn = true
     private lateinit var oldState: GameStateMessage
@@ -41,10 +40,12 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         savedInstanceState: Bundle?
     ): View {
         PokerClient.receiver = this
+        PokerClient.joinedListener = this
         MainActivity.backPressDisabled = true
         binding = FragmentGamePlayBinding.inflate(layoutInflater, container, false)
         tableCards = listOf(binding.tableCard1, binding.tableCard2, binding.tableCard3, binding.tableCard4, binding.tableCard5)
         binding.tvTableId.text = getString(R.string.game_play_table_id, args.tableId)
+        tables.add(Pair(args.tableId, args.rules))
         setOnClickListeners()
         StyleableToast.makeText(requireContext(), getString(R.string.table_join_success), Toast.LENGTH_LONG, R.style.custom_toast).show()
         return binding.root
@@ -77,7 +78,29 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         binding.btnLastTurn.setOnClickListener { showTurnResults() }
     }
 
+    private fun saveState() {
+        // save avatar states
+    }
+
+    fun changeTable(toTableId: Int) {
+        val idx = tables.indexOfFirst { it.first == toTableId }
+        if (idx == -1)
+            return
+        saveState()
+        loadState(toTableId)
+    }
+
+    private fun loadState(tableId: Int) {
+        TODO("clear view")
+
+        TODO("load newly viewed tables state into view")
+    }
+
     override fun onTableStarted(tableId: Int) {
+        if (tableId != currentTable) {
+            TODO("activate button on the right")
+            return
+        }
         activity?.runOnUiThread {
             StyleableToast.makeText(
                 requireContext(),
@@ -93,6 +116,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onNewGameState(stateMessage: GameStateMessage) {
+        if (stateMessage.tableId != currentTable && tables.any { it.first == stateMessage.tableId }) {
+            updateNonViewedGameState()
+            return
+        }
         if (this::newState.isInitialized)
             oldState = newState
         newState = stateMessage
@@ -112,6 +139,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         displayChipCounts()
         displayCurrentHand()
         showActionButtonsIfNecessary()
+    }
+
+    private fun updateNonViewedGameState() {
+        TODO("Not yet implemented")
     }
 
     private fun setAvatarTheme(action: ActionMessage) {
@@ -164,6 +195,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
+        if (turnEndMessage.tableId != currentTable) {
+            TODO("End turn in non-viewed table")
+            TODO("Save last turn results for non-viewed table")
+        }
         lastTurnResults = turnEndMessage
         activity?.runOnUiThread { binding.btnLastTurn.visibility = View.VISIBLE }
         if (!ResultsFragment.isShowing)
@@ -173,6 +208,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     private fun showTurnResults() {
+        // TODO: show turn results for current table
         view?.findNavController()?.navigate(GamePlayFragmentDirections.actionGamePlayFragmentToResultsFragment(lastTurnResults))
     }
 
@@ -189,6 +225,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onGetEliminated(tableId: Int) {
+        if (tableId != currentTable) {
+            TODO("remove table from tables, remove button for the table")
+            return
+        }
         activity?.runOnUiThread {
             StyleableToast.makeText(
                 requireContext(),
@@ -200,7 +240,11 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
-    override fun onPlayerDisconnection(name: String) {
+    override fun onPlayerDisconnection(tableId: Int, name: String) {
+        if (tableId != currentTable) {
+            TODO("remove player from non-viewed table")
+            return
+        }
         activity?.runOnUiThread {
             avatarMap[name]?.tvLastAction?.visibility = View.VISIBLE
             avatarMap[name]?.tvLastAction?.text = getString(R.string.out)
@@ -216,22 +260,23 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
                 Toast.LENGTH_LONG,
                 R.style.custom_toast
             ).show()
-            view?.findNavController()?.popBackStack()
+            // TODO: clear table from buttons, tables
+            // TODO: if last table: popBackStack
         }
     }
 
     private fun askForAmount() {
+        val numPicker = NumberPicker(requireContext())
+        val minVal = newState.maxRaiseThisRound + newState.bigBlind
+        val myStack = newState.players.single { player -> player.userName == PokerClient.userName }.run { chipStack + inPotThisRound }
+        val displayed = (minVal..myStack step newState.bigBlind).toMutableList()
+        if (displayed.isEmpty() || displayed.last() != myStack)
+            displayed.add(myStack)
+        val asArray = displayed.map { it.toString() }.toTypedArray()
+        numPicker.displayedValues = asArray
+        numPicker.maxValue = asArray.size - 1
+        numPicker.minValue = 0
         activity?.runOnUiThread {
-            val numPicker = NumberPicker(requireContext())
-            val minVal = newState.maxRaiseThisRound + newState.bigBlind
-            val myStack = newState.players.single { player -> player.userName == PokerClient.userName }.run { chipStack + inPotThisRound }
-            val displayed = (minVal..myStack step newState.bigBlind).toMutableList()
-            if (displayed.isEmpty() || displayed.last() != myStack)
-                displayed.add(myStack)
-            val asArray = displayed.map { it.toString() }.toTypedArray()
-            numPicker.displayedValues = asArray
-            numPicker.maxValue = asArray.size - 1
-            numPicker.minValue = 0
             AlertDialog.Builder(requireContext())
                 .setTitle("Raise to:")
                 .setView(numPicker)
@@ -247,10 +292,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private fun handCards() {
         activity?.runOnUiThread {
             binding.playerCard1.alpha = 1f
-            binding.playerCard2.alpha = 1f
             binding.playerCard1.value = newState.receiverCards.first().value
-            binding.playerCard2.value = newState.receiverCards.last().value
             binding.playerCard1.symbol = newState.receiverCards.first().suit.ordinal
+            binding.playerCard2.alpha = 1f
+            binding.playerCard2.value = newState.receiverCards.last().value
             binding.playerCard2.symbol = newState.receiverCards.last().suit.ordinal
             animatePlayerCards()
         }
@@ -353,5 +398,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
                 }
             }
         }
+    }
+
+    override fun tableJoined(joinedMessage: TableJoinedMessage) {
+        tables.add(Pair(joinedMessage.tableId, joinedMessage.rules))
+        TODO("add button for changing tables")
     }
 }

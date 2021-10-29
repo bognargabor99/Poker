@@ -15,7 +15,9 @@ import androidx.navigation.findNavController
 import hu.bme.aut.onlab.poker.databinding.FragmentMainBinding
 import hu.bme.aut.onlab.poker.network.PokerClient
 import hu.bme.aut.onlab.poker.network.TableJoinedMessage
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 class MainFragment : Fragment(), PokerClient.TableJoinedListener {
     private lateinit var binding: FragmentMainBinding
 
@@ -25,7 +27,7 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
     ): View {
         MainActivity.backPressDisabled = false
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
-        PokerClient.listener = this
+        PokerClient.joinedListener = this
 
         binding.btnStartTable.setOnClickListener {
             view?.findNavController()?.navigate(R.id.action_mainFragment_to_startTableFragment)
@@ -43,6 +45,11 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
                 .show()
         }
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        PokerClient.joinedListener = this
     }
 
     private fun toast(message: String) {
