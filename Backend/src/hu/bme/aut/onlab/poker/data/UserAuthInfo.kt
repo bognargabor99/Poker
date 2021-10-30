@@ -1,7 +1,7 @@
 package hu.bme.aut.onlab.poker.data
 
 import io.ktor.auth.Principal
-import java.util.*
+import java.util.Base64
 
 data class UserAuthInfo(val userName: String = "", val password: String = ""): Principal {
     companion object {

@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_mainFragment_to_gamePlayFragment"
             app:destination="@id/gamePlayFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_authFragment"
+            app:destination="@id/authFragment" />
     </fragment>
     <fragment
         android:id="@+id/startTableFragment"
@@ -47,4 +50,9 @@
             android:name="winners"
             app:argType="hu.bme.aut.onlab.poker.network.TurnEndMessage" />
     </dialog>
+    <dialog
+        android:id="@+id/authFragment"
+        android:name="hu.bme.aut.onlab.poker.AuthFragment"
+        android:label="fragment_auth"
+        tools:layout="@layout/fragment_auth" />
 </navigation>

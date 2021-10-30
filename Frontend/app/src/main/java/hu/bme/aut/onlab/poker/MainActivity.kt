@@ -2,7 +2,6 @@ package hu.bme.aut.onlab.poker
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import hu.bme.aut.onlab.poker.databinding.ActivityMainBinding
@@ -17,15 +16,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        PokerAPI.connect("831f-37-220-136-8") {
-            runOnUiThread {
-                toast("Couldn't connect to server")
-            }
-        }
-    }
-
-    private fun toast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     override fun onBackPressed() {
