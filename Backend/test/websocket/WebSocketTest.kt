@@ -8,7 +8,7 @@ import hu.bme.aut.onlab.poker.utils.MessageHelper
 import io.ktor.http.cio.websocket.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.DelicateCoroutinesApi
-import java.util.*
+import java.util.Base64
 import kotlin.test.*
 
 @DelicateCoroutinesApi

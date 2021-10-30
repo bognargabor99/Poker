@@ -11,13 +11,25 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import hu.bme.aut.onlab.poker.databinding.FragmentMainBinding
+import hu.bme.aut.onlab.poker.network.PokerAPI
 import hu.bme.aut.onlab.poker.network.PokerClient
 import hu.bme.aut.onlab.poker.network.TableJoinedMessage
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 class MainFragment : Fragment(), PokerClient.TableJoinedListener {
     private lateinit var binding: FragmentMainBinding
+
+    var interactionEnabled: Boolean = PokerAPI.isConnected
+        set(value) {
+            activity?.runOnUiThread {
+                binding.btnStartTable.isEnabled = value
+                binding.btnJoinTable.isEnabled = value
+            }
+            field = value
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,8 +39,24 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
         PokerClient.listener = this
 
+        _this = this
+        setOnClickListeners()
+
+        return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        interactionEnabled = PokerAPI.isConnected
+    }
+
+    private fun setOnClickListeners() {
+        binding.btnConnect.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_authFragment)
+        }
+
         binding.btnStartTable.setOnClickListener {
-            view?.findNavController()?.navigate(R.id.action_mainFragment_to_startTableFragment)
+            findNavController().navigate(R.id.action_mainFragment_to_startTableFragment)
         }
 
         binding.btnJoinTable.setOnClickListener {
@@ -42,7 +70,6 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
                 }
                 .show()
         }
-        return binding.root
     }
 
     private fun toast(message: String) {
@@ -72,6 +99,11 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener {
 
     override fun tableJoined(joinedMessage: TableJoinedMessage) {
         Log.d("pokerWeb", "Got join message for table ${joinedMessage.tableId}")
-        view?.findNavController()?.navigate(MainFragmentDirections.actionMainFragmentToGamePlayFragment(joinedMessage.tableId, joinedMessage.rules))
+        findNavController().navigate(MainFragmentDirections.actionMainFragmentToGamePlayFragment(joinedMessage.tableId, joinedMessage.rules))
+    }
+
+    companion object {
+        lateinit var _this: MainFragment
+        const val POKER_DOMAIN = "d49b-109-74-48-2"
     }
 }
