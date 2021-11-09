@@ -1,5 +1,7 @@
 package hu.bme.aut.onlab.poker.network
 
+import hu.bme.aut.onlab.poker.data.DatabaseHelper
+import hu.bme.aut.onlab.poker.gamemodel.Statistics
 import hu.bme.aut.onlab.poker.gamemodel.TableRules
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
@@ -56,8 +58,8 @@ object UserCollection {
         users.find { it.name == userName }?.tablePlayingIds?.removeAll(tables)
     }
 
-    fun tableSpectated(tableId: Int, userName: String) {
-        val answer = SubscriptionAcceptanceMessage(tableId)
+    fun tableSpectated(userName: String, tableId: Int, rules: TableRules) {
+        val answer = SubscriptionAcceptanceMessage(tableId, rules)
         sendToClient(userName, answer.toJsonString(), SubscriptionAcceptanceMessage.MESSAGE_CODE)
         users.find { it.name == userName }?.tableSpectatingIds?.add(tableId)
     }
@@ -71,4 +73,13 @@ object UserCollection {
 
     fun isAlreadyAuthenticated(user: String) =
         users.any { it.name == user }
+
+    fun updateStats(userName: String, stats: Statistics) {
+        if (users.find { it.name == userName }?.isGuest == false)
+            DatabaseHelper.updateStatsForUser(userName, stats)
+    }
+
+    fun getStatsForPlayer(userName: String): Statistics {
+        return DatabaseHelper.getStatisticsByName(userName)
+    }
 }

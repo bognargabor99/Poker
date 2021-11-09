@@ -21,8 +21,9 @@ class WebSocketTest {
                 val firstReceivedText = (incoming.receive() as Frame.Text).readText()
 
                 val connInfo = Gson().fromJson(Gson().fromJson(firstReceivedText, NetworkMessage::class.java).data, ConnectionInfoMessage::class.java)
-                assertTrue(connInfo.userName.startsWith("user"))
-                assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
+                assertTrue(connInfo.userName.startsWith("guest"))
+                assertTrue(connInfo.userName.substring(5).toIntOrNull() != null)
+                assertEquals(true, connInfo.isGuest)
             }
         }
     }
@@ -37,7 +38,7 @@ class WebSocketTest {
             }) { incoming, _ ->
                 val firstReceivedText = (incoming.receive() as Frame.Text).readText()
 
-                assertEquals(MessageHelper.getConnectionInfoMessage("admin"), firstReceivedText)
+                assertEquals(MessageHelper.getConnectionInfoMessage("admin", isGuest = false), firstReceivedText)
             }
         }
     }
@@ -53,6 +54,7 @@ class WebSocketTest {
                 val firstReceivedText = (incoming.receive() as Frame.Text).readText()
                 val connInfo = Gson().fromJson(Gson().fromJson(firstReceivedText, NetworkMessage::class.java).data, ConnectionInfoMessage::class.java)
                 assertNotEquals("admin", connInfo.userName)
+                assertEquals(true, connInfo.isGuest)
             }
         }
     }

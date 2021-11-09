@@ -21,7 +21,9 @@ object PokerAPI {
 
     val isConnected: Boolean
         get() {
-            return PokerAPI::messageReceivingRoutine.isInitialized && messageReceivingRoutine.isActive
+            val ret = PokerAPI::messageReceivingRoutine.isInitialized && messageReceivingRoutine.isActive
+            Log.d("pokerWeb", "isConnected: ${ if (ret) "YES" else "NO" }")
+            return ret
         }
 
     fun connect(domain: String, authInfo: UserAuthInfo, onSuccess: () -> Unit, onError: () -> Unit) {

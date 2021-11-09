@@ -69,4 +69,7 @@ object Game {
         tables.removeIf { it.id == tableId }
         UserCollection.removeTableFromPLayers(tableId)
     }
+
+    fun getRulesByTableId(tableId: Int): TableRules =
+        this.tables.find { it.id == tableId }?.rules!!
 }

@@ -13,7 +13,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = CreateTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(LeaveTableProcessor(SpectatorSubscriptionProcessor(SpectatorUnsubscriptionProcessor(null)))))))
+        chain = CreateTableProcessor(JoinTableProcessor(GetOpenTablesProcessor(ActionProcessor(LeaveTableProcessor(SpectatorSubscriptionProcessor(SpectatorUnsubscriptionProcessor(GetStatisticsProcessor(null))))))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -85,7 +85,8 @@ class SpectatorSubscriptionProcessor(processor: Processor?) : Processor(processo
         if (message?.messageCode == SpectatorSubscriptionMessage.MESSAGE_CODE) {
             val subMessage = Gson().fromJson(message.data, SpectatorSubscriptionMessage::class.java)
             if (Game.addSpectator(subMessage.tableId, subMessage.userName)) {
-                UserCollection.tableSpectated(subMessage.tableId, subMessage.userName)
+                val rules = Game.getRulesByTableId(subMessage.tableId)
+                UserCollection.tableSpectated(subMessage.userName, subMessage.tableId, rules)
             }
         } else {
             super.process(message)
@@ -98,6 +99,18 @@ class SpectatorUnsubscriptionProcessor(processor: Processor?) : Processor(proces
         if (message?.messageCode == SpectatorUnsubscriptionMessage.MESSAGE_CODE) {
             val unSubMessage = Gson().fromJson(message.data, SpectatorUnsubscriptionMessage::class.java)
             Game.removeSpectator(unSubMessage.tableId, unSubMessage.userName)
+        }
+        else
+            super.process(message)
+}
+
+class GetStatisticsProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == StatisticsMessage.MESSAGE_CODE) {
+            val getStatsMessage = Gson().fromJson(message.data, StatisticsMessage::class.java)
+            val stats = UserCollection.getStatsForPlayer(getStatsMessage.userName)
+            getStatsMessage.statistics = stats
+            UserCollection.sendToClient(getStatsMessage.userName, getStatsMessage.toJsonString(), StatisticsMessage.MESSAGE_CODE)
         }
         else
             super.process(message)

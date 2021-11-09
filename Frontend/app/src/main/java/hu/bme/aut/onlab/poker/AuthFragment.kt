@@ -83,6 +83,15 @@ class AuthFragment : DialogFragment() {
     }
 
     private fun setOnClickListeners() {
+
+        binding.btnGuest.setOnClickListener {
+            PokerAPI.connect(MainFragment.POKER_DOMAIN, UserAuthInfo("",""), {
+                MainFragment._this.interactionEnabled = true
+            }) {
+                MainFragment._this.interactionEnabled = false
+            }
+            dismiss()
+        }
         binding.btnLogin.setOnClickListener {
             val result = GlobalScope.async { tryLogin().toString() }
             GlobalScope.launch {
@@ -104,7 +113,9 @@ class AuthFragment : DialogFragment() {
 
                     dismiss()
                 } else {
-                    Toast.makeText(requireContext(), "Couldn't log in with the given credentials", Toast.LENGTH_LONG).show()
+                    activity?.runOnUiThread {
+                        Toast.makeText(requireContext(), "Couldn't log in with the given credentials", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }

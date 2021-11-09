@@ -2,7 +2,9 @@ package hu.bme.aut.onlab.poker.network
 
 import android.util.Log
 import com.google.gson.Gson
+import hu.bme.aut.onlab.poker.MainFragment
 import hu.bme.aut.onlab.poker.model.Action
+import hu.bme.aut.onlab.poker.model.Statistics
 import hu.bme.aut.onlab.poker.model.TableRules
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
@@ -14,9 +16,15 @@ import kotlinx.coroutines.launch
 object PokerClient {
     lateinit var session: DefaultClientWebSocketSession
     lateinit var userName: String
+    var isGuest: Boolean = true
+        set(value) {
+            field = value
+            MainFragment._this.interactionEnabled = true
+        }
     private var tables = mutableListOf<Int>()
     private val chain = NetworkChain()
-    lateinit var listener: TableJoinedListener
+    lateinit var tableJoinedListener: TableJoinedListener
+    var statsListener: StatisticsListener? = null
     lateinit var receiver: GamePlayReceiver
 
     fun receiveText(text: String) {
@@ -24,7 +32,7 @@ object PokerClient {
         try {
             message = Gson().fromJson(text, NetworkMessage::class.java)
         } catch (e: Exception) {
-            Log.d("receive", "Couldn't decode text from server:\n$text")
+            Log.d("pokerWeb", "Couldn't decode text from server:\n$text")
             return
         }
         chain.process(message)
@@ -41,8 +49,9 @@ object PokerClient {
         receiver.onNewGameState(stateMessage)
     }
 
-    fun setConnectionInfo(name: String) {
+    fun setConnectionInfo(name: String, guest: Boolean) {
         userName = name
+        isGuest = guest
     }
 
     fun turnEnded(turnEndMessage: TurnEndMessage) {
@@ -63,7 +72,7 @@ object PokerClient {
     fun tableJoined(joinedMessage: TableJoinedMessage) {
         if (joinedMessage.tableId != 0 && !tables.contains(joinedMessage.tableId)) {
             tables.add(joinedMessage.tableId)
-            listener.tableJoined(joinedMessage)
+            tableJoinedListener.tableJoined(joinedMessage)
         }
     }
 
@@ -94,8 +103,21 @@ object PokerClient {
         sendToServer(Gson().toJson(actionMessage), ActionMessage.MESSAGE_CODE)
     }
 
+    fun fetchStatistics() {
+        val getStatsMessage = StatisticsMessage(userName)
+        sendToServer(Gson().toJson(getStatsMessage), StatisticsMessage.MESSAGE_CODE)
+    }
+
+    fun receiveStats(stats: Statistics) {
+        statsListener?.statisticsReceived(stats)
+    }
+
     interface TableJoinedListener {
         fun tableJoined(joinedMessage: TableJoinedMessage)
+    }
+
+    interface StatisticsListener {
+        fun statisticsReceived(statistics: Statistics)
     }
 
     interface GamePlayReceiver {

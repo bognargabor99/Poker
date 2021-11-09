@@ -1,6 +1,7 @@
 package hu.bme.aut.onlab.poker.network
 
 import android.os.Parcelable
+import hu.bme.aut.onlab.poker.dto.PlayerToSpectate
 import hu.bme.aut.onlab.poker.model.*
 import kotlinx.parcelize.Parcelize
 
@@ -82,7 +83,8 @@ data class EliminationMessage(
 }
 
 data class ConnectionInfoMessage(
-        val userName: String
+        val userName: String,
+        val isGuest: Boolean
 ) {
     companion object {
         const val MESSAGE_CODE = 8
@@ -145,5 +147,57 @@ data class LeaveTableMessage(
 ) {
     companion object {
         const val MESSAGE_CODE = 15
+    }
+}
+
+data class SpectatorSubscriptionMessage(
+    val userName: String,
+    val tableId: Int
+) {
+    companion object {
+        const val MESSAGE_CODE = 16
+    }
+}
+
+data class SpectatorUnsubscriptionMessage(
+    val userName: String,
+    val tableId: Int
+) {
+    companion object {
+        const val MESSAGE_CODE = 17
+    }
+}
+
+data class SubscriptionAcceptanceMessage(
+    val tableId: Int,
+    val rules: TableRules
+) {
+    companion object {
+        const val MESSAGE_CODE = 18
+    }
+}
+
+data class SpectatorGameStateMessage(
+    val tableId: Int, // id of Table (if multiple playable Tables will be implemented in the future)
+    val tableCards: List<Card>, // cards on the table
+    val players: List<PlayerToSpectate>, // players with name, chip stack, and this rounds betsize
+    val maxRaiseThisRound: Int,
+    val nextPlayer: String, // username of next player
+    val turnState: TurnState,
+    val bigBlind: Int,
+    val pot: Int,
+    val lastAction: ActionMessage?
+) {
+    companion object {
+        const val MESSAGE_CODE = 19
+    }
+}
+
+data class StatisticsMessage(
+    val userName: String,
+    var statistics: Statistics? = null
+) {
+    companion object {
+        const val MESSAGE_CODE = 20
     }
 }

@@ -9,10 +9,10 @@ object MessageHelper {
             messageCode = CreateTableMessage.MESSAGE_CODE,
             data = CreateTableMessage(userName, rules).toJsonString()).toJsonString()
 
-    fun getConnectionInfoMessage(userName: String) : String =
+    fun getConnectionInfoMessage(userName: String, isGuest: Boolean) : String =
         NetworkMessage(
             messageCode = ConnectionInfoMessage.MESSAGE_CODE,
-            data = ConnectionInfoMessage(userName).toJsonString()).toJsonString()
+            data = ConnectionInfoMessage(userName, isGuest).toJsonString()).toJsonString()
 
     fun getTableCreatedMessage(tableId: Int) : String =
         NetworkMessage(

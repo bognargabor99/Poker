@@ -19,6 +19,12 @@
         <action
             android:id="@+id/action_mainFragment_to_authFragment"
             app:destination="@id/authFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_statisticsFragment"
+            app:destination="@id/statisticsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_spectatorFragment"
+            app:destination="@id/spectatorFragment" />
     </fragment>
     <fragment
         android:id="@+id/startTableFragment"
@@ -55,4 +61,22 @@
         android:name="hu.bme.aut.onlab.poker.AuthFragment"
         android:label="fragment_auth"
         tools:layout="@layout/fragment_auth" />
+    <dialog
+        android:id="@+id/statisticsFragment"
+        android:name="hu.bme.aut.onlab.poker.StatisticsFragment"
+        android:label="fragment_statistics"
+        tools:layout="@layout/fragment_statistics" >
+        <argument
+            android:name="statistics"
+            app:argType="hu.bme.aut.onlab.poker.model.Statistics" />
+    </dialog>
+    <fragment
+        android:id="@+id/spectatorFragment"
+        android:name="hu.bme.aut.onlab.poker.SpectatorFragment"
+        android:label="fragment_spectator"
+        tools:layout="@layout/fragment_spectator" >
+        <argument
+            android:name="tableId"
+            app:argType="integer" />
+    </fragment>
 </navigation>

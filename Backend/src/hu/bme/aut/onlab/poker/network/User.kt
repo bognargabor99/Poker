@@ -10,18 +10,22 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 @DelicateCoroutinesApi
-class User(private val session: DefaultWebSocketSession, userName: String = "") {
-    var name = userName.ifBlank { "user${lastId.getAndIncrement()}" }
+class User(private val session: DefaultWebSocketSession, val isGuest: Boolean, userName: String = "") {
+    var name: String
     val tablePlayingIds = mutableListOf<Int>()
     val tableSpectatingIds = mutableListOf<Int>()
     private val chain = NetworkChain()
 
     init {
         UserCollection += this
+        name = if (isGuest)
+            "guest${lastId.getAndIncrement()}"
+        else
+            userName.ifBlank { "guest${lastId.getAndIncrement()}" }
     }
 
     suspend fun sendNameToClient() {
-        val networkMsg = NetworkMessage(ConnectionInfoMessage.MESSAGE_CODE, ConnectionInfoMessage(name).toJsonString())
+        val networkMsg = NetworkMessage(ConnectionInfoMessage.MESSAGE_CODE, ConnectionInfoMessage(name, isGuest).toJsonString())
         coroutineScope {
             session.send(networkMsg.toJsonString())
         }

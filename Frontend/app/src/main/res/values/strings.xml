@@ -44,4 +44,20 @@
     <string name="action_register">Register</string>
     <string name="settings">Settings</string>
     <string name="remember_me">Remember me</string>
+    <string name="play_as_guest">Play as guest</string>
+    <string name="statistics_u"><u>Statistics</u></string>
+    <string name="total_hands">Total hands</string>
+    <string name="tables_won">Tables won</string>
+    <string name="tables_played">Tables played</string>
+    <string name="total_hands_won">Total hands won</string>
+    <string name="total_chips_won">Total chips won</string>
+    <string name="biggest_pot_won">Biggest pot won</string>
+    <string name="total_bet_raise_count">Total bet/raise count</string>
+    <string name="showdown_participations">Showdown participations</string>
+    <string name="flops_seen">Flops seen</string>
+    <string name="turns_seen">Turns seen</string>
+    <string name="rivers_seen">Rivers seen</string>
+    <string name="players_busted">Players busted</string>
+    <string name="registration_date">Registration date</string>
+    <string name="statistics">Statistics</string>
 </resources>
