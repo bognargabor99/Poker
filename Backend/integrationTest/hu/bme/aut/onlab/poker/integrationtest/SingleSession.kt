@@ -36,21 +36,20 @@ class SingleSession {
 
                 // receive message and assert that it's about a table creation
                 receivedText = (incoming.receive() as Frame.Text).readText()
-                val tableId = Gson().fromJson(receivedText, TableCreatedMessage::class.java).tableId
 
                 // receive message and assert that it's about a joining a table
                 receivedText = (incoming.receive() as Frame.Text).readText()
-                assertEquals(MessageHelper.getTableJoinedMessage(tableId), receivedText)
+                assertEquals(MessageHelper.getTableJoinedMessage(100), receivedText)
 
                 // asking for open tables
                 outgoing.send(Frame.Text(MessageHelper.getGetOpenTablesMessage(ourName)))
 
                 // receive open tables and assert that our table is there
                 receivedText = (incoming.receive() as Frame.Text).readText()
-                assertEquals(MessageHelper.getSendOpenTablesMessage(listOf(tableId)), receivedText)
+                assertEquals(MessageHelper.getSendOpenTablesMessage(listOf(100)), receivedText)
 
                 // leave the table
-                outgoing.send(Frame.Text(MessageHelper.getLeaveTableMessage(ourName, tableId)))
+                outgoing.send(Frame.Text(MessageHelper.getLeaveTableMessage(ourName, 100)))
 
                 // asking for open tables
                 outgoing.send(Frame.Text(MessageHelper.getGetOpenTablesMessage(ourName)))
