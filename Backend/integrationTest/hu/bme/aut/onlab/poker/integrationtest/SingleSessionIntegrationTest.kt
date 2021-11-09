@@ -59,6 +59,7 @@ class SingleSessionIntegrationTest {
                 receivedText = (incoming.receive() as Frame.Text).readText()
                 assertEquals(MessageHelper.getSendOpenTablesMessage(listOf()), receivedText)
             }
+            this.stop(10, 20)
         }
     }
 }

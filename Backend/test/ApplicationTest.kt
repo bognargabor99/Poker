@@ -19,6 +19,7 @@ class ApplicationTest {
             handleRequest(HttpMethod.Get, "/").apply {
                 assertEquals(HttpStatusCode.MovedPermanently, response.status())
             }
+            this.stop(10, 20)
         }
     }
 
@@ -33,6 +34,7 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.OK, call.response.status())
                 assertEquals("it works!", call.response.content)
             }
+            this.stop(10, 20)
         }
     }
 
@@ -49,6 +51,7 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.OK, call.response.status())
                 assertEquals("Hello, admin!", call.response.content)
             }
+            this.stop(10, 20)
         }
     }
 
@@ -66,6 +69,7 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.Conflict, call.response.status())
                 assertEquals("Username already in use: admin", call.response.content)
             }
+            this.stop(10, 20)
         }
     }
 
@@ -83,6 +87,7 @@ class ApplicationTest {
                 assertEquals("Registered new user: localadmin", call.response.content)
             }
             DatabaseHelper.deleteUser("localadmin")
+            this.stop(10, 20)
         }
     }
 }

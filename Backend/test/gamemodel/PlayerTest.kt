@@ -30,7 +30,7 @@ class PlayerTest {
         assertEquals(200, player.inPot)
         assertEquals(200, player.inPotThisRound)
 
-        player.nextRound()
+        player.nextRound(TurnState.AFTER_FLOP)
         assertEquals(false, player.actedThisRound)
         assertEquals(2800, player.chipStack)
         assertEquals(200, player.inPot)
@@ -41,7 +41,7 @@ class PlayerTest {
         assertEquals(700, player.inPot)
         assertEquals(500, player.inPotThisRound)
 
-        player.nextRound()
+        player.nextRound(TurnState.AFTER_TURN)
         assertEquals(2300, player.chipStack)
         assertEquals(700, player.inPot)
         assertEquals(0, player.inPotThisRound)
@@ -63,7 +63,7 @@ class PlayerTest {
         assertEquals(500, player.inPot)
         assertEquals(500, player.inPotThisRound)
 
-        player.nextRound()
+        player.nextRound(TurnState.AFTER_FLOP)
         player.actedThisRound = true
         player.newTurn()
         assertEquals(false, player.actedThisRound)
@@ -82,7 +82,7 @@ class PlayerTest {
         assertEquals(500, player.inPot)
         assertEquals(500, player.inPotThisRound)
 
-        player.nextRound()
+        player.nextRound(TurnState.AFTER_FLOP)
         player.putInPot(3000)
         assertEquals(0, player.chipStack)
         assertEquals(3000, player.inPot)

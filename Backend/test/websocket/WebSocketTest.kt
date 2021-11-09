@@ -6,6 +6,7 @@ import hu.bme.aut.onlab.poker.network.NetworkMessage
 import hu.bme.aut.onlab.poker.plugins.configureWebSockets
 import hu.bme.aut.onlab.poker.utils.MessageHelper
 import io.ktor.http.cio.websocket.*
+import io.ktor.server.engine.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.Base64
@@ -25,6 +26,7 @@ class WebSocketTest {
                 assertTrue(connInfo.userName.substring(5).toIntOrNull() != null)
                 assertEquals(true, connInfo.isGuest)
             }
+            this.stop(10, 20)
         }
     }
 
@@ -56,6 +58,7 @@ class WebSocketTest {
                 assertNotEquals("admin", connInfo.userName)
                 assertEquals(true, connInfo.isGuest)
             }
+            this.stop(10, 20)
         }
     }
 }

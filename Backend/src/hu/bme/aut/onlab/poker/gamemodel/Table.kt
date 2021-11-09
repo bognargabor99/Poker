@@ -312,7 +312,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             return
 
         if (!isStarted) {
-            removePlayer(index)
+            removePlayer(players[index].id)
             if (players.size == 0)
                 Game.closeTable(id)
         } else if (players.size > 2) {
@@ -321,7 +321,7 @@ class Table(val rules: TableRules) : PokerActionListener{
                 setNextPlayer()
             }
             playersInTurn.remove(players[index].id)
-            removePlayer(index)
+            removePlayer(players[index].id)
             (spectators + players).forEach {
                 UserCollection.sendToClient(it.userName, DisconnectedPlayerMessage(id, name).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
@@ -333,7 +333,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             else
                 spreadGameState()
         } else if (players.size == 2) {
-            removePlayer(index)
+            removePlayer(players[index].id)
             (spectators + players.first()).forEach {
                 UserCollection.sendToClient(it.userName, DisconnectedPlayerMessage(id, name).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
