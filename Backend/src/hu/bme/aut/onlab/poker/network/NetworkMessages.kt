@@ -4,10 +4,7 @@ import com.google.gson.Gson
 import hu.bme.aut.onlab.poker.dto.InGamePlayerDto
 import hu.bme.aut.onlab.poker.dto.PlayerToSpectateDto
 import hu.bme.aut.onlab.poker.dto.TurnEndMsgPlayerDto
-import hu.bme.aut.onlab.poker.gamemodel.Action
-import hu.bme.aut.onlab.poker.gamemodel.Card
-import hu.bme.aut.onlab.poker.gamemodel.TableRules
-import hu.bme.aut.onlab.poker.gamemodel.TurnState
+import hu.bme.aut.onlab.poker.gamemodel.*
 
 interface Message {
     fun toJsonString(): String = Gson().toJson(this)
@@ -90,7 +87,8 @@ data class EliminationMessage(
 }
 
 data class ConnectionInfoMessage(
-    val userName: String
+    val userName: String,
+    val isGuest: Boolean
 ) : Message {
     companion object {
         const val MESSAGE_CODE = 8
@@ -176,7 +174,8 @@ data class SpectatorUnsubscriptionMessage(
 }
 
 data class SubscriptionAcceptanceMessage(
-    val tableId: Int
+    val tableId: Int,
+    val rules: TableRules
 ) : Message {
     companion object {
         const val MESSAGE_CODE = 18
@@ -193,6 +192,15 @@ data class SpectatorGameStateMessage(
     val bigBlind: Int,
     val pot: Int,
     val lastAction: ActionIncomingMessage?
+) : Message {
+    companion object {
+        const val MESSAGE_CODE = 19
+    }
+}
+
+data class StatisticsMessage(
+    val userName: String,
+    var statistics: Statistics? = null
 ) : Message {
     companion object {
         const val MESSAGE_CODE = 20

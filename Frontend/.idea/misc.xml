@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/drawable/rounded_corner.xml" value="0.2046875" />
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/drawable/rounded_corners_btn.xml" value="0.2046875" />
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/drawable/rounded_corners_dialog.xml" value="0.2046875" />
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/drawable/rounded_corners_textview.xml" value="0.22864583333333333" />
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/layout/fragment_auth.xml" value="0.16438703140830802" />
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/layout/fragment_main.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/layout/fragment_spectator.xml" value="0.16438703140830802" />
+        <entry key="..\:/Users/cyber/source/repos/Onlab/Frontend/app/src/main/res/layout/fragment_statistics.xml" value="0.3333333333333333" />
+      </map>
+    </option>
+  </component>
   <component name="EntryPointsManager">
     <list size="1">
       <item index="0" class="java.lang.String" itemvalue="kotlinx.parcelize.Parcelize" />

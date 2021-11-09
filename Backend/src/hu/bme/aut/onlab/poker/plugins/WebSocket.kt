@@ -32,7 +32,7 @@ fun Application.configureWebSockets(testing: Boolean = false) {
                 username = ""
 
 
-            val thisUser = User(this, username)
+            val thisUser = User(this, username.isBlank(), username)
             UserCollection += thisUser
             println("adding ${thisUser.name}")
             thisUser.sendNameToClient()
@@ -44,7 +44,7 @@ fun Application.configureWebSockets(testing: Boolean = false) {
                     thisUser.receiveFromClient(receivedText)
                 }
             } catch (e: Exception) {
-                println(e.localizedMessage)
+                e.printStackTrace()
             } finally {
                 println("Removing ${thisUser.name}!")
                 thisUser.disconnect()

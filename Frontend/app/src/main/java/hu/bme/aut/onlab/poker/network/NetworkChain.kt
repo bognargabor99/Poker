@@ -12,7 +12,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = GameStateProcessor(ConnectionInfoProcessor(TableJoinedProcessor(TurnEndProcessor(EliminationProcessor(GameStartedProcessor(DisconnectedPlayerProcessor(WinnerAnnouncementProcessor(null))))))))
+        chain = GameStateProcessor(ConnectionInfoProcessor(TableJoinedProcessor(TurnEndProcessor(EliminationProcessor(GameStartedProcessor(DisconnectedPlayerProcessor(WinnerAnnouncementProcessor(StatisticsProcessor(null)))))))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -26,9 +26,8 @@ abstract class Processor(private val processor: Processor?) {
 
 class GameStateProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-            if (message?.messageCode == GameStateMessage.MESSAGE_CODE) {
+            if (message?.messageCode == GameStateMessage.MESSAGE_CODE)
                 PokerClient.setGameState(Gson().fromJson(message.data, GameStateMessage::class.java))
-            }
             else
                 super.process(message)
 }
@@ -36,17 +35,16 @@ class GameStateProcessor(processor: Processor?) : Processor(processor) {
 class ConnectionInfoProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
             if (message?.messageCode == ConnectionInfoMessage.MESSAGE_CODE) {
-                PokerClient.setConnectionInfo(Gson().fromJson(message.data, ConnectionInfoMessage::class.java).userName)
-            }
-            else
+                val connInfo = Gson().fromJson(message.data, ConnectionInfoMessage::class.java)
+                PokerClient.setConnectionInfo(connInfo.userName, connInfo.isGuest)
+            } else
                 super.process(message)
 }
 
 class TurnEndProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-            if (message?.messageCode == TurnEndMessage.MESSAGE_CODE) {
+            if (message?.messageCode == TurnEndMessage.MESSAGE_CODE)
                 PokerClient.turnEnded(Gson().fromJson(message.data, TurnEndMessage::class.java))
-            }
             else
                 super.process(message)
 }
@@ -71,28 +69,35 @@ class TableJoinedProcessor(processor: Processor?) : Processor(processor) {
 
 class GameStartedProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-        if (message?.messageCode == GameStartedMessage.MESSAGE_CODE) {
+        if (message?.messageCode == GameStartedMessage.MESSAGE_CODE)
             PokerClient.tableStarted(Gson().fromJson(message.data, GameStartedMessage::class.java).tableId)
-        }
         else
             super.process(message)
 }
 
 class DisconnectedPlayerProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-        if (message?.messageCode == DisconnectedPlayerMessage.MESSAGE_CODE) {
-            val disconnectMessage = Gson().fromJson(message.data, DisconnectedPlayerMessage::class.java)
-            PokerClient.playerDisconnectedFromTable(disconnectMessage.tableId, disconnectMessage.userName)
-        }
+        if (message?.messageCode == DisconnectedPlayerMessage.MESSAGE_CODE)
+            PokerClient.playerDisconnectedFromTable(Gson().fromJson(message.data, DisconnectedPlayerMessage::class.java).userName)
         else
             super.process(message)
 }
 
 class WinnerAnnouncementProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-        if (message?.messageCode == WinnerAnnouncerMessage.MESSAGE_CODE) {
+        if (message?.messageCode == WinnerAnnouncerMessage.MESSAGE_CODE)
             PokerClient.tableWon(Gson().fromJson(message.data, WinnerAnnouncerMessage::class.java).tableId)
-        }
         else
             super.process(message)
+}
+
+class StatisticsProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) {
+        if (message?.messageCode == StatisticsMessage.MESSAGE_CODE) {
+            val statsMessage = Gson().fromJson(message.data, StatisticsMessage::class.java)
+            if (statsMessage.statistics != null)
+                PokerClient.receiveStats(statsMessage.statistics!!)
+        } else
+            super.process(message)
+    }
 }

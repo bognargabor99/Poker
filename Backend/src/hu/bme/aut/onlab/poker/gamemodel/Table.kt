@@ -170,6 +170,7 @@ class Table(val rules: TableRules) : PokerActionListener{
     override fun onRaise(amount: Int) {
         maxRaiseThisRound = amount
         players.single { it.id == nextPlayerId }.apply {
+            stats.raiseCount++
             putInPot(amount)
             actedThisRound = true
         }
@@ -188,7 +189,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         cardsOnTable.addAll(deck.getCards(5 - cardsOnTable.size))
         fastForwarding = true
         nextPlayerId = 0
-        turnState = TurnState.AFTER_RIVER
+        while (turnState != TurnState.AFTER_RIVER) {
+            turnState++
+            playersInTurn.forEach { players.find { player -> player.id == it }?.nextRound(turnState) }
+        }
         previousAction = null
         spreadGameState()
         showdown()
@@ -283,15 +287,20 @@ class Table(val rules: TableRules) : PokerActionListener{
     private fun eliminatePlayers() {
         val toEliminate = players.filter { it.chipStack == 0 }
             .map { it.userName }
-        players.removeIf { it.chipStack == 0 }
+        val playerIdsToEliminate = players.filter { it.chipStack == 0 }
+            .map { it.id }
+        removePlayer(*playerIdsToEliminate.toIntArray())
+
         UserCollection.eliminateFromTable(id, toEliminate, players.map { it.userName } + spectators.map { it.userName })
         if (players.size <= 1)
             declareWinner()
     }
 
     private fun declareWinner() {
+        players.first().stats.tablesWon = 1
         val toInform = spectators + players.first()
         toInform.forEach {
+            UserCollection.updateStats(players.first().userName, players.first().stats)
             UserCollection.sendToClient(it.userName, WinnerAnnouncerMessage(this@Table.id, players.first().userName).toJsonString(), WinnerAnnouncerMessage.MESSAGE_CODE)
         }
         Game.closeTable(id)
@@ -303,7 +312,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             return
 
         if (!isStarted) {
-            players.removeAt(index)
+            removePlayer(players[index].id)
             if (players.size == 0)
                 Game.closeTable(id)
         } else if (players.size > 2) {
@@ -312,7 +321,7 @@ class Table(val rules: TableRules) : PokerActionListener{
                 setNextPlayer()
             }
             playersInTurn.remove(players[index].id)
-            players.removeAt(index)
+            removePlayer(players[index].id)
             (spectators + players).forEach {
                 UserCollection.sendToClient(it.userName, DisconnectedPlayerMessage(id, name).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
@@ -324,7 +333,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             else
                 spreadGameState()
         } else if (players.size == 2) {
-            players.removeAt(index)
+            removePlayer(players[index].id)
             (spectators + players.first()).forEach {
                 UserCollection.sendToClient(it.userName, DisconnectedPlayerMessage(id, name).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             }
@@ -335,19 +344,32 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    private fun removePlayer(vararg playerIds: Int) {
+        for (pid in playerIds) {
+            val p = players.find { it.id == pid }
+            if (p != null) {
+                UserCollection.updateStats(p.userName, p.stats)
+                players.removeAt(players.indexOfFirst { it.id == pid })
+            }
+        }
+    }
+
     private fun showdown() {
         pot = players.sumOf { it.inPot }
         val handsOfPlayers: MutableList<Pair<Int, Hand>> = mutableListOf()
         playersInTurn.forEach {
             val cardsToUse = mutableListOf<Card>()
+            players.single { p -> p.id == it  }.stats.showDownCount++
             cardsToUse.addAll(cardsOnTable)
             cardsToUse.addAll(players.single { p -> p.id == it }.inHandCards)
             val handOfPlayer = evaluateHand(cardsToUse)
             handsOfPlayers.add(Pair(it, handOfPlayer))
         }
-        val winnings = getWinners(MutableList(handsOfPlayers.size) { handsOfPlayers[it]})
+        val winnings = getWinners(MutableList(handsOfPlayers.size) { handsOfPlayers[it] })
 
         val playerOrder: MutableList<TurnEndMsgPlayerDto> = mutableListOf()
+
+        val bustedCount = players.count { player -> player.chipStack == 0 && winnings.any { win -> win.first == player.id && win.second == 0 } }
         winnings.forEach { win ->
             players.single { p -> p.id == win.first }.apply {
                 playerOrder.add(TurnEndMsgPlayerDto(
@@ -355,16 +377,14 @@ class Table(val rules: TableRules) : PokerActionListener{
                     this.inHandCards,
                     handsOfPlayers.single { it.first == this.id }.second,
                     win.second))
-                chipStack += win.second
-                handsWon++
+                if (win.second > 0) {
+                    potWon(win.second, bustedCount)
+                    stats.handsWon++
+                }
             }
         }
 
-        val turnEndMessage = TurnEndMessage(
-            this.id,
-            cardsOnTable,
-            playerOrder
-        )
+        val turnEndMessage = TurnEndMessage(this.id, cardsOnTable, playerOrder)
         players.forEach {
             UserCollection.sendToClient(it.userName, turnEndMessage.toJsonString(), TurnEndMessage.MESSAGE_CODE)
         }
@@ -424,31 +444,26 @@ class Table(val rules: TableRules) : PokerActionListener{
         return winnerCount
     }
 
-    private fun validateAction(actionMsg: ActionIncomingMessage): Boolean {
+    private fun validateAction(actionMsg: ActionIncomingMessage): Boolean =
         if (actionMsg.name != players.single { nextPlayerId == it.id }.userName) // if action not from next player
-            return false
-        if (actionMsg.action.type == ActionType.CHECK && maxRaiseThisRound != players.single { it.id == nextPlayerId }.inPotThisRound) // if checked but has to fold/raise
-            return false
-        if (actionMsg.action.type == ActionType.RAISE) {
+            false
+        else if (actionMsg.action.type == ActionType.CHECK && maxRaiseThisRound != players.single { it.id == nextPlayerId }.inPotThisRound) // if checked but has to fold/raise
+            false
+        else if (actionMsg.action.type == ActionType.RAISE) {
             val (stack, inThisRound) = players.single { it.id == nextPlayerId }.run { Pair(chipStack, inPotThisRound) }
-            if (stack < bigBlindAmount) {
-                if (stack + inThisRound == actionMsg.action.amount)
-                    return true
-                return false
-            }
-            if (actionMsg.action.amount <= stack + inThisRound)
-                return true
-            return false
-        }
-        return true
-    }
+            if (stack < bigBlindAmount)
+                stack + inThisRound == actionMsg.action.amount
+            else
+                actionMsg.action.amount <= stack + inThisRound
+        } else
+            true
 
     private fun oneLeft() {
         var winnerName: String
         pot = players.sumOf { it.inPot }
         players.single { it.id == playersInTurn.first() }.apply {
-            chipStack += pot
-            handsWon++
+            potWon(pot, 0)
+            stats.handsWon++
             winnerName = userName
         }
         val turnEndMsg = TurnEndMessage(id, cardsOnTable, listOf(TurnEndMsgPlayerDto(winnerName, null, null, pot)))
@@ -466,7 +481,9 @@ class Table(val rules: TableRules) : PokerActionListener{
 
     private fun nextRound() {
         maxRaiseThisRound = 0
-        players.forEach { it.nextRound() }
+        var state = turnState
+        state++
+        players.forEach { it.nextRound(state) }
         previousAction = null
         when (turnState) {
             TurnState.PREFLOP -> cardsOnTable.addAll(deck.getCards(3))

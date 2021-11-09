@@ -1,5 +1,7 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
+import kotlin.math.max
+
 class Player(
     startingStack: Int
 ) : Person() {
@@ -9,11 +11,12 @@ class Player(
     var inPotThisRound: Int = 0
     var actedThisRound = false
     var isInTurn = false
-    var handsWon = 0
+    var stats = Statistics()
 
     fun handCards(cards: List<Card>) {
         inHandCards.clear()
         inHandCards.addAll(cards)
+        stats.allHands++
     }
 
     fun newTurn() {
@@ -23,9 +26,16 @@ class Player(
         isInTurn = true
     }
 
-    fun nextRound() {
+    fun nextRound(newState: TurnState) {
         inPotThisRound = 0
         actedThisRound = false
+        if (isInTurn)
+            when (newState) {
+                TurnState.AFTER_FLOP -> stats.flopsSeen++
+                TurnState.AFTER_TURN -> stats.turnsSeen++
+                TurnState.AFTER_RIVER -> stats.riversSeen++
+                else -> { }
+            }
     }
 
     fun fold() {
@@ -42,5 +52,14 @@ class Player(
             chipStack -= it
         }
         inPotThisRound = toPut
+    }
+
+    fun potWon(size: Int, bustedCount: Int) {
+        chipStack += size
+        stats.apply {
+            totalChipsWon += size
+            biggestPotWon = max(stats.biggestPotWon, size)
+            playersBusted += bustedCount
+        }
     }
 }

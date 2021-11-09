@@ -26,10 +26,8 @@ class DoubleSession {
                     val receivedText = (incoming.receive() as Frame.Text).readText()
 
                     val connInfo = Gson().fromJson(Gson().fromJson(receivedText, NetworkMessage::class.java).data, ConnectionInfoMessage::class.java)
-                    assertTrue(connInfo.userName.startsWith("user"))
-                    assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
-                    val ourName = connInfo.userName
-
+                    assertTrue(connInfo.userName.startsWith("guest"))
+                    assertTrue(connInfo.userName.substring(5).toIntOrNull() != null)
                     delay(2000)
                 }
             }
@@ -39,10 +37,8 @@ class DoubleSession {
                     val receivedText = (incoming.receive() as Frame.Text).readText()
 
                     val connInfo = Gson().fromJson(Gson().fromJson(receivedText, NetworkMessage::class.java).data, ConnectionInfoMessage::class.java)
-                    assertTrue(connInfo.userName.startsWith("user"))
-                    assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
-                    val ourName = connInfo.userName
-
+                    assertTrue(connInfo.userName.startsWith("guest"))
+                    assertTrue(connInfo.userName.substring(5).toIntOrNull() != null)
                     delay(2000)
                 }
             }
@@ -50,6 +46,7 @@ class DoubleSession {
             user2Thread.start()
             user1Thread.join()
             user2Thread.join()
+            this.stop(10, 20)
         }
     }
 
@@ -62,8 +59,8 @@ class DoubleSession {
                     var receivedText = (incoming.receive() as Frame.Text).readText()
 
                     val connInfo = Gson().fromJson(Gson().fromJson(receivedText, NetworkMessage::class.java).data, ConnectionInfoMessage::class.java)
-                    assertTrue(connInfo.userName.startsWith("user"))
-                    assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
+                    assertTrue(connInfo.userName.startsWith("guest"))
+                    assertTrue(connInfo.userName.substring(5).toIntOrNull() != null)
                     val ourName = connInfo.userName
 
                     val bot = AggressiveBot(ourName)
@@ -87,8 +84,8 @@ class DoubleSession {
                     var receivedText = (incoming.receive() as Frame.Text).readText()
 
                     val connInfo = Gson().fromJson(Gson().fromJson(receivedText, NetworkMessage::class.java).data, ConnectionInfoMessage::class.java)
-                    assertTrue(connInfo.userName.startsWith("user"))
-                    assertTrue(connInfo.userName.substring(4).toIntOrNull() != null)
+                    assertTrue(connInfo.userName.startsWith("guest"))
+                    assertTrue(connInfo.userName.substring(5).toIntOrNull() != null)
                     val ourName = connInfo.userName
 
                     val bot = AggressiveBot(ourName)
@@ -119,6 +116,7 @@ class DoubleSession {
             user2Thread.start()
             user1Thread.join()
             user2Thread.join()
+            this.stop(10, 20)
         }
     }
 }
