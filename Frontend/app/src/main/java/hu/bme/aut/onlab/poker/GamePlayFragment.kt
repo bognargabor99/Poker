@@ -27,7 +27,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
     private lateinit var tableCards: List<PokerCardView>
     private val args: GamePlayFragmentArgs by navArgs()
     private val tables: MutableList<Pair<Int, TableRules>> = mutableListOf()
-    private var currentTable: Int = args.tableId
+    private var currentTable: Int = 0
     private var tableStart = true
     private var newTurn = true
     private lateinit var oldState: GameStateMessage
@@ -40,11 +40,12 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
         savedInstanceState: Bundle?
     ): View {
         PokerClient.receiver = this
-        PokerClient.joinedListener = this
+        PokerClient.tableJoinedListener = this
         MainActivity.backPressDisabled = true
         binding = FragmentGamePlayBinding.inflate(layoutInflater, container, false)
         tableCards = listOf(binding.tableCard1, binding.tableCard2, binding.tableCard3, binding.tableCard4, binding.tableCard5)
         binding.tvTableId.text = getString(R.string.game_play_table_id, args.tableId)
+        currentTable = args.tableId
         tables.add(Pair(args.tableId, args.rules))
         setOnClickListeners()
         StyleableToast.makeText(requireContext(), getString(R.string.table_join_success), Toast.LENGTH_LONG, R.style.custom_toast).show()

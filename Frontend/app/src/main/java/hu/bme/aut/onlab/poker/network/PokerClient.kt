@@ -90,8 +90,8 @@ object PokerClient {
         receiver.onTableStarted(tableId)
     }
 
-    fun playerDisconnectedFromTable(userName: String) {
-        receiver.onPlayerDisconnection(userName)
+    fun playerDisconnectedFromTable(tableId: Int, userName: String) {
+        receiver.onPlayerDisconnection(tableId, userName)
     }
 
     fun tableWon(tableId: Int) {
@@ -125,7 +125,7 @@ object PokerClient {
         fun onNewGameState(stateMessage: GameStateMessage)
         fun onTurnEnd(turnEndMessage: TurnEndMessage)
         fun onGetEliminated(tableId: Int)
-        fun onPlayerDisconnection(name: String)
+        fun onPlayerDisconnection(tableId: Int, name: String)
         fun onTableWin(tableId: Int)
     }
 }
