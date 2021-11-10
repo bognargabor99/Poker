@@ -5,13 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ArrayAdapter
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
 import hu.bme.aut.onlab.poker.databinding.FragmentStartTableBinding
 import hu.bme.aut.onlab.poker.model.TableRules
 import hu.bme.aut.onlab.poker.network.PokerClient
+import kotlinx.coroutines.DelicateCoroutinesApi
 
-class StartTableFragment : Fragment() {
+@DelicateCoroutinesApi
+class StartTableFragment : DialogFragment() {
     private lateinit var binding: FragmentStartTableBinding
 
     override fun onCreateView(
@@ -38,7 +42,7 @@ class StartTableFragment : Fragment() {
         )
 
         binding.btnCancel.setOnClickListener {
-            view?.findNavController()?.popBackStack()
+            dismiss()
         }
 
         binding.btnCreate.setOnClickListener {
@@ -51,9 +55,16 @@ class StartTableFragment : Fragment() {
                     if (binding.mspStartStack.selectedItem != null) binding.mspStartStack.selectedItem.toString().toInt() else 5000,
                     binding.cbRoyal.isChecked
             ))
-            view?.findNavController()?.popBackStack()
+            dismiss()
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val params = dialog!!.window!!.attributes
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT
+        dialog!!.window!!.attributes = params as WindowManager.LayoutParams
     }
 }

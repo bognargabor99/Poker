@@ -11,8 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
+import androidx.navigation.fragment.findNavController
 import com.muddzdev.styleabletoast.StyleableToast
 import hu.bme.aut.onlab.poker.databinding.AvatarBinding
 import hu.bme.aut.onlab.poker.databinding.FragmentGamePlayBinding
@@ -21,48 +20,46 @@ import hu.bme.aut.onlab.poker.network.*
 import hu.bme.aut.onlab.poker.view.PokerCardView
 import kotlinx.coroutines.DelicateCoroutinesApi
 
+private const val TABLE_ID_PARAM = "tableId"
+private const val RULE_PARAM = "rules"
+
 @OptIn(DelicateCoroutinesApi::class)
-class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.TableJoinedListener {
+class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var binding: FragmentGamePlayBinding
     private lateinit var tableCards: List<PokerCardView>
-    private val args: GamePlayFragmentArgs by navArgs()
-    private val tables: MutableList<Pair<Int, TableRules>> = mutableListOf()
-    private var currentTable: Int = 0
     private var tableStart = true
     private var newTurn = true
     private lateinit var oldState: GameStateMessage
     private lateinit var newState: GameStateMessage
     private lateinit var lastTurnResults: TurnEndMessage
     private val avatarMap = mutableMapOf<String, AvatarBinding>()
+    private lateinit var _container: ViewGroup
+    private var currentTable: Int = 0
+    private lateinit var tableRules: TableRules
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            currentTable = it.getInt(TABLE_ID_PARAM)
+            tableRules = it.getParcelable(RULE_PARAM)!!
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        PokerClient.receiver = this
-        PokerClient.tableJoinedListener = this
         MainActivity.backPressDisabled = true
+        _container = container!!
         binding = FragmentGamePlayBinding.inflate(layoutInflater, container, false)
         tableCards = listOf(binding.tableCard1, binding.tableCard2, binding.tableCard3, binding.tableCard4, binding.tableCard5)
-        binding.tvTableId.text = getString(R.string.game_play_table_id, args.tableId)
-        currentTable = args.tableId
-        tables.add(Pair(args.tableId, args.rules))
+        binding.tvTableId.text = getString(R.string.game_play_table_id, currentTable)
         setOnClickListeners()
         StyleableToast.makeText(requireContext(), getString(R.string.table_join_success), Toast.LENGTH_LONG, R.style.custom_toast).show()
         return binding.root
     }
 
     private fun setOnClickListeners() {
-        binding.btnBack.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setMessage(R.string.leave_table_alert)
-                .setPositiveButton(R.string.yes) { _, _ ->
-                    PokerClient.leaveTable(args.tableId)
-                    view?.findNavController()?.popBackStack()
-                }
-                .setNegativeButton(R.string.no, null)
-                .show()
-        }
         binding.btnFold.setOnClickListener {
             PokerClient.action(Action(ActionType.FOLD, 0))
             foldCards()
@@ -79,29 +76,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
         binding.btnLastTurn.setOnClickListener { showTurnResults() }
     }
 
-    private fun saveState() {
-        // save avatar states
-    }
-
-    fun changeTable(toTableId: Int) {
-        val idx = tables.indexOfFirst { it.first == toTableId }
-        if (idx == -1)
-            return
-        saveState()
-        loadState(toTableId)
-    }
-
-    private fun loadState(tableId: Int) {
-        TODO("clear view")
-
-        TODO("load newly viewed tables state into view")
-    }
-
     override fun onTableStarted(tableId: Int) {
-        if (tableId != currentTable) {
-            TODO("activate button on the right")
+        if (tableId != currentTable)
             return
-        }
+
         activity?.runOnUiThread {
             StyleableToast.makeText(
                 requireContext(),
@@ -117,10 +95,8 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
     }
 
     override fun onNewGameState(stateMessage: GameStateMessage) {
-        if (stateMessage.tableId != currentTable && tables.any { it.first == stateMessage.tableId }) {
-            updateNonViewedGameState()
+        if (stateMessage.tableId != currentTable)
             return
-        }
         if (this::newState.isInitialized)
             oldState = newState
         newState = stateMessage
@@ -140,10 +116,6 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
         displayChipCounts()
         displayCurrentHand()
         showActionButtonsIfNecessary()
-    }
-
-    private fun updateNonViewedGameState() {
-        TODO("Not yet implemented")
     }
 
     private fun setAvatarTheme(action: ActionMessage) {
@@ -196,10 +168,8 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
     }
 
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
-        if (turnEndMessage.tableId != currentTable) {
-            TODO("End turn in non-viewed table")
-            TODO("Save last turn results for non-viewed table")
-        }
+        if (turnEndMessage.tableId != currentTable)
+            return
         lastTurnResults = turnEndMessage
         activity?.runOnUiThread { binding.btnLastTurn.visibility = View.VISIBLE }
         if (!ResultsFragment.isShowing)
@@ -209,8 +179,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
     }
 
     private fun showTurnResults() {
-        // TODO: show turn results for current table
-        view?.findNavController()?.navigate(GamePlayFragmentDirections.actionGamePlayFragmentToResultsFragment(lastTurnResults))
+        if (!(requireView().parent!! as ViewGroup).isVisible)
+            return
+        val resultsFragment = ResultsFragment.newInstance(lastTurnResults)
+        resultsFragment.show(requireActivity().supportFragmentManager, "result")
     }
 
 
@@ -226,26 +198,13 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
     }
 
     override fun onGetEliminated(tableId: Int) {
-        if (tableId != currentTable) {
-            TODO("remove table from tables, remove button for the table")
+        if (tableId != currentTable)
             return
-        }
-        activity?.runOnUiThread {
-            StyleableToast.makeText(
-                requireContext(),
-                getString(R.string.eliminated_alert),
-                Toast.LENGTH_LONG,
-                R.style.custom_toast
-            ).show()
-            view?.findNavController()?.popBackStack()
-        }
     }
 
     override fun onPlayerDisconnection(tableId: Int, name: String) {
-        if (tableId != currentTable) {
-            TODO("remove player from non-viewed table")
+        if (tableId != currentTable)
             return
-        }
         activity?.runOnUiThread {
             avatarMap[name]?.tvLastAction?.visibility = View.VISIBLE
             avatarMap[name]?.tvLastAction?.text = getString(R.string.out)
@@ -254,16 +213,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
     }
 
     override fun onTableWin(tableId: Int) {
-        activity?.runOnUiThread {
-            StyleableToast.makeText(
-                requireContext(),
-                getString(R.string.congratulation),
-                Toast.LENGTH_LONG,
-                R.style.custom_toast
-            ).show()
-            // TODO: clear table from buttons, tables
-            // TODO: if last table: popBackStack
-        }
+
     }
 
     private fun askForAmount() {
@@ -346,7 +296,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
     private fun displayAvatars() {
         binding.avatarSelf.root.visibility = View.VISIBLE
         binding.avatars.children.forEachIndexed { index, view ->
-            if (index < args.rules.playerCount - 1)
+            if (index < tableRules.playerCount - 1)
                 view.visibility = View.VISIBLE
         }
     }
@@ -383,7 +333,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
         }
     }
 
-    private fun showActionButtonsIfNecessary() {
+    public fun showActionButtonsIfNecessary() {
         activity?.runOnUiThread { 
             if (newState.nextPlayer!=PokerClient.userName)
                 binding.actionButtons.visibility = View.GONE
@@ -401,8 +351,14 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver, PokerClient.T
         }
     }
 
-    override fun tableJoined(joinedMessage: TableJoinedMessage) {
-        tables.add(Pair(joinedMessage.tableId, joinedMessage.rules))
-        TODO("add button for changing tables")
+    companion object {
+        @JvmStatic
+        fun newInstance(tableId: Int, rules: TableRules) =
+            GamePlayFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(TABLE_ID_PARAM, tableId)
+                    putParcelable(RULE_PARAM, rules)
+                }
+            }
     }
 }

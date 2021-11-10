@@ -25,8 +25,8 @@
     <string name="leave_table">Leave table</string>
     <string name="table_join_success">Successfully joined table</string>
     <string name="table_started">Table Started</string>
-    <string name="eliminated_alert">You\'ve been eliminated from table</string>
-    <string name="congratulation">Congratulations!\nYou won the table!</string>
+    <string name="eliminated_alert">You\'ve been eliminated from table %1$d</string>
+    <string name="congratulation">Congratulations!\nYou won table %1$d!</string>
     <string name="avatar">Avatar</string>
     <string name="call_action">Call %1$d</string>
     <string name="pot">Pot: %1$d</string>
@@ -60,4 +60,12 @@
     <string name="players_busted">Players busted</string>
     <string name="registration_date">Registration date</string>
     <string name="statistics">Statistics</string>
+    <string name="join_or_start_new_table">Join or start new table</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="switch_to_table_1">Switch to table 1</string>
+    <string name="switch_to_table_2">Switch to table 2</string>
+    <string name="switch_to_table_3">Switch to table 3</string>
+    <string name="play">Play</string>
 </resources>
