@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.navigation.fragment.findNavController
 import com.muddzdev.styleabletoast.StyleableToast
 import hu.bme.aut.onlab.poker.databinding.AvatarBinding
 import hu.bme.aut.onlab.poker.databinding.FragmentGamePlayBinding
@@ -34,13 +33,13 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var lastTurnResults: TurnEndMessage
     private val avatarMap = mutableMapOf<String, AvatarBinding>()
     private lateinit var _container: ViewGroup
-    private var currentTable: Int = 0
+    private var tableId: Int = 0
     private lateinit var tableRules: TableRules
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            currentTable = it.getInt(TABLE_ID_PARAM)
+            tableId = it.getInt(TABLE_ID_PARAM)
             tableRules = it.getParcelable(RULE_PARAM)!!
         }
     }
@@ -53,7 +52,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         _container = container!!
         binding = FragmentGamePlayBinding.inflate(layoutInflater, container, false)
         tableCards = listOf(binding.tableCard1, binding.tableCard2, binding.tableCard3, binding.tableCard4, binding.tableCard5)
-        binding.tvTableId.text = getString(R.string.game_play_table_id, currentTable)
+        binding.tvTableId.text = getString(R.string.game_play_table_id, tableId)
         setOnClickListeners()
         StyleableToast.makeText(requireContext(), getString(R.string.table_join_success), Toast.LENGTH_LONG, R.style.custom_toast).show()
         return binding.root
@@ -61,15 +60,15 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
 
     private fun setOnClickListeners() {
         binding.btnFold.setOnClickListener {
-            PokerClient.action(Action(ActionType.FOLD, 0))
+            PokerClient.action(Action(ActionType.FOLD, 0), tableId)
             foldCards()
         }
         binding.btnCheck.setOnClickListener {
-            PokerClient.action(Action(ActionType.CHECK, 0))
+            PokerClient.action(Action(ActionType.CHECK, 0), tableId)
             binding.actionButtons.visibility = View.GONE
         }
         binding.btnCall.setOnClickListener {
-            PokerClient.action(Action(ActionType.CALL, newState.maxRaiseThisRound))
+            PokerClient.action(Action(ActionType.CALL, newState.maxRaiseThisRound), tableId)
             binding.actionButtons.visibility = View.GONE
         }
         binding.btnRaise.setOnClickListener { askForAmount() }
@@ -77,7 +76,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onTableStarted(tableId: Int) {
-        if (tableId != currentTable)
+        if (tableId != this.tableId)
             return
 
         activity?.runOnUiThread {
@@ -95,7 +94,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onNewGameState(stateMessage: GameStateMessage) {
-        if (stateMessage.tableId != currentTable)
+        if (stateMessage.tableId != tableId)
             return
         if (this::newState.isInitialized)
             oldState = newState
@@ -168,7 +167,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
-        if (turnEndMessage.tableId != currentTable)
+        if (turnEndMessage.tableId != tableId)
             return
         lastTurnResults = turnEndMessage
         activity?.runOnUiThread { binding.btnLastTurn.visibility = View.VISIBLE }
@@ -198,12 +197,12 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     override fun onGetEliminated(tableId: Int) {
-        if (tableId != currentTable)
+        if (tableId != this.tableId)
             return
     }
 
     override fun onPlayerDisconnection(tableId: Int, name: String) {
-        if (tableId != currentTable)
+        if (tableId != this.tableId)
             return
         activity?.runOnUiThread {
             avatarMap[name]?.tvLastAction?.visibility = View.VISIBLE
@@ -212,9 +211,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
-    override fun onTableWin(tableId: Int) {
-
-    }
+    override fun onTableWin(tableId: Int) { }
 
     private fun askForAmount() {
         val numPicker = NumberPicker(requireContext())
@@ -232,7 +229,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
                 .setTitle("Raise to:")
                 .setView(numPicker)
                 .setPositiveButton(R.string.ok) { _, _ ->
-                    PokerClient.action(Action(ActionType.RAISE, numPicker.displayedValues[numPicker.value].toInt()))
+                    PokerClient.action(Action(ActionType.RAISE, numPicker.displayedValues[numPicker.value].toInt()), tableId)
                     binding.actionButtons.visibility = View.GONE
                 }
                 .setNegativeButton(R.string.cancel) { _, _ -> }
@@ -333,7 +330,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
-    public fun showActionButtonsIfNecessary() {
+    fun showActionButtonsIfNecessary() {
         activity?.runOnUiThread { 
             if (newState.nextPlayer!=PokerClient.userName)
                 binding.actionButtons.visibility = View.GONE

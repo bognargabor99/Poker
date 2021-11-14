@@ -1,14 +1,10 @@
 package hu.bme.aut.onlab.poker
 
+import android.graphics.Point
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.findNavController
 import hu.bme.aut.onlab.poker.databinding.FragmentStartTableBinding
 import hu.bme.aut.onlab.poker.model.TableRules
 import hu.bme.aut.onlab.poker.network.PokerClient
@@ -63,8 +59,15 @@ class StartTableFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        val params = dialog!!.window!!.attributes
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT
-        dialog!!.window!!.attributes = params as WindowManager.LayoutParams
+
+        val size = Point()
+
+        val display: Display? = dialog!!.window?.windowManager?.defaultDisplay
+        display?.getSize(size)
+
+        val width: Int = size.x
+
+        dialog!!.window?.setLayout((width * 0.75).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog!!.window?.setGravity(Gravity.CENTER)
     }
 }

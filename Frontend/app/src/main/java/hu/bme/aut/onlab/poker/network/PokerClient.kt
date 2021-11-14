@@ -98,8 +98,8 @@ object PokerClient {
         receiver.onTableWin(tableId)
     }
 
-    fun action(action: Action) {
-        val actionMessage = ActionMessage(tables.last(), userName, action)
+    fun action(action: Action, tableId: Int) {
+        val actionMessage = ActionMessage(tableId, userName, action)
         sendToServer(Gson().toJson(actionMessage), ActionMessage.MESSAGE_CODE)
     }
 

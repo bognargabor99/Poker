@@ -80,6 +80,6 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener, PokerClient.St
 
     companion object {
         lateinit var _this: MainFragment
-        const val POKER_DOMAIN = "75eb-152-66-182-115"
+        const val POKER_DOMAIN = "4ba4-37-220-136-8"
     }
 }
