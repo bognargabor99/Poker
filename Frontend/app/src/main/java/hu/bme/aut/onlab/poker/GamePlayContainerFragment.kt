@@ -29,7 +29,7 @@ class GamePlayContainerFragment : Fragment(), PokerClient.TableJoinedListener, P
         get() = gamePlayInfos.any { !it.isFree }
 
     private val args: GamePlayContainerFragmentArgs by navArgs()
-    private var activeTable: Int = 1
+    private var activeTable: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +54,7 @@ class GamePlayContainerFragment : Fragment(), PokerClient.TableJoinedListener, P
         val tr = requireActivity().supportFragmentManager.beginTransaction()
         tr.replace(gamePlayInfos.first().containerId, gamePlayInfos.first().fragment!!)
         tr.commit()
-        activeTable = 1
+        activeTable = 0
         return binding.root
     }
 
@@ -66,8 +66,13 @@ class GamePlayContainerFragment : Fragment(), PokerClient.TableJoinedListener, P
                     PokerClient.leaveTable(gamePlayInfos[activeTable].currentTableId)
                     gamePlayInfos[activeTable].isFree = true
                     gamePlayInfos[activeTable].currentTableId = 0
-                    if (!gamePlayInfos.any { it.isFree })
+                    activity?.runOnUiThread {
+                        gamePlayInfos[activeTable].button.isEnabled = false
+                    }
+                    if (!this.amIPlaying)
                         view?.findNavController()?.popBackStack()
+                    else
+                        switchTable()
                 }
                 .setNegativeButton(R.string.no, null)
                 .show()
@@ -77,21 +82,21 @@ class GamePlayContainerFragment : Fragment(), PokerClient.TableJoinedListener, P
             binding.frameLayoutTable1.visibility = View.VISIBLE
             binding.frameLayoutTable2.visibility = View.INVISIBLE
             binding.frameLayoutTable3.visibility = View.INVISIBLE
-            activeTable = 1
+            activeTable = 0
         }
 
         binding.btnTable2.setOnClickListener {
             binding.frameLayoutTable1.visibility = View.INVISIBLE
             binding.frameLayoutTable2.visibility = View.VISIBLE
             binding.frameLayoutTable3.visibility = View.INVISIBLE
-            activeTable = 2
+            activeTable = 1
         }
 
         binding.btnTable3.setOnClickListener {
             binding.frameLayoutTable1.visibility = View.INVISIBLE
             binding.frameLayoutTable2.visibility = View.INVISIBLE
             binding.frameLayoutTable3.visibility = View.VISIBLE
-            activeTable = 3
+            activeTable = 2
         }
 
         binding.btnPlus.setOnClickListener {
@@ -155,7 +160,7 @@ class GamePlayContainerFragment : Fragment(), PokerClient.TableJoinedListener, P
             }
         }
         if (tableId == gamePlayInfos[activeTable].currentTableId) {
-            if (this.amIPlaying)
+            if (!this.amIPlaying)
                 findNavController().popBackStack()
             else
                 switchTable()
@@ -195,7 +200,7 @@ class GamePlayContainerFragment : Fragment(), PokerClient.TableJoinedListener, P
             }
         }
         if (tableId == gamePlayInfos[activeTable].currentTableId) {
-            if (this.amIPlaying)
+            if (!this.amIPlaying)
                 findNavController().popBackStack()
             else
                 switchTable()
