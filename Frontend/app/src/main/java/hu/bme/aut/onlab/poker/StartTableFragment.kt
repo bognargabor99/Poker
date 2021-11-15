@@ -1,17 +1,17 @@
 package hu.bme.aut.onlab.poker
 
+import android.graphics.Point
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ArrayAdapter
-import androidx.navigation.findNavController
+import androidx.fragment.app.DialogFragment
 import hu.bme.aut.onlab.poker.databinding.FragmentStartTableBinding
 import hu.bme.aut.onlab.poker.model.TableRules
 import hu.bme.aut.onlab.poker.network.PokerClient
+import kotlinx.coroutines.DelicateCoroutinesApi
 
-class StartTableFragment : Fragment() {
+@DelicateCoroutinesApi
+class StartTableFragment : DialogFragment() {
     private lateinit var binding: FragmentStartTableBinding
 
     override fun onCreateView(
@@ -38,7 +38,7 @@ class StartTableFragment : Fragment() {
         )
 
         binding.btnCancel.setOnClickListener {
-            view?.findNavController()?.popBackStack()
+            dismiss()
         }
 
         binding.btnCreate.setOnClickListener {
@@ -51,9 +51,23 @@ class StartTableFragment : Fragment() {
                     if (binding.mspStartStack.selectedItem != null) binding.mspStartStack.selectedItem.toString().toInt() else 5000,
                     binding.cbRoyal.isChecked
             ))
-            view?.findNavController()?.popBackStack()
+            dismiss()
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val size = Point()
+
+        val display: Display? = dialog!!.window?.windowManager?.defaultDisplay
+        display?.getSize(size)
+
+        val width: Int = size.x
+
+        dialog!!.window?.setLayout((width * 0.75).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog!!.window?.setGravity(Gravity.CENTER)
     }
 }

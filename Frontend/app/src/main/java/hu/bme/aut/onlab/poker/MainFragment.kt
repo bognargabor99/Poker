@@ -27,8 +27,7 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener, PokerClient.St
         set(value) {
             activity?.runOnUiThread {
                 binding.btnConnect.isEnabled = !value
-                binding.btnStartTable.isEnabled = value
-                binding.btnJoinTable.isEnabled = value
+                binding.btnPlay.isEnabled = value
                 binding.btnStatistics.visibility = if (value && !PokerClient.isGuest) View.VISIBLE else View.GONE
             }
             field = value
@@ -55,23 +54,11 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener, PokerClient.St
 
     private fun setOnClickListeners() {
         binding.btnConnect.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_authFragment)
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToAuthFragment())
         }
 
-        binding.btnStartTable.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_startTableFragment)
-        }
-
-        binding.btnJoinTable.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setMessage(R.string.alert_join_table)
-                .setNegativeButton(R.string.random) { _, _ ->
-                    PokerClient.tryJoin(null)
-                }
-                .setPositiveButton(R.string.specific) { _, _ ->
-                    joinSpecificTable()
-                }
-                .show()
+        binding.btnPlay.setOnClickListener {
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToChoosePlayOrJoinFragment())
         }
 
         binding.btnStatistics.setOnClickListener {
@@ -80,34 +67,11 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener, PokerClient.St
         }
     }
 
-    private fun toast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-    }
-
-    private fun joinSpecificTable() {
-        var table: Int
-        val input = EditText(requireContext())
-        input.inputType = InputType.TYPE_CLASS_NUMBER
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT)
-        input.layoutParams = lp
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.enter_id)
-            .setView(input)
-            .setPositiveButton(R.string.ok) { _, _ ->
-                table = input.text.toString().toInt()
-                if (table >= 100)
-                    PokerClient.tryJoin(table)
-                else
-                    toast("Please enter a valid ID")
-            }
-            .show()
-    }
-
     override fun tableJoined(joinedMessage: TableJoinedMessage) {
         Log.d("pokerWeb", "Got join message for table ${joinedMessage.tableId}")
-        findNavController().navigate(MainFragmentDirections.actionMainFragmentToGamePlayFragment(joinedMessage.tableId, joinedMessage.rules))
+        requireActivity().runOnUiThread {
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToGamePlayContainerFragment(joinedMessage.tableId, joinedMessage.rules))
+        }
     }
 
     override fun statisticsReceived(statistics: Statistics) {
@@ -116,6 +80,6 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener, PokerClient.St
 
     companion object {
         lateinit var _this: MainFragment
-        const val POKER_DOMAIN = "8262-37-220-136-8"
+        const val POKER_DOMAIN = "4ba4-37-220-136-8"
     }
 }

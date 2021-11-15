@@ -74,7 +74,7 @@ class LeaveTableProcessor(processor: Processor?) : Processor(processor) {
         if (message?.messageCode == LeaveTableMessage.MESSAGE_CODE) {
             val leaveMessage = Gson().fromJson(message.data, LeaveTableMessage::class.java)
             UserCollection.removePlayerFromTables(leaveMessage.userName, mutableListOf(leaveMessage.tableId))
-            Game.removePlayerFromTables(leaveMessage.userName, leaveMessage.tableId)
+            Game.removePlayerFromTable(leaveMessage.userName, leaveMessage.tableId)
         }
         else
             super.process(message)

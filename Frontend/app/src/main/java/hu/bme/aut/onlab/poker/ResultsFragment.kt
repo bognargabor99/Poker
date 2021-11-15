@@ -9,12 +9,24 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import hu.bme.aut.onlab.poker.adapter.ResultsAdapter
 import hu.bme.aut.onlab.poker.databinding.FragmentResultsBinding
+import hu.bme.aut.onlab.poker.model.TableRules
+import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.view.PokerCardView
+
+private const val WINNERS_PARAM = "winnners"
 
 class ResultsFragment : DialogFragment() {
     private lateinit var binding: FragmentResultsBinding
     private lateinit var resultsAdapter: ResultsAdapter
-    private val args: ResultsFragmentArgs by navArgs()
+
+    private lateinit var winners: TurnEndMessage
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            winners = it.getParcelable(WINNERS_PARAM)!!
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,8 +35,8 @@ class ResultsFragment : DialogFragment() {
         binding = FragmentResultsBinding.inflate(layoutInflater, container, false)
         resultsAdapter = ResultsAdapter()
         binding.resultList.adapter = resultsAdapter
-        resultsAdapter.submitList(args.winners.playerOrder)
-        args.winners.tableCards.forEachIndexed { index, card ->
+        resultsAdapter.submitList(winners.playerOrder)
+        winners.tableCards.forEachIndexed { index, card ->
             val cardOnTable = binding.tableCards.getChildAt(index) as PokerCardView
             cardOnTable.isUpside = true
             cardOnTable.value = card.value
@@ -48,5 +60,13 @@ class ResultsFragment : DialogFragment() {
 
     companion object {
         var isShowing = false
+
+        @JvmStatic
+        fun newInstance(turnEnd: TurnEndMessage) =
+            ResultsFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(WINNERS_PARAM, turnEnd)
+                }
+            }
     }
 }

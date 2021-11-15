@@ -11,12 +11,6 @@
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
-            android:id="@+id/action_mainFragment_to_startTableFragment"
-            app:destination="@id/startTableFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_gamePlayFragment"
-            app:destination="@id/gamePlayFragment" />
-        <action
             android:id="@+id/action_mainFragment_to_authFragment"
             app:destination="@id/authFragment" />
         <action
@@ -25,8 +19,14 @@
         <action
             android:id="@+id/action_mainFragment_to_spectatorFragment"
             app:destination="@id/spectatorFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_gamePlayContainerFragment"
+            app:destination="@id/gamePlayContainerFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_choosePlayOrJoinFragment"
+            app:destination="@id/choosePlayOrJoinFragment" />
     </fragment>
-    <fragment
+    <dialog
         android:id="@+id/startTableFragment"
         android:name="hu.bme.aut.onlab.poker.StartTableFragment"
         android:label="fragment_start_table"
@@ -43,9 +43,6 @@
         <argument
             android:name="rules"
             app:argType="hu.bme.aut.onlab.poker.model.TableRules"/>
-        <action
-            android:id="@+id/action_gamePlayFragment_to_resultsFragment"
-            app:destination="@id/resultsFragment" />
     </fragment>
     <dialog
         android:id="@+id/resultsFragment"
@@ -78,5 +75,29 @@
         <argument
             android:name="tableId"
             app:argType="integer" />
+    </fragment>
+    <dialog
+        android:id="@+id/choosePlayOrJoinFragment"
+        android:name="hu.bme.aut.onlab.poker.ChoosePlayOrJoinFragment"
+        android:label="fragment_choose_play_or_join"
+        tools:layout="@layout/fragment_choose_play_or_join" >
+        <action
+            android:id="@+id/action_choosePlayOrJoinFragment_to_startTableFragment"
+            app:destination="@id/startTableFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/gamePlayContainerFragment"
+        android:name="hu.bme.aut.onlab.poker.GamePlayContainerFragment"
+        android:label="fragment_game_play_container"
+        tools:layout="@layout/fragment_game_play_container" >
+        <action
+            android:id="@+id/action_gamePlayContainerFragment_to_choosePlayOrJoinFragment"
+            app:destination="@id/choosePlayOrJoinFragment" />
+        <argument
+            android:name="firstTableId"
+            app:argType="integer" />
+        <argument
+            android:name="firstTableRules"
+            app:argType="hu.bme.aut.onlab.poker.model.TableRules" />
     </fragment>
 </navigation>

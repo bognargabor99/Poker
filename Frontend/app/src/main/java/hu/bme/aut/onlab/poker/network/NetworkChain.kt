@@ -77,8 +77,10 @@ class GameStartedProcessor(processor: Processor?) : Processor(processor) {
 
 class DisconnectedPlayerProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-        if (message?.messageCode == DisconnectedPlayerMessage.MESSAGE_CODE)
-            PokerClient.playerDisconnectedFromTable(Gson().fromJson(message.data, DisconnectedPlayerMessage::class.java).userName)
+        if (message?.messageCode == DisconnectedPlayerMessage.MESSAGE_CODE) {
+            val disconnectMessage = Gson().fromJson(message.data, DisconnectedPlayerMessage::class.java)
+            PokerClient.playerDisconnectedFromTable(disconnectMessage.tableId, disconnectMessage.userName)
+        }
         else
             super.process(message)
 }

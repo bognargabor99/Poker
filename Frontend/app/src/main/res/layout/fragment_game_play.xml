@@ -13,16 +13,6 @@
         android:scaleType="fitXY"
         android:src="@drawable/table" />
 
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:backgroundTint="@color/secondaryDarkColor"
-        android:src="@drawable/ic_arrow_forward"
-        android:contentDescription="@string/leave_table" />
-
     <RelativeLayout
         android:id="@+id/action_buttons"
         android:layout_width="wrap_content"
@@ -33,7 +23,6 @@
 
         <Button
             android:id="@+id/btn_fold"
-            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +30,6 @@
 
         <Button
             android:id="@+id/btn_check"
-            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:layout_toEndOf="@id/btn_fold"
             android:layout_width="wrap_content"
@@ -50,7 +38,6 @@
 
         <Button
             android:id="@+id/btn_call"
-            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:layout_toEndOf="@id/btn_fold"
             android:layout_width="wrap_content"
@@ -59,7 +46,6 @@
 
         <Button
             android:id="@+id/btn_raise"
-            android:background="@drawable/rounded_corners_btn"
             android:layout_marginHorizontal="2dp"
             android:layout_toEndOf="@id/btn_call"
             android:layout_width="wrap_content"
@@ -153,46 +139,46 @@
         <include
             android:id="@+id/avatar1"
             layout="@layout/avatar"
-            android:visibility="invisible"
             android:layout_width="70dp"
             android:layout_height="100dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="30dp"
+            android:visibility="invisible" />
 
         <include
             android:id="@+id/avatar2"
             layout="@layout/avatar"
-            android:visibility="invisible"
             android:layout_width="70dp"
             android:layout_height="100dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="80dp"
-            android:layout_marginBottom="30dp"/>
+            android:layout_marginBottom="30dp"
+            android:visibility="invisible" />
 
         <include
             android:id="@+id/avatar3"
             layout="@layout/avatar"
-            android:visibility="invisible"
             android:layout_width="70dp"
             android:layout_height="100dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="80dp"
-            android:layout_marginBottom="30dp"/>
+            android:layout_marginBottom="30dp"
+            android:visibility="invisible" />
 
         <include
             android:id="@+id/avatar4"
             layout="@layout/avatar"
-            android:visibility="invisible"
             android:layout_width="70dp"
             android:layout_height="100dp"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="80dp"
-            android:layout_marginTop="30dp"/>
+            android:visibility="invisible" />
 
     </RelativeLayout>
 

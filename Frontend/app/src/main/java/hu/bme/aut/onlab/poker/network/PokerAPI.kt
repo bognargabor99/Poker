@@ -57,6 +57,7 @@ object PokerAPI {
             }
         } catch (e: Exception) {
             Log.d("pokerWeb","Error while receiving: " + e.localizedMessage)
+            Log.d("pokerWeb", e.stackTraceToString())
         }
     }
 

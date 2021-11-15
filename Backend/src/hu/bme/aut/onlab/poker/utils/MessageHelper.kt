@@ -38,4 +38,14 @@ object MessageHelper {
         NetworkMessage(
             messageCode = LeaveTableMessage.MESSAGE_CODE,
             data = LeaveTableMessage(userName, tableId).toJsonString()).toJsonString()
+
+    fun getGameStartedMessage(tableId: Int) : String =
+        NetworkMessage(
+            messageCode = GameStartedMessage.MESSAGE_CODE,
+            data = GameStartedMessage(tableId).toJsonString()).toJsonString()
+
+    fun getJoinTableMessage(userName: String, tableId: Int) : String =
+        NetworkMessage(
+            messageCode = JoinTableMessage.MESSAGE_CODE,
+            data = JoinTableMessage(userName, tableId).toJsonString()).toJsonString()
 }
