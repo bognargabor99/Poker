@@ -1,6 +1,7 @@
 package hu.bme.aut.onlab.poker.gamemodel
 
 import hu.bme.aut.onlab.poker.network.ActionIncomingMessage
+import hu.bme.aut.onlab.poker.network.SpectatorSubscriptionMessage
 import hu.bme.aut.onlab.poker.network.UserCollection
 import kotlinx.coroutines.DelicateCoroutinesApi
 
@@ -23,14 +24,15 @@ object Game {
         }
     }
 
-    fun addSpectator(tableId: Int, userName: String) : Boolean {
-        val indexOfTable = tables.indexOfFirst { it.id == tableId }
-        return if (indexOfTable != -1 && tables[indexOfTable].addSpectator(userName)) {
-            println("Spectator: $userName added to table$tableId")
-            true
+    fun addSpectator(subMessage: SpectatorSubscriptionMessage) : Int {
+        println("New subscription received for ${subMessage.tableId}")
+        val toSpectate = if (subMessage.tableId != null && tables.any { it.id == subMessage.tableId }) subMessage.tableId else tables.first().id
+        return if (tables.single { it.id == subMessage.tableId  }.addSpectator(subMessage.userName)) {
+            println("Spectator: ${subMessage.userName} added to table$toSpectate")
+            toSpectate
         }
         else
-            false
+            0
     }
 
     fun removeSpectator(tableId: Int, userName: String) {

@@ -12,7 +12,7 @@ class NetworkChain {
     }
 
     private fun buildChain() {
-        chain = GameStateProcessor(ConnectionInfoProcessor(TableJoinedProcessor(TurnEndProcessor(EliminationProcessor(GameStartedProcessor(DisconnectedPlayerProcessor(WinnerAnnouncementProcessor(StatisticsProcessor(null)))))))))
+        chain = GameStateProcessor(ConnectionInfoProcessor(TableJoinedProcessor(TurnEndProcessor(EliminationProcessor(GameStartedProcessor(DisconnectedPlayerProcessor(WinnerAnnouncementProcessor(WinnerAnnouncementProcessor(StatisticsProcessor(SubscriptionAcceptanceProcessor(null)))))))))))
     }
 
     fun process(message: NetworkMessage) = chain.process(message)
@@ -26,8 +26,8 @@ abstract class Processor(private val processor: Processor?) {
 
 class GameStateProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-            if (message?.messageCode == GameStateMessage.MESSAGE_CODE)
-                PokerClient.setGameState(Gson().fromJson(message.data, GameStateMessage::class.java))
+            if (message?.messageCode == GameStateMessage.MESSAGE_CODE || message?.messageCode == SpectatorGameStateMessage.MESSAGE_CODE)
+                PokerClient.setGameState(message)
             else
                 super.process(message)
 }
@@ -87,8 +87,10 @@ class DisconnectedPlayerProcessor(processor: Processor?) : Processor(processor) 
 
 class WinnerAnnouncementProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
-        if (message?.messageCode == WinnerAnnouncerMessage.MESSAGE_CODE)
-            PokerClient.tableWon(Gson().fromJson(message.data, WinnerAnnouncerMessage::class.java).tableId)
+        if (message?.messageCode == WinnerAnnouncerMessage.MESSAGE_CODE) {
+            val announcement = Gson().fromJson(message.data, WinnerAnnouncerMessage::class.java)
+            PokerClient.tableWon(announcement.tableId, announcement.nameOfWinner)
+        }
         else
             super.process(message)
 }
@@ -102,4 +104,14 @@ class StatisticsProcessor(processor: Processor?) : Processor(processor) {
         } else
             super.process(message)
     }
+}
+
+class SubscriptionAcceptanceProcessor(processor: Processor?) : Processor(processor) {
+    override fun process(message: NetworkMessage?) =
+        if (message?.messageCode == SubscriptionAcceptanceMessage.MESSAGE_CODE) {
+            PokerClient.tableSpectated(Gson().fromJson(message.data, SubscriptionAcceptanceMessage::class.java))
+            Thread.sleep(1000)
+        }
+        else
+            super.process(message)
 }

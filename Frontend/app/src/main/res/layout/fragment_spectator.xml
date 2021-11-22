@@ -1,10 +1,250 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SpectatorFragment">
+    android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/poker_table"
+        android:scaleType="fitXY"
+        android:src="@drawable/table" />
 
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/table_card1"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:layout_marginHorizontal="2dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/table_card2"
+        android:visibility="invisible"/>
 
-</FrameLayout>
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/table_card2"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:layout_marginHorizontal="2dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/table_card3"
+        android:visibility="invisible"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/table_card3"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:layout_marginHorizontal="2dp"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/table_card4"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:layout_marginHorizontal="2dp"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/table_card3"
+        android:visibility="invisible"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/table_card5"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:layout_marginHorizontal="2dp"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/table_card4"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/tvPot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_textview"
+        android:textColor="@color/white"
+        android:layout_above="@id/table_card3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:id="@+id/btn_last_turn"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignBottom="@id/tvPot"
+        android:layout_toEndOf="@id/tvPot"
+        android:scaleType="fitXY"
+        android:visibility="invisible"
+        android:background="@drawable/bulleted_list"
+        android:contentDescription="@string/last_turn_results" />
+
+    <include
+        android:id="@+id/avatar1"
+        layout="@layout/avatar"
+        android:layout_width="70dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="30dp"
+        android:visibility="invisible" />
+
+    <include
+        android:id="@+id/avatar2"
+        layout="@layout/avatar"
+        android:layout_width="70dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="30dp"
+        android:visibility="invisible" />
+
+    <include
+        android:id="@+id/avatar3"
+        layout="@layout/avatar"
+        android:layout_width="70dp"
+        android:layout_height="100dp"
+        android:visibility="invisible"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@id/player_3_card_2"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="8dp"/>
+
+    <include
+        android:id="@+id/avatar4"
+        layout="@layout/avatar"
+        android:layout_width="70dp"
+        android:layout_height="100dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="30dp"
+        android:visibility="invisible" />
+
+    <include
+        android:id="@+id/avatar5"
+        layout="@layout/avatar"
+        android:layout_width="70dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="80dp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/tvTableId"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/bangers"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        tools:ignore="RelativeOverlap" />
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_1_card_1"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="-10"
+        android:layout_toEndOf="@id/avatar1"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="60dp"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_1_card_2"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="10"
+        android:layout_marginTop="60dp"
+        android:layout_toEndOf="@id/player_1_card_1"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_2_card_1"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="-10"
+        android:layout_toEndOf="@id/avatar2"
+        android:layout_marginBottom="60dp"
+        android:layout_marginStart="5dp"
+        android:layout_alignParentBottom="true"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_2_card_2"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="10"
+        android:layout_marginBottom="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@id/player_2_card_1"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_3_card_1"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="-10"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginBottom="40dp"
+        android:layout_alignEnd="@id/player_3_card_2"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_3_card_2"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="10"
+        android:layout_marginBottom="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_4_card_1"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="-10"
+        android:layout_toStartOf="@id/player_4_card_2"
+        android:layout_marginBottom="60dp"
+        android:layout_marginStart="5dp"
+        android:layout_alignParentBottom="true"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_4_card_2"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="10"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/avatar4"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_5_card_1"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="-10"
+        android:layout_toStartOf="@id/player_4_card_2"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="5dp"/>
+
+    <hu.bme.aut.onlab.poker.view.PokerCardView
+        android:id="@+id/player_5_card_2"
+        android:layout_width="32dp"
+        android:layout_height="46dp"
+        android:visibility="invisible"
+        android:rotation="10"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/avatar5"/>
+</RelativeLayout>

@@ -101,7 +101,8 @@ data class DisconnectedPlayerMessage(
 }
 
 data class WinnerAnnouncerMessage(
-        val tableId: Int
+    val tableId: Int,
+    val nameOfWinner: String
 ) {
     companion object {
         const val MESSAGE_CODE = 10
@@ -152,7 +153,7 @@ data class LeaveTableMessage(
 
 data class SpectatorSubscriptionMessage(
     val userName: String,
-    val tableId: Int
+    val tableId: Int?
 ) {
     companion object {
         const val MESSAGE_CODE = 16

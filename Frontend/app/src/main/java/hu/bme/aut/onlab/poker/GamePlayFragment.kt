@@ -32,7 +32,6 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     private lateinit var newState: GameStateMessage
     private lateinit var lastTurnResults: TurnEndMessage
     private val avatarMap = mutableMapOf<String, AvatarBinding>()
-    private lateinit var _container: ViewGroup
     private var tableId: Int = 0
     private lateinit var tableRules: TableRules
 
@@ -49,7 +48,6 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         savedInstanceState: Bundle?
     ): View {
         MainActivity.backPressDisabled = true
-        _container = container!!
         binding = FragmentGamePlayBinding.inflate(layoutInflater, container, false)
         tableCards = listOf(binding.tableCard1, binding.tableCard2, binding.tableCard3, binding.tableCard4, binding.tableCard5)
         binding.tvTableId.text = getString(R.string.game_play_table_id, tableId)
@@ -118,13 +116,13 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
     }
 
     private fun setAvatarTheme(action: ActionMessage) {
+        val resourceId = when (action.action.type) {
+            ActionType.CHECK -> R.drawable.avatar_background_check
+            ActionType.CALL -> R.drawable.avatar_background_call
+            ActionType.RAISE -> R.drawable.avatar_background_raise
+            else -> R.drawable.avatar_background_default
+        }
         activity?.runOnUiThread {
-            val resourceId = when (action.action.type) {
-                ActionType.CHECK -> R.drawable.avatar_background_check
-                ActionType.CALL -> R.drawable.avatar_background_call
-                ActionType.RAISE -> R.drawable.avatar_background_raise
-                else -> R.drawable.avatar_background_default
-            }
             avatarMap[action.name].let {
                 it?.root?.setBackgroundResource(resourceId)
                 it?.tvLastAction?.visibility = View.VISIBLE
@@ -196,10 +194,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
-    override fun onGetEliminated(tableId: Int) {
-        if (tableId != this.tableId)
-            return
-    }
+    override fun onGetEliminated(tableId: Int) { }
 
     override fun onPlayerDisconnection(tableId: Int, name: String) {
         if (tableId != this.tableId)
@@ -330,7 +325,7 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
-    fun showActionButtonsIfNecessary() {
+    private fun showActionButtonsIfNecessary() {
         activity?.runOnUiThread { 
             if (newState.nextPlayer!=PokerClient.userName)
                 binding.actionButtons.visibility = View.GONE

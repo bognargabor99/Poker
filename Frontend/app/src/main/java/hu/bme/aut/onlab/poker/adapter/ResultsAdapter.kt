@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import hu.bme.aut.onlab.poker.databinding.ItemResultBinding
 import hu.bme.aut.onlab.poker.model.WinningPlayer
-import hu.bme.aut.onlab.poker.network.PokerClient
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@DelicateCoroutinesApi
 class ResultsAdapter : ListAdapter<WinningPlayer, ResultsAdapter.ViewHolder>(RunItemCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(ItemResultBinding.inflate(
@@ -20,7 +21,7 @@ class ResultsAdapter : ListAdapter<WinningPlayer, ResultsAdapter.ViewHolder>(Run
         holder.result = result
 
         holder.binding.let {
-            it.tvName.text = if (result.userName == PokerClient.userName) "You" else "Opponent"
+            it.tvName.text = result.userName
             it.tvWinAmount.text = result.winAmount.toString()
             if (result.hand != null) {
                 it.tvHandType.visibility = View.VISIBLE

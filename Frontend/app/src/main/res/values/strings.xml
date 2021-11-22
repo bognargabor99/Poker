@@ -27,6 +27,7 @@
     <string name="table_started">Table Started</string>
     <string name="eliminated_alert">You\'ve been eliminated from table %1$d</string>
     <string name="congratulation">Congratulations!\nYou won table %1$d!</string>
+    <string name="winner_announcement">%1$s has won table %2$d!</string>
     <string name="avatar">Avatar</string>
     <string name="call_action">Call %1$d</string>
     <string name="pot">Pot: %1$d</string>
@@ -68,4 +69,7 @@
     <string name="switch_to_table_2">Switch to table 2</string>
     <string name="switch_to_table_3">Switch to table 3</string>
     <string name="play">Play</string>
+    <string name="spectate">Spectate</string>
+    <string name="alert_spectate_table">Do you want to spectate a specific table or a random one?</string>
+    <string name="alert_disconnection"><u>%1$s</u> had to left table %2$d!</string>
 </resources>

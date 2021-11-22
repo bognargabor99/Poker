@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SpectatorContainerFragment">
+
+    <FrameLayout
+        android:id="@+id/frame_layout_table_1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/frame_layout_table_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <FrameLayout
+        android:id="@+id/frame_layout_table_3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/secondaryDarkColor"
+        android:contentDescription="@string/leave_table"
+        android:src="@drawable/ic_arrow_forward"
+        tools:ignore="DuplicateSpeakableTextCheck" />
+
+    <Button
+        android:id="@+id/btn_table_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnBack"
+        android:layout_alignStart="@id/btnBack"
+        android:layout_alignEnd="@id/btnBack"
+        android:backgroundTint="@color/secondaryDarkColor"
+        android:contentDescription="@string/switch_to_table_1"
+        android:text="@string/one"
+        android:layout_margin="3dp"/>
+
+    <Button
+        android:id="@+id/btn_table_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_table_1"
+        android:layout_alignStart="@id/btnBack"
+        android:layout_alignEnd="@id/btnBack"
+        android:enabled="false"
+        android:backgroundTint="@color/secondaryDarkColor"
+        android:contentDescription="@string/switch_to_table_2"
+        android:layout_margin="3dp"
+        android:text="@string/two" />
+
+    <Button
+        android:id="@+id/btn_table_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_table_2"
+        android:layout_alignStart="@id/btnBack"
+        android:layout_alignEnd="@id/btnBack"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="3dp"
+        android:backgroundTint="@color/secondaryDarkColor"
+        android:contentDescription="@string/switch_to_table_3"
+        android:enabled="false"
+        android:text="@string/three" />
+
+    <ImageButton
+        android:id="@+id/btnPlus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:backgroundTint="@color/secondaryDarkColor"
+        android:contentDescription="@string/join_or_start_new_table"
+        android:src="@drawable/ic_action_add"
+        tools:ignore="ImageContrastCheck" />
+
+</RelativeLayout>

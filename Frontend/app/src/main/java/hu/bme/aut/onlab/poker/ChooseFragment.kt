@@ -10,20 +10,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
-import hu.bme.aut.onlab.poker.databinding.FragmentChoosePlayOrJoinBinding
+import hu.bme.aut.onlab.poker.databinding.FragmentChooseBinding
 import hu.bme.aut.onlab.poker.network.PokerClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 
 @DelicateCoroutinesApi
-class ChoosePlayOrJoinFragment : DialogFragment() {
-    private lateinit var binding: FragmentChoosePlayOrJoinBinding
+class ChooseFragment : DialogFragment() {
+    private lateinit var binding: FragmentChooseBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentChoosePlayOrJoinBinding.inflate(layoutInflater, container, false)
+        binding = FragmentChooseBinding.inflate(layoutInflater, container, false)
 
         setOnClickListeners()
 
@@ -32,7 +32,7 @@ class ChoosePlayOrJoinFragment : DialogFragment() {
 
     private fun setOnClickListeners() {
         binding.btnStartTable.setOnClickListener {
-            findNavController().navigate(ChoosePlayOrJoinFragmentDirections.actionChoosePlayOrJoinFragmentToStartTableFragment())
+            findNavController().navigate(ChooseFragmentDirections.actionChoosePlayOrJoinFragmentToStartTableFragment())
             findNavController().popBackStack()
         }
 
