@@ -40,7 +40,7 @@ class Table(val rules: TableRules) : PokerActionListener{
                 false
 
     fun addSpectator(userName: String): Boolean {
-        if (players.any { it.userName == userName } || spectators.any { it.userName == userName } || !this.isStarted)
+        if (players.any { it.userName == userName } || spectators.any { it.userName == userName })
             return false
         UserCollection.tableSpectated(userName, id, rules)
         val newSpectator = Person()
