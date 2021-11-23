@@ -17,14 +17,14 @@
             android:id="@+id/action_mainFragment_to_statisticsFragment"
             app:destination="@id/statisticsFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_spectatorFragment"
-            app:destination="@id/spectatorFragment" />
-        <action
             android:id="@+id/action_mainFragment_to_gamePlayContainerFragment"
             app:destination="@id/gamePlayContainerFragment" />
         <action
             android:id="@+id/action_mainFragment_to_choosePlayOrJoinFragment"
             app:destination="@id/choosePlayOrJoinFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_spectatorContainerFragment"
+            app:destination="@id/spectatorContainerFragment" />
     </fragment>
     <dialog
         android:id="@+id/startTableFragment"
@@ -78,9 +78,9 @@
     </fragment>
     <dialog
         android:id="@+id/choosePlayOrJoinFragment"
-        android:name="hu.bme.aut.onlab.poker.ChoosePlayOrJoinFragment"
+        android:name="hu.bme.aut.onlab.poker.ChooseFragment"
         android:label="fragment_choose_play_or_join"
-        tools:layout="@layout/fragment_choose_play_or_join" >
+        tools:layout="@layout/fragment_choose" >
         <action
             android:id="@+id/action_choosePlayOrJoinFragment_to_startTableFragment"
             app:destination="@id/startTableFragment" />
@@ -93,6 +93,18 @@
         <action
             android:id="@+id/action_gamePlayContainerFragment_to_choosePlayOrJoinFragment"
             app:destination="@id/choosePlayOrJoinFragment" />
+        <argument
+            android:name="firstTableId"
+            app:argType="integer" />
+        <argument
+            android:name="firstTableRules"
+            app:argType="hu.bme.aut.onlab.poker.model.TableRules" />
+    </fragment>
+    <fragment
+        android:id="@+id/spectatorContainerFragment"
+        android:name="hu.bme.aut.onlab.poker.SpectatorContainerFragment"
+        android:label="fragment_spectator_container"
+        tools:layout="@layout/fragment_spectator_container" >
         <argument
             android:name="firstTableId"
             app:argType="integer" />

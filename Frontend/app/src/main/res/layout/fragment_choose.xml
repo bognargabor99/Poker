@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/secondaryColor"
+    android:background="@color/secondaryDarkColor"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ChoosePlayOrJoinFragment">
+    tools:context=".ChooseFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_line"
@@ -34,6 +34,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guide_line"
+        android:backgroundTint="@color/secondaryColor"
         android:text="@string/join_table"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

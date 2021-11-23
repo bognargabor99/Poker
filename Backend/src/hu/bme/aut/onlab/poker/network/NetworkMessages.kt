@@ -157,7 +157,7 @@ data class LeaveTableMessage(
 
 data class SpectatorSubscriptionMessage(
     val userName: String,
-    val tableId: Int
+    val tableId: Int?
 ) : Message {
     companion object {
         const val MESSAGE_CODE = 16

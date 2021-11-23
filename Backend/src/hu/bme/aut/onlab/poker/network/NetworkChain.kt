@@ -84,10 +84,7 @@ class SpectatorSubscriptionProcessor(processor: Processor?) : Processor(processo
     override fun process(message: NetworkMessage?) {
         if (message?.messageCode == SpectatorSubscriptionMessage.MESSAGE_CODE) {
             val subMessage = Gson().fromJson(message.data, SpectatorSubscriptionMessage::class.java)
-            if (Game.addSpectator(subMessage.tableId, subMessage.userName)) {
-                val rules = Game.getRulesByTableId(subMessage.tableId)
-                UserCollection.tableSpectated(subMessage.userName, subMessage.tableId, rules)
-            }
+            Game.addSpectator(subMessage)
         } else {
             super.process(message)
         }

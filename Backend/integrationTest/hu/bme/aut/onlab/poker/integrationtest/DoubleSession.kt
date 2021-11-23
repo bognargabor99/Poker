@@ -46,7 +46,6 @@ class DoubleSession {
             user2Thread.start()
             user1Thread.join()
             user2Thread.join()
-            this.stop(10, 20)
         }
     }
 

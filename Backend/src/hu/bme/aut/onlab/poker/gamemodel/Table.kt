@@ -40,20 +40,27 @@ class Table(val rules: TableRules) : PokerActionListener{
                 false
 
     fun addSpectator(userName: String): Boolean {
-        if (players.any { it.userName == userName } ||
-            spectators.any { it.userName == userName })
+        if (players.any { it.userName == userName } || spectators.any { it.userName == userName })
             return false
+        UserCollection.tableSpectated(userName, id, rules)
         val newSpectator = Person()
         newSpectator.userName = userName
         spectators.add(newSpectator)
+        if (isStarted)
+            sendFirstMessageToSpectator(newSpectator.userName)
         return true
+    }
+
+    private fun sendFirstMessageToSpectator(spectatorName: String) {
+        val spectatorMessage = createSpectatorGSMessage()
+        UserCollection.sendToClient(spectatorName, spectatorMessage.toJsonString(), SpectatorGameStateMessage.MESSAGE_CODE)
     }
 
     fun removeSpectator(userName: String): Boolean = spectators.removeIf { it.userName == userName }
 
     private fun startGame() {
         isStarted = true
-        val usersInTable = players.map { it.userName } + spectators.map { it.userName }
+        val usersInTable = (spectators + players).map { it.userName }
         UserCollection.notifyGameStarted(id, usersInTable)
         newTurn()
     }
@@ -231,9 +238,9 @@ class Table(val rules: TableRules) : PokerActionListener{
         fastForwarding = false
     }
 
-    private fun spreadToSpectators() {
+    private fun createSpectatorGSMessage(): SpectatorGameStateMessage {
         val playerDtos: List<PlayerToSpectateDto> = List(players.size) { i -> PlayerToSpectateDto(players[i].toDto(), players[i].inHandCards) }
-        val spectatorStateMessage = SpectatorGameStateMessage(
+        return SpectatorGameStateMessage(
             tableId = id,
             tableCards = cardsOnTable,
             players = playerDtos,
@@ -244,9 +251,13 @@ class Table(val rules: TableRules) : PokerActionListener{
             pot = players.sumOf { it.inPot },
             lastAction = previousAction
         )
+    }
+
+    private fun spreadToSpectators() {
+        val spectatorMessage = createSpectatorGSMessage()
 
         spectators.forEach {
-            UserCollection.sendToClient(it.userName, spectatorStateMessage.toJsonString(), SpectatorGameStateMessage.MESSAGE_CODE)
+            UserCollection.sendToClient(it.userName, spectatorMessage.toJsonString(), SpectatorGameStateMessage.MESSAGE_CODE)
         }
     }
 
@@ -291,7 +302,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             .map { it.id }
         removePlayer(*playerIdsToEliminate.toIntArray())
 
-        UserCollection.eliminateFromTable(id, toEliminate, players.map { it.userName } + spectators.map { it.userName })
+        UserCollection.eliminateFromTable(id, toEliminate, (players + spectators).map { it.userName })
         if (players.size <= 1)
             declareWinner()
     }
@@ -385,7 +396,7 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
 
         val turnEndMessage = TurnEndMessage(this.id, cardsOnTable, playerOrder)
-        players.forEach {
+        (players + spectators).forEach {
             UserCollection.sendToClient(it.userName, turnEndMessage.toJsonString(), TurnEndMessage.MESSAGE_CODE)
         }
     }
@@ -467,7 +478,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             winnerName = userName
         }
         val turnEndMsg = TurnEndMessage(id, cardsOnTable, listOf(TurnEndMsgPlayerDto(winnerName, null, null, pot)))
-        players.forEach {
+        (players + spectators).forEach {
             UserCollection.sendToClient(it.userName, turnEndMsg.toJsonString(), TurnEndMessage.MESSAGE_CODE)
         }
         newTurn()
