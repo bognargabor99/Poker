@@ -27,7 +27,7 @@ object Game {
     fun addSpectator(subMessage: SpectatorSubscriptionMessage) : Int {
         println("New subscription received for ${subMessage.tableId}")
         val toSpectate = if (subMessage.tableId != null && tables.any { it.id == subMessage.tableId }) subMessage.tableId else tables.first().id
-        return if (tables.single { it.id == subMessage.tableId  }.run { isStarted && addSpectator(subMessage.userName)}) {
+        return if (tables.single { it.id == toSpectate  }.run { isStarted && addSpectator(subMessage.userName)}) {
             println("Spectator: ${subMessage.userName} added to table$toSpectate")
             toSpectate
         }
@@ -71,7 +71,4 @@ object Game {
         tables.removeIf { it.id == tableId }
         UserCollection.removeTableFromPLayers(tableId)
     }
-
-    fun getRulesByTableId(tableId: Int): TableRules =
-        this.tables.find { it.id == tableId }?.rules!!
 }

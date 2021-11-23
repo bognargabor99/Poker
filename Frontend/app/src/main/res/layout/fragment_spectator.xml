@@ -163,6 +163,18 @@
         android:layout_marginTop="60dp"
         android:layout_toEndOf="@id/player_1_card_1"/>
 
+    <TextView
+        android:id="@+id/tv_chance_player1"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/player_1_card_1"
+        android:layout_alignStart="@id/player_1_card_1"
+        android:layout_alignEnd="@id/player_1_card_2"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:layout_marginVertical="4dp"/>
+
     <hu.bme.aut.onlab.poker.view.PokerCardView
         android:id="@+id/player_2_card_1"
         android:layout_width="32dp"
@@ -183,6 +195,18 @@
         android:layout_marginBottom="60dp"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@id/player_2_card_1"/>
+
+    <TextView
+        android:id="@+id/tv_chance_player2"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/player_2_card_1"
+        android:layout_alignStart="@id/player_2_card_1"
+        android:layout_alignEnd="@id/player_2_card_2"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:layout_marginVertical="4dp"/>
 
     <hu.bme.aut.onlab.poker.view.PokerCardView
         android:id="@+id/player_3_card_1"
@@ -206,6 +230,18 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"/>
 
+    <TextView
+        android:id="@+id/tv_chance_player3"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/player_3_card_1"
+        android:layout_alignStart="@id/player_3_card_1"
+        android:layout_alignEnd="@id/player_3_card_2"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:layout_marginVertical="4dp"/>
+
     <hu.bme.aut.onlab.poker.view.PokerCardView
         android:id="@+id/player_4_card_1"
         android:layout_width="32dp"
@@ -228,6 +264,18 @@
         android:layout_alignParentBottom="true"
         android:layout_toStartOf="@id/avatar4"/>
 
+    <TextView
+        android:id="@+id/tv_chance_player4"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/player_4_card_1"
+        android:layout_alignStart="@id/player_4_card_1"
+        android:layout_alignEnd="@id/player_4_card_2"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:layout_marginVertical="4dp"/>
+
     <hu.bme.aut.onlab.poker.view.PokerCardView
         android:id="@+id/player_5_card_1"
         android:layout_width="32dp"
@@ -247,4 +295,16 @@
         android:layout_marginTop="60dp"
         android:layout_marginEnd="5dp"
         android:layout_toStartOf="@id/avatar5"/>
+
+    <TextView
+        android:id="@+id/tv_chance_player5"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/player_5_card_1"
+        android:layout_alignStart="@id/player_5_card_1"
+        android:layout_alignEnd="@id/player_5_card_2"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:layout_marginVertical="4dp"/>
 </RelativeLayout>

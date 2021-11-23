@@ -65,9 +65,9 @@ object PokerClient {
 
     fun turnEnded(turnEndMessage: TurnEndMessage) {
         Log.d("pokerWeb", "Turn ended: $turnEndMessage")
-        receiver?.onTurnEnd(turnEndMessage)
         spectatingReceiver?.onTurnEnd(turnEndMessage)
-        Thread.sleep(1000)
+        receiver?.onTurnEnd(turnEndMessage)
+        //Thread.sleep(600)
     }
 
     fun eliminatedFromTable(table: Int) {

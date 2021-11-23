@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import com.muddzdev.styleabletoast.StyleableToast
+import hu.bme.aut.onlab.poker.calculation.HandEvaluator
 import hu.bme.aut.onlab.poker.databinding.AvatarBinding
 import hu.bme.aut.onlab.poker.databinding.FragmentGamePlayBinding
 import hu.bme.aut.onlab.poker.model.*

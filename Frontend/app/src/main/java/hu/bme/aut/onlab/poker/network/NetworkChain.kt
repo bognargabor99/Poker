@@ -110,7 +110,7 @@ class SubscriptionAcceptanceProcessor(processor: Processor?) : Processor(process
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == SubscriptionAcceptanceMessage.MESSAGE_CODE) {
             PokerClient.tableSpectated(Gson().fromJson(message.data, SubscriptionAcceptanceMessage::class.java))
-            Thread.sleep(1000)
+            Thread.sleep(600)
         }
         else
             super.process(message)

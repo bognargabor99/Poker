@@ -105,7 +105,7 @@ class MainFragment : Fragment(), PokerClient.TableJoinedListener, PokerClient.St
             .show()
     }
 
-    private fun toast(message: String) {
+    fun toast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 

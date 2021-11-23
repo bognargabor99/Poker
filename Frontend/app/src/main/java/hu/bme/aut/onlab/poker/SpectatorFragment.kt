@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
+import hu.bme.aut.onlab.poker.calculation.OddsCalculator
+import hu.bme.aut.onlab.poker.calculation.WinningChance
 import hu.bme.aut.onlab.poker.databinding.AvatarBinding
 import hu.bme.aut.onlab.poker.databinding.FragmentSpectatorBinding
 import hu.bme.aut.onlab.poker.model.*
@@ -17,6 +19,7 @@ import hu.bme.aut.onlab.poker.network.SpectatorGameStateMessage
 import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.view.PokerCardView
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlin.system.measureTimeMillis
 
 private const val TABLE_ID_PARAM = "tableId"
 private const val RULE_PARAM = "rules"
@@ -60,7 +63,9 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
     }
 
     private fun setOnClickListeners() {
-        binding.btnLastTurn.setOnClickListener { showTurnResults() }
+        binding.btnLastTurn.setOnClickListener {
+            showTurnResults()
+        }
     }
 
     private fun setAvatarTheme(action: ActionMessage) {
@@ -105,8 +110,8 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
                 tableCards[i].startAnimation(anim)
             }
         }
-        if (!range.isEmpty())
-            Thread.sleep(500)
+        //if (!range.isEmpty())
+        //    Thread.sleep(500)
     }
 
     private fun handCards() {
@@ -172,13 +177,20 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
             R.anim.reverse_card_animation_player4,
             R.anim.reverse_card_animation_player5)
 
+        val tvChances = listOf(binding.tvChancePlayer1,
+            binding.tvChancePlayer2,
+            binding.tvChancePlayer3,
+            binding.tvChancePlayer4,
+            binding.tvChancePlayer5)
+
         newState.players.forEachIndexed { i, player ->
             avatarMap[player.playerDto.userName] = avatars[i]
             cardAnimationMap[player.playerDto.userName] = CardAnimation(
                 card1 = cards[i*2],
                 card2 = cards[i*2+1],
                 animId = animations[i],
-                reverseAnimId = reverseAnimations[i]
+                reverseAnimId = reverseAnimations[i],
+                tvChance = tvChances[i]
             )
         }
     }
@@ -215,15 +227,44 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
             disableTableCards()
             newTurn = false
         }
-        if (newState.lastAction == null) {
-            putCardsOnTable()
-            Thread.sleep(800)
-            setDefaultAvatarThemes()
-        } else {
+        if (newState.lastAction != null) {
             setAvatarTheme(newState.lastAction!!)
+            if (newState.lastAction!!.action.type == ActionType.FOLD) {
+                foldCard(newState.lastAction!!.name)
+                displayOdds()
+            }
+        } else {
+            setDefaultAvatarThemes()
+            displayOdds()
+            putCardsOnTable()
         }
         displayChipCounts()
         firstMessage = false
+    }
+
+    private fun displayOdds() {
+        lateinit var oddsMap: Map<String, WinningChance>
+        val time = measureTimeMillis {
+            oddsMap = OddsCalculator.calculateOdds(newState.tableCards.toMutableList(), newState.players)
+        }
+        activity?.runOnUiThread {
+            MainFragment._this.toast("calculated odds in: $time millis")
+            newState.players.forEach { player ->
+                val name = player.playerDto.userName
+                cardAnimationMap[name]?.tvChance?.text = if (player.playerDto.isInTurn) oddsMap[name].toString() else ""
+            }
+        }
+    }
+
+    private fun foldCard(name: String) {
+        if (!cardAnimationMap.keys.contains(name))
+            return
+        val anim = AnimationUtils.loadAnimation(requireContext(), cardAnimationMap[name]!!.reverseAnimId)
+        activity?.runOnUiThread {
+            cardAnimationMap[name]!!.card1.startAnimation(anim)
+            cardAnimationMap[name]!!.card2.startAnimation(anim)
+            cardAnimationMap[name]!!.tvChance.text = ""
+        }
     }
 
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
@@ -245,11 +286,12 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
 
         activity?.runOnUiThread {
             binding.tvPot.visibility = View.INVISIBLE
-            newState.players.forEachIndexed { i, player ->
+            newState.players.filter { player -> player.playerDto.isInTurn }.forEachIndexed { i, player ->
                 val anim = AnimationUtils.loadAnimation(requireContext(), cardAnimationMap[player.playerDto.userName]!!.reverseAnimId)
                 anim.startOffset = i * 200L
                 cardAnimationMap[player.playerDto.userName]!!.card1.startAnimation(anim)
                 cardAnimationMap[player.playerDto.userName]!!.card2.startAnimation(anim)
+                cardAnimationMap[player.playerDto.userName]!!.tvChance.text = ""
             }
             tableCards.take(tableCardCount).forEachIndexed { i, view ->
                 val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.reverse_card_animation)
