@@ -1,6 +1,6 @@
-package hu.bme.aut.onlab.poker.gamemodel
+package hu.bme.aut.thesis.poker.gamemodel
 
-import hu.bme.aut.onlab.poker.testutils.*
+import hu.bme.aut.thesis.poker.testutils.*
 import kotlin.test.*
 
 class DeckTest {

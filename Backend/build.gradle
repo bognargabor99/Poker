@@ -12,7 +12,7 @@ plugins {
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
-group 'hu.bme.aut.onlab.poker'
+group 'hu.bme.aut.thesis.poker'
 version '1.0.0'
 
 sourceSets {

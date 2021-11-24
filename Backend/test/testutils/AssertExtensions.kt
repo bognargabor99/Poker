@@ -1,4 +1,4 @@
-package hu.bme.aut.onlab.poker.testutils
+package hu.bme.aut.thesis.poker.testutils
 
 import kotlin.test.*
 

@@ -1,4 +1,4 @@
-package hu.bme.aut.onlab.poker.gamemodel
+package hu.bme.aut.thesis.poker.gamemodel
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

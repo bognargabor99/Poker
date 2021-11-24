@@ -1,10 +1,10 @@
 package integrationtestutils
 
 import com.google.gson.Gson
-import hu.bme.aut.onlab.poker.gamemodel.*
-import hu.bme.aut.onlab.poker.network.GameStateMessage
-import hu.bme.aut.onlab.poker.network.NetworkMessage
-import hu.bme.aut.onlab.poker.network.TurnEndMessage
+import hu.bme.aut.thesis.poker.gamemodel.*
+import hu.bme.aut.thesis.poker.network.GameStateMessage
+import hu.bme.aut.thesis.poker.network.NetworkMessage
+import hu.bme.aut.thesis.poker.network.TurnEndMessage
 import kotlin.math.min
 
 abstract class Bot(val userName: String) {

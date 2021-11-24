@@ -1,8 +1,8 @@
-package hu.bme.aut.onlab.poker
+package hu.bme.aut.thesis.poker
 
 import com.google.gson.Gson
-import hu.bme.aut.onlab.poker.data.DatabaseHelper
-import hu.bme.aut.onlab.poker.data.UserAuthInfo
+import hu.bme.aut.thesis.poker.data.DatabaseHelper
+import hu.bme.aut.thesis.poker.data.UserAuthInfo
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*

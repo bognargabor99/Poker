@@ -1,10 +1,10 @@
-package hu.bme.aut.onlab.poker.websocket
+package hu.bme.aut.thesis.poker.websocket
 
 import com.google.gson.Gson
-import hu.bme.aut.onlab.poker.network.ConnectionInfoMessage
-import hu.bme.aut.onlab.poker.network.NetworkMessage
-import hu.bme.aut.onlab.poker.plugins.configureWebSockets
-import hu.bme.aut.onlab.poker.utils.MessageHelper
+import hu.bme.aut.thesis.poker.network.ConnectionInfoMessage
+import hu.bme.aut.thesis.poker.network.NetworkMessage
+import hu.bme.aut.thesis.poker.plugins.configureWebSockets
+import hu.bme.aut.thesis.poker.utils.MessageHelper
 import io.ktor.http.cio.websocket.*
 import io.ktor.server.engine.*
 import io.ktor.server.testing.*
