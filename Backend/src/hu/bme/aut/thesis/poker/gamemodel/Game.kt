@@ -16,7 +16,7 @@ object Game {
     }
 
     fun joinTable(tableId: Int?, userName: String) {
-        val toJoin = tableId ?: getOpenTables().first()
+        val toJoin = tableId ?: getOpenTables().firstOrNull()
         val success = tables.firstOrNull { it.id == toJoin }
             ?.addInGamePlayer(userName)
         if (success == true) {
@@ -26,7 +26,7 @@ object Game {
 
     fun addSpectator(subMessage: SpectatorSubscriptionMessage) : Int {
         println("New subscription received for ${subMessage.tableId}")
-        val toSpectate = if (subMessage.tableId != null && tables.any { it.id == subMessage.tableId }) subMessage.tableId else tables.first().id
+        val toSpectate = if (subMessage.tableId != null && tables.any { it.id == subMessage.tableId }) subMessage.tableId else tables.last().id
         return if (tables.single { it.id == toSpectate  }.run { isStarted && addSpectator(subMessage.userName)}) {
             println("Spectator: ${subMessage.userName} added to table$toSpectate")
             toSpectate
@@ -42,7 +42,7 @@ object Game {
     }
 
     fun performAction(actionMessage: ActionIncomingMessage) {
-        tables.find { it.id == actionMessage.tableId }
+        tables.find { it.id == actionMessage.tableId && it.isStarted }
             ?.onAction(actionMessage)
     }
 

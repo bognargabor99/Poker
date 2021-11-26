@@ -327,12 +327,14 @@ class Table(val rules: TableRules) : PokerActionListener{
             if (players.size == 0)
                 Game.closeTable(id)
         } else if (players.size > 2) {
+            playersInTurn.remove(players[index].id)
             if (players[index].id == nextPlayerId) {
                 nextPlayerId = players.find { player -> player.userName == previousAction?.name }?.id ?: playersInTurn.last()
+                removePlayer(players[index].id)
                 setNextPlayer()
             }
-            playersInTurn.remove(players[index].id)
-            removePlayer(players[index].id)
+            else
+                removePlayer(players[index].id)
             (spectators + players).forEach {
                 UserCollection.sendToClient(it.userName, DisconnectedPlayerMessage(id, name).toJsonString(), DisconnectedPlayerMessage.MESSAGE_CODE)
             }

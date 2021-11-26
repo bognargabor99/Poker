@@ -1,8 +1,8 @@
-user1: {     "messageCode":1,     "data":"{\"userName\":\"user1\",\"rules\":{\"isOpen\":true,\"playerCount\":3,\"bigBlindStartingAmount\":40,\"doubleBlindsAfterTurnCount\":5,\"playerStartingStack\":3000}}" }
+user1: {     "messageCode":1,     "data":"{\"userName\":\"guest1\",\"rules\":{\"isOpen\":true,\"playerCount\":3,\"bigBlindStartingAmount\":40,\"doubleBlindsAfterTurnCount\":5,\"playerStartingStack\":3000}}" }
 
-user2: {"messageCode":2,"data":"{\"userName\":\"user2\",\"tableId\":100}"}
+user2: {"messageCode":2,"data":"{\"userName\":\"guest2\",\"tableId\":100}"}
 
-user3: {"messageCode":2,"data":"{\"userName\":\"user3\",\"tableId\":100}"}
+user3: {"messageCode":2,"data":"{\"userName\":\"guest3\",\"tableId\":100}"}
 
 user3: {"messageCode":4,"data":"{\"tableId\":100,\"playerId\":1002,\"action\":{\"type\":\"CALL\",\"amount\":0}}"}
 

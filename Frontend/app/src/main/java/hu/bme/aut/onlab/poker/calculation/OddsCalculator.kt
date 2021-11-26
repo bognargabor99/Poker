@@ -57,7 +57,7 @@ object OddsCalculator {
 
         for (value in start..14)
             for (suit in Suit.values())
-                if (!players.any { it.inHandCards.contains(Card(value, suit)) })
+                if (!players.any { it.inHandCards.contains(Card(value, suit)) } && !tableCards.any { it == Card(value, suit) })
                     remainingCards.add(Card(value, suit))
 
         return when (tableCards.size) {

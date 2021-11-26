@@ -19,7 +19,6 @@ import hu.bme.aut.onlab.poker.network.SpectatorGameStateMessage
 import hu.bme.aut.onlab.poker.network.TurnEndMessage
 import hu.bme.aut.onlab.poker.view.PokerCardView
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlin.system.measureTimeMillis
 
 private const val TABLE_ID_PARAM = "tableId"
 private const val RULE_PARAM = "rules"
@@ -110,8 +109,6 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
                 tableCards[i].startAnimation(anim)
             }
         }
-        //if (!range.isEmpty())
-        //    Thread.sleep(500)
     }
 
     private fun handCards() {
@@ -236,19 +233,18 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         } else {
             setDefaultAvatarThemes()
             displayOdds()
-            putCardsOnTable()
+            if (tableCards.count { card -> card.isVisible } < newState.tableCards.size)
+                putCardsOnTable()
         }
         displayChipCounts()
         firstMessage = false
     }
 
     private fun displayOdds() {
-        lateinit var oddsMap: Map<String, WinningChance>
-        val time = measureTimeMillis {
-            oddsMap = OddsCalculator.calculateOdds(newState.tableCards.toMutableList(), newState.players)
-        }
+        val oddsMap: Map<String, WinningChance> =
+            OddsCalculator.calculateOdds(newState.tableCards.toMutableList(), newState.players)
+
         activity?.runOnUiThread {
-            MainFragment._this.toast("calculated odds in: $time millis")
             newState.players.forEach { player ->
                 val name = player.playerDto.userName
                 cardAnimationMap[name]?.tvChance?.text = if (player.playerDto.isInTurn) oddsMap[name].toString() else ""
@@ -315,6 +311,8 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
             avatarMap[name]?.tvLastAction?.visibility = View.VISIBLE
             avatarMap[name]?.tvLastAction?.text = getString(R.string.out)
             avatarMap.remove(name)
+            cardAnimationMap[name]?.tvChance?.isVisible = false
+            foldCard(name)
             cardAnimationMap.remove(name)
             Snackbar.make(requireView(), getString(R.string.alert_disconnection, name, tableId), Snackbar.LENGTH_LONG)
                 .show()
