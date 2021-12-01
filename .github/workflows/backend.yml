@@ -24,7 +24,7 @@ jobs:
         cache: gradle
 
     - name: Build with Gradle
-      run: gradle build --b ./Backend/build.gradle --info --continue
+      run: gradle build --b ./Backend/build.gradle --continue
 
     - name: Unit Test Report
       uses: dorny/test-reporter@v1
