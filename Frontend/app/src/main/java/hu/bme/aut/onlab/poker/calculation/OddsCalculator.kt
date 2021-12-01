@@ -20,9 +20,7 @@ object OddsCalculator {
     private fun getRandomOdds(players: List<PlayerToSpectate>): Map<String, WinningChance> {
         val remainingCards = mutableListOf<Card>()
 
-        val start = 2
-
-        for (value in start..14)
+        for (value in 2..14)
             for (suit in Suit.values())
                 if (!players.any { it.inHandCards.contains(Card(value, suit)) })
                     remainingCards.add(Card(value, suit))

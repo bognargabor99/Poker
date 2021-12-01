@@ -6,7 +6,6 @@ import hu.bme.aut.thesis.poker.network.NetworkMessage
 import hu.bme.aut.thesis.poker.plugins.configureWebSockets
 import hu.bme.aut.thesis.poker.utils.MessageHelper
 import io.ktor.http.cio.websocket.*
-import io.ktor.server.engine.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.Base64

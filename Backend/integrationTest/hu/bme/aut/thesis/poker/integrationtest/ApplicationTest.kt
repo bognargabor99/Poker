@@ -1,8 +1,9 @@
-package hu.bme.aut.thesis.poker
+package hu.bme.aut.thesis.poker.integrationtest
 
 import com.google.gson.Gson
 import hu.bme.aut.thesis.poker.data.DatabaseHelper
 import hu.bme.aut.thesis.poker.data.UserAuthInfo
+import hu.bme.aut.thesis.poker.module
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -19,7 +20,7 @@ class ApplicationTest {
             handleRequest(HttpMethod.Get, "/").apply {
                 assertEquals(HttpStatusCode.MovedPermanently, response.status())
             }
-            this.stop(10, 20)
+            this.stop(1000, 10000)
         }
     }
 
@@ -34,7 +35,7 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.OK, call.response.status())
                 assertEquals("it works!", call.response.content)
             }
-            this.stop(10, 20)
+            this.stop(1000, 10000)
         }
     }
 
@@ -51,7 +52,7 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.OK, call.response.status())
                 assertEquals("Hello, admin!", call.response.content)
             }
-            this.stop(10, 20)
+            this.stop(1000, 10000)
         }
     }
 
@@ -69,7 +70,7 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.Conflict, call.response.status())
                 assertEquals("Username already in use: admin", call.response.content)
             }
-            this.stop(10, 20)
+            this.stop(1000, 10000)
         }
     }
 
@@ -87,7 +88,7 @@ class ApplicationTest {
                 assertEquals("Registered new user: localadmin", call.response.content)
             }
             DatabaseHelper.deleteUser("localadmin")
-            this.stop(10, 20)
+            this.stop(1000, 10000)
         }
     }
 }
