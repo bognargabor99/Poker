@@ -314,7 +314,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             UserCollection.updateStats(players.first().userName, players.first().stats)
             UserCollection.sendToClient(it.userName, WinnerAnnouncerMessage(this@Table.id, players.first().userName).toJsonString(), WinnerAnnouncerMessage.MESSAGE_CODE)
         }
-        Game.closeTable(id)
+        Casino.closeTable(id)
     }
 
     fun playerDisconnected(name: String) {
@@ -325,8 +325,9 @@ class Table(val rules: TableRules) : PokerActionListener{
         if (!isStarted) {
             removePlayer(players[index].id)
             if (players.size == 0)
-                Game.closeTable(id)
-        } else if (players.size > 2) {
+                Casino.closeTable(id)
+        }
+        else if (players.size > 2) {
             playersInTurn.remove(players[index].id)
             if (players[index].id == nextPlayerId) {
                 nextPlayerId = players.find { player -> player.userName == previousAction?.name }?.id ?: playersInTurn.last()
@@ -353,7 +354,7 @@ class Table(val rules: TableRules) : PokerActionListener{
             declareWinner()
         }
         else {
-            Game.closeTable(id)
+            Casino.closeTable(id)
         }
     }
 

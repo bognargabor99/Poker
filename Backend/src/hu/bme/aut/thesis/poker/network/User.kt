@@ -1,7 +1,7 @@
 package hu.bme.aut.thesis.poker.network
 
 import com.google.gson.Gson
-import hu.bme.aut.thesis.poker.gamemodel.Game
+import hu.bme.aut.thesis.poker.gamemodel.Casino
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -39,7 +39,7 @@ class User(private val session: DefaultWebSocketSession, val isGuest: Boolean, u
     fun sendToClient(textToSend: String) = GlobalScope.launch { session.send(textToSend) }
 
     fun disconnect() {
-        Game.removePlayerFromTables(name, tablePlayingIds, tableSpectatingIds)
+        Casino.removePlayerFromTables(name, tablePlayingIds, tableSpectatingIds)
     }
 
     companion object {

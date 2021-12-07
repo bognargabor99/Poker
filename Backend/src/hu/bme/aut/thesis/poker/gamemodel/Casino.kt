@@ -6,7 +6,7 @@ import hu.bme.aut.thesis.poker.network.UserCollection
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
-object Game {
+object Casino {
     private val tables = mutableListOf<Table>()
 
     fun startTable(rules: TableRules): Int {

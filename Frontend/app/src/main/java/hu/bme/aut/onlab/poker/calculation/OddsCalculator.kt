@@ -1,6 +1,5 @@
 package hu.bme.aut.onlab.poker.calculation
 
-import android.util.Log
 import hu.bme.aut.onlab.poker.dto.PlayerToSpectate
 import hu.bme.aut.onlab.poker.model.Card
 import hu.bme.aut.onlab.poker.model.Hand
@@ -45,10 +44,6 @@ object OddsCalculator {
     }
 
     private fun getExactOdds(tableCards: MutableList<Card>, players: List<PlayerToSpectate>): Map<String, WinningChance> {
-        Log.d("pokerWeb", "tableCards: $tableCards")
-        players.forEach {
-            Log.d("pokerWeb", "${it.playerDto.userName}: ${it.inHandCards}")
-        }
         val remainingCards = mutableListOf<Card>()
 
         val start = 2
