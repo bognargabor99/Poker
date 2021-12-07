@@ -30,7 +30,7 @@ jobs:
       uses: dorny/test-reporter@v1
       if: success() || failure()    # run this step even if previous step failed
       with:
-        name: Unit test reports
+        name: Backend Unit test reports
         path: /home/runner/work/Poker/Poker/Backend/build/unit-test-results/TEST-*.xml
         reporter: java-junit
         
@@ -38,7 +38,7 @@ jobs:
       uses: dorny/test-reporter@v1
       if: ${{ hashFiles('**/integration-test-results/TEST-*.xml') != '' }}
       with:
-        name: Integration test reports
+        name: Backend Integration test reports
         path: /home/runner/work/Poker/Poker/Backend/build/integration-test-results/TEST-*.xml
         reporter: java-junit
         
