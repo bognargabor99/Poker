@@ -64,7 +64,6 @@ object DatabaseHelper {
     fun deleteUser(userToDelete: String) {
         transaction(db) {
             Users.deleteWhere { Users.userName eq userToDelete }
-            UserStatistics.deleteWhere { Users.userName eq userToDelete }
         }
     }
 
