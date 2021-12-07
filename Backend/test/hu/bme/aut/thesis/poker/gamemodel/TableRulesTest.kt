@@ -5,7 +5,14 @@ import kotlin.test.*
 class TableRulesTest {
     @Test
     fun createTableRulesSuccessTest() {
-        val rules = TableRules(isOpen = true, playerCount = 3, bigBlindStartingAmount = 80, doubleBlindsAfterTurnCount = 4, 4000, false)
+        val rules = TableRules(
+            isOpen = true,
+            playerCount = 3,
+            bigBlindStartingAmount = 80,
+            doubleBlindsAfterTurnCount = 4,
+            playerStartingStack =  4000,
+            isRoyal = false
+        )
         assertEquals(true, rules.isOpen)
         assertEquals(3, rules.playerCount)
         assertEquals(80, rules.bigBlindStartingAmount)
