@@ -25,3 +25,11 @@ jobs:
 
     - name: Build with Gradle
       run: gradle build --b ./Frontend/build.gradle --continue
+      
+    - name: Unit Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Frontend Unit test reports
+        path: /home/runner/work/Poker/Poker/Frontend/app/build/test-results/test*UnitTest/TEST-*.xml
+        reporter: java-junit
