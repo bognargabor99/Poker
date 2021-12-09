@@ -37,7 +37,7 @@ object HandEvaluator {
     }
 
     private fun getPairType(valueCounts: MutableList<Pair<Int, Int>>): Hand {
-        val sortedCounts = valueCounts.sortedWith(compareBy({-it.second}, {-it.first}))
+        val sortedCounts = valueCounts.sortedWith(compareBy({-it.second}, {-it.first})).toMutableList()
         when (sortedCounts[0].second) {
             4 -> return Hand(HandType.FOUR_OF_A_KIND, List(2) { sortedCounts[it].first })
             3 -> {
@@ -46,8 +46,13 @@ object HandEvaluator {
                 return Hand(HandType.THREE_OF_A_KIND, List(3) { sortedCounts[it].first })
             }
             2 -> {
-                if (sortedCounts[1].second == 2)
-                    return Hand(HandType.TWO_PAIR, List(3) { sortedCounts[it].first })
+                if (sortedCounts[1].second == 2) {
+                    // if there are three pairs, we have to order the remaining part of the list from the first two elements
+                    val list = sortedCounts.take(2).toMutableList()
+                    val remainingList = sortedCounts.filter { it.second > 0 }
+                    list.addAll(remainingList.subList(2, remainingList.size).sortedByDescending { it.first })
+                    return Hand(HandType.TWO_PAIR, List(3) { list[it].first })
+                }
                 return Hand(HandType.PAIR, List(4) { sortedCounts[it].first })
             }
             else -> return Hand(HandType.HIGH_CARD, List(5) { sortedCounts[it].first })

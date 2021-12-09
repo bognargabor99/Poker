@@ -184,6 +184,48 @@ class HandEvaluatorTest {
     }
 
     @Test
+    fun twoPairTestWithThreePairs_verion1() {
+        // Arrange
+        val handCards = mutableListOf(Card(9, Suit.DIAMONDS),
+            Card(5, Suit.SPADES),
+            Card(14, Suit.HEARTS),
+            Card(7, Suit.DIAMONDS),
+            Card(7, Suit.HEARTS),
+            Card(5, Suit.HEARTS),
+            Card(9, Suit.HEARTS))
+
+        // Act
+        val hand = HandEvaluator.evaluateHand(handCards)
+
+        // Assert
+        assertEquals(HandType.TWO_PAIR, hand.type)
+        assertEquals(9, hand.values[0])
+        assertEquals(7, hand.values[1])
+        assertEquals(14, hand.values[2])
+    }
+
+    @Test
+    fun twoPairTestWithThreePairs_version2() {
+        // Arrange
+        val handCards = mutableListOf(Card(6, Suit.DIAMONDS),
+            Card(2, Suit.SPADES),
+            Card(9, Suit.HEARTS),
+            Card(4, Suit.DIAMONDS),
+            Card(4, Suit.HEARTS),
+            Card(2, Suit.HEARTS),
+            Card(6, Suit.HEARTS))
+
+        // Act
+        val hand = HandEvaluator.evaluateHand(handCards)
+
+        // Assert
+        assertEquals(HandType.TWO_PAIR, hand.type)
+        assertEquals(6, hand.values[0])
+        assertEquals(4, hand.values[1])
+        assertEquals(9, hand.values[2])
+    }
+
+    @Test
     fun pairTest() {
         // Arrange
         val handCards = mutableListOf(Card(11, Suit.HEARTS),
