@@ -56,13 +56,13 @@ class ChooseFragment : DialogFragment() {
 
     private fun joinSpecificTable() {
         var table: Int
-        val input = EditText(requireContext())
+        val input = EditText(MainFragment._this.context)
         input.inputType = InputType.TYPE_CLASS_NUMBER
         val lp = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT)
         input.layoutParams = lp
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(MainFragment._this.requireContext())
             .setTitle(R.string.enter_id)
             .setView(input)
             .setPositiveButton(R.string.ok) { _, _ ->
