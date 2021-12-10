@@ -4,6 +4,10 @@ package hu.bme.aut.onlab.poker.network
 
 import com.google.gson.Gson
 
+/**
+ * This class represents the chain in the "Chain of responsibility" pattern
+ * @author Bognar, Gabor Bela
+ */
 class NetworkChain {
     private lateinit var chain: Processor
 
@@ -18,12 +22,20 @@ class NetworkChain {
     fun process(message: NetworkMessage) = chain.process(message)
 }
 
+/**
+ * Base class of all the Processors in the [NetworkChain]
+ * @author Bognar, Gabor Bela
+ */
 abstract class Processor(private val processor: Processor?) {
     open fun process(message: NetworkMessage?) {
         processor?.process(message)
     }
 }
 
+/**
+ * This processor class handles recieving game states
+ * @author Bognar, Gabor Bela
+ */
 class GameStateProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
             if (message?.messageCode == GameStateMessage.MESSAGE_CODE || message?.messageCode == SpectatorGameStateMessage.MESSAGE_CODE)
@@ -32,6 +44,10 @@ class GameStateProcessor(processor: Processor?) : Processor(processor) {
                 super.process(message)
 }
 
+/**
+ * This processor class handles recieving connection information
+ * @author Bognar, Gabor Bela
+ */
 class ConnectionInfoProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
             if (message?.messageCode == ConnectionInfoMessage.MESSAGE_CODE) {
@@ -41,6 +57,10 @@ class ConnectionInfoProcessor(processor: Processor?) : Processor(processor) {
                 super.process(message)
 }
 
+/**
+ * This processor class handles recieving [TurnEndMessage]s
+ * @author Bognar, Gabor Bela
+ */
 class TurnEndProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
             if (message?.messageCode == TurnEndMessage.MESSAGE_CODE)
@@ -49,6 +69,10 @@ class TurnEndProcessor(processor: Processor?) : Processor(processor) {
                 super.process(message)
 }
 
+/**
+ * This processor class handles being eliminated from a table
+ * @author Bognar, Gabor Bela
+ */
 class EliminationProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
             if (message?.messageCode == EliminationMessage.MESSAGE_CODE)
@@ -57,6 +81,10 @@ class EliminationProcessor(processor: Processor?) : Processor(processor) {
                 super.process(message)
 }
 
+/**
+ * This processor class handles receiving [TableJoinedMessage]
+ * @author Bognar, Gabor Bela
+ */
 class TableJoinedProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == TableJoinedMessage.MESSAGE_CODE) {
@@ -67,6 +95,10 @@ class TableJoinedProcessor(processor: Processor?) : Processor(processor) {
             super.process(message)
 }
 
+/**
+ * This processor class handles receiving [GameStartedMessage]
+ * @author Bognar, Gabor Bela
+ */
 class GameStartedProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == GameStartedMessage.MESSAGE_CODE)
@@ -75,6 +107,10 @@ class GameStartedProcessor(processor: Processor?) : Processor(processor) {
             super.process(message)
 }
 
+/**
+ * This processor class handles receiving [DisconnectedPlayerMessage]
+ * @author Bognar, Gabor Bela
+ */
 class DisconnectedPlayerProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == DisconnectedPlayerMessage.MESSAGE_CODE) {
@@ -85,6 +121,10 @@ class DisconnectedPlayerProcessor(processor: Processor?) : Processor(processor) 
             super.process(message)
 }
 
+/**
+ * This processor class handles receiving [WinnerAnnouncerMessage]
+ * @author Bognar, Gabor Bela
+ */
 class WinnerAnnouncementProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == WinnerAnnouncerMessage.MESSAGE_CODE) {
@@ -95,6 +135,10 @@ class WinnerAnnouncementProcessor(processor: Processor?) : Processor(processor) 
             super.process(message)
 }
 
+/**
+ * This processor class handles receiving [StatisticsMessage]
+ * @author Bognar, Gabor Bela
+ */
 class StatisticsProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) {
         if (message?.messageCode == StatisticsMessage.MESSAGE_CODE) {
@@ -106,6 +150,10 @@ class StatisticsProcessor(processor: Processor?) : Processor(processor) {
     }
 }
 
+/**
+ * This processor class handles receiving [SubscriptionAcceptanceMessage]
+ * @author Bognar, Gabor Bela
+ */
 class SubscriptionAcceptanceProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == SubscriptionAcceptanceMessage.MESSAGE_CODE) {

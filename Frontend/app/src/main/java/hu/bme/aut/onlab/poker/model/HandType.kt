@@ -1,5 +1,10 @@
 package hu.bme.aut.onlab.poker.model
 
+/**
+ * Enum class for the types of a [Hand]
+ * @property asString Representation of he hand type as text
+ * @author Bognar, Gabor Bela
+ */
 enum class HandType(val asString: String) {
     ROYAL_FLUSH("Royal Flush"),
     STRAIGHT_FLUSH("Straight Flush"),

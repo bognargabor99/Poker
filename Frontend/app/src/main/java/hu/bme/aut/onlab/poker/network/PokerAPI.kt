@@ -11,6 +11,10 @@ import io.ktor.http.cio.websocket.*
 import io.ktor.util.*
 import kotlinx.coroutines.*
 
+/**
+ * Static class that connects to the server and receives messages
+ * @author Bognar, Gabor Bela
+ */
 @OptIn(InternalAPI::class)
 @DelicateCoroutinesApi
 object PokerAPI {
@@ -26,6 +30,10 @@ object PokerAPI {
             return ret
         }
 
+    /**
+     * Connects to the server
+     * @author Bognar, Gabor Bela
+     */
     fun connect(domain: String, authInfo: UserAuthInfo, onSuccess: () -> Unit, onError: () -> Unit) {
         GlobalScope.launch {
             try {

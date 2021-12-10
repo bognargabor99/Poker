@@ -5,9 +5,17 @@ import hu.bme.aut.onlab.poker.model.Card
 import hu.bme.aut.onlab.poker.model.Hand
 import hu.bme.aut.onlab.poker.model.Suit
 
+/**
+ * This class implements the poker odd calculation algorithm.
+ * @author Bognar, Gabor Bela
+ */
 object OddsCalculator {
     private const val TRIES = 2000
 
+    /**
+     * Calculates the odd of each player into a (playerName -> [WinningChance]) [Map]
+     * @author Bognar, Gabor Bela
+     */
     fun calculateOdds(tableCards: MutableList<Card>, players: List<PlayerToSpectate>) : Map<String, WinningChance> {
         return if (tableCards.size < 3) {
             getRandomOdds(players)
@@ -16,6 +24,10 @@ object OddsCalculator {
         }
     }
 
+    /**
+     * Calculates random odds when there are no cards on the table yet
+     * @author Bognar, Gabor Bela
+     */
     private fun getRandomOdds(players: List<PlayerToSpectate>): Map<String, WinningChance> {
         val remainingCards = mutableListOf<Card>()
 
@@ -43,6 +55,10 @@ object OddsCalculator {
         return chanceMap
     }
 
+    /**
+     * Calculates exact odds when there are at least 3 [Card]s on tha table
+     * @author Bognar, Gabor Bela
+     */
     private fun getExactOdds(tableCards: MutableList<Card>, players: List<PlayerToSpectate>): Map<String, WinningChance> {
         val remainingCards = mutableListOf<Card>()
 
@@ -71,6 +87,10 @@ object OddsCalculator {
         }
     }
 
+    /**
+     * Calculates exact odds when there are 5 [Card]s on the table
+     * @author Bognar, Gabor Bela
+     */
     private fun getExactOdds0Remains(
         tableCards: List<Card>,
         players: List<PlayerToSpectate>
@@ -89,6 +109,10 @@ object OddsCalculator {
         return oddsMap
     }
 
+    /**
+     * Calculates exact odds when there are 4 [Card]s on the table
+     * @author Bognar, Gabor Bela
+     */
     private fun getExactOdds1Remains(
         tableCards: MutableList<Card>,
         players: List<PlayerToSpectate>,
@@ -113,6 +137,10 @@ object OddsCalculator {
         return chanceMap
     }
 
+    /**
+     * Calculates exact odds when there are 3 [Card]s on the table
+     * @author Bognar, Gabor Bela
+     */
     private fun getExactOdds2Remain(
         tableCards: MutableList<Card>,
         players: List<PlayerToSpectate>,

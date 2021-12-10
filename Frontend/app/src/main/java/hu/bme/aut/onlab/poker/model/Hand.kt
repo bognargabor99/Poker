@@ -3,6 +3,12 @@ package hu.bme.aut.onlab.poker.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Represents a poker hand with [HandType] and corresponding values
+ * @property type Type of the hand
+ * @property values Corresponding values of the hand
+ * @author Bognar, Gabor Bela
+ */
 @Parcelize
 data class Hand(
     val type: HandType,

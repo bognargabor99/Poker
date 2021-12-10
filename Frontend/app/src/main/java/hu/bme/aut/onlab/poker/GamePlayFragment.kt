@@ -92,6 +92,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
+    /**
+     * Handle new game state
+     * @author Bognar, Gabor Bela
+     */
     override fun onNewGameState(stateMessage: GameStateMessage) {
         if (stateMessage.tableId != tableId)
             return
@@ -116,6 +120,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         showActionButtonsIfNecessary()
     }
 
+    /**
+     * Sets the theme of an avatar
+     * @author Bognar, Gabor Bela
+     */
     private fun setAvatarTheme(action: ActionMessage) {
         val resourceId = when (action.action.type) {
             ActionType.CHECK -> R.drawable.avatar_background_check
@@ -132,6 +140,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
+    /**
+     * Sets default (grey) theme for all avatars
+     * @author Bognar, Gabor Bela
+     */
     private fun setDefaultAvatarThemes() {
         activity?.runOnUiThread {
             avatarMap.values.forEach {
@@ -145,6 +157,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         tableCards.forEach { it.visibility = View.INVISIBLE }
     }
 
+    /**
+     * Puts cards on the table
+     * @author Bognar, Gabor Bela
+     */
     private fun putCardsOnTable() {
         val range = when (newState.turnState) {
             TurnState.AFTER_FLOP -> 0..2
@@ -165,6 +181,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
             Thread.sleep(500)
     }
 
+    /**
+     * Handles end of turn
+     * @author Bognar, Gabor Bela
+     */
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
         if (turnEndMessage.tableId != tableId)
             return
@@ -176,6 +196,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         newTurn = true
     }
 
+    /**
+     * Shows [ResultsFragment]
+     * @author Bognar, Gabor Bela
+     */
     private fun showTurnResults() {
         if (!(requireView().parent!! as ViewGroup).isVisible)
             return
@@ -183,7 +207,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         resultsFragment.show(requireActivity().supportFragmentManager, "result")
     }
 
-
+    /**
+     * Displays current [Hand] of the user
+     * @author Bognar, Gabor Bela
+     */
     private fun displayCurrentHand() {
         val cards = mutableListOf<Card>()
         cards.addAll(newState.tableCards)
@@ -209,6 +236,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
 
     override fun onTableWin(tableId: Int) { }
 
+    /**
+     * Asks for amount when the user wants to raise
+     * @author Bognar, Gabor Bela
+     */
     private fun askForAmount() {
         val numPicker = NumberPicker(requireContext())
         val minVal = newState.maxRaiseThisRound + newState.bigBlind
@@ -245,6 +276,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
+    /**
+     * Animates cards
+     * @author Bognar, Gabor Bela
+     */
     private fun animatePlayerCards() {
         AnimationUtils.loadAnimation(requireContext(), R.anim.card_animation).also {
             binding.playerCard1.isVisible = true
@@ -254,6 +289,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
+    /**
+     * Fold cards with animation
+     * @author Bognar, Gabor Bela
+     */
     private fun foldCards() {
         activity?.runOnUiThread {
             AnimationUtils.loadAnimation(requireContext(), R.anim.reverse_card_animation).also {
@@ -266,6 +305,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
+    /**
+     * Displays backward animation for table [Card]s
+     * @author Bognar, Gabor Bela
+     */
     private fun gatherCards() {
         val tableCardCount = when (newState.turnState) {
             TurnState.PREFLOP -> 0
@@ -294,6 +337,10 @@ class GamePlayFragment : Fragment(), PokerClient.GamePlayReceiver {
         }
     }
 
+    /**
+     * Maps names to avatars
+     * @author Bognar, Gabor Bela
+     */
     private fun mapAvatars() {
         binding.let {
             if (newState.players.size >= 3) {

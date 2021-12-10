@@ -8,8 +8,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import hu.bme.aut.onlab.poker.databinding.ItemResultBinding
 import hu.bme.aut.onlab.poker.model.WinningPlayer
+import hu.bme.aut.onlab.poker.ResultsFragment
 import kotlinx.coroutines.DelicateCoroutinesApi
 
+/**
+ * An adapter class for displaying the order of the player in the [ResultsFragment]
+ * @author Bognar, Gabor Bela
+ */
 @DelicateCoroutinesApi
 class ResultsAdapter : ListAdapter<WinningPlayer, ResultsAdapter.ViewHolder>(RunItemCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =

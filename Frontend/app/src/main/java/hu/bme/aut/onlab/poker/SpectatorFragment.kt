@@ -67,6 +67,10 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         }
     }
 
+    /**
+     * Sets the theme of an avatar
+     * @author Bognar, Gabor Bela
+     */
     private fun setAvatarTheme(action: ActionMessage) {
         val resourceId = when (action.action.type) {
             ActionType.CHECK -> R.drawable.avatar_background_check
@@ -84,6 +88,10 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         }
     }
 
+    /**
+     * Sets default (grey) theme for all avatars
+     * @author Bognar, Gabor Bela
+     */
     private fun setDefaultAvatarThemes() {
         activity?.runOnUiThread {
             avatarMap.values.forEach {
@@ -93,6 +101,10 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         }
     }
 
+    /**
+     * Puts cards on the table
+     * @author Bognar, Gabor Bela
+     */
     private fun putCardsOnTable() {
         val range = when (newState.turnState) {
             TurnState.AFTER_FLOP -> 0..2
@@ -209,6 +221,10 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         tableCards.forEach { it.visibility = View.INVISIBLE }
     }
 
+    /**
+     * Handle new game state
+     * @author Bognar, Gabor Bela
+     */
     override fun onNewGameState(stateMessage: SpectatorGameStateMessage) {
         if (stateMessage.tableId != tableId)
             return
@@ -263,6 +279,10 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         }
     }
 
+    /**
+     * Handles end of turn
+     * @author Bognar, Gabor Bela
+     */
     override fun onTurnEnd(turnEndMessage: TurnEndMessage) {
         if (turnEndMessage.tableId != tableId)
             return
@@ -272,6 +292,10 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         newTurn = true
     }
 
+    /**
+     * Displays backward animation for table [Card]s
+     * @author Bognar, Gabor Bela
+     */
     private fun gatherCards() {
         val tableCardCount = when (newState.turnState) {
             TurnState.PREFLOP -> 0
@@ -297,6 +321,10 @@ class SpectatorFragment : Fragment(), PokerClient.SpectatorGamePlayReceiver {
         }
     }
 
+    /**
+     * Shows [ResultsFragment]
+     * @author Bognar, Gabor Bela
+     */
     private fun showTurnResults() {
         if (!(requireView().parent!! as ViewGroup).isVisible)
             return

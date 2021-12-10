@@ -5,6 +5,10 @@ import hu.bme.aut.onlab.poker.GamePlayFragment
 import hu.bme.aut.onlab.poker.SpectatorFragment
 import kotlinx.coroutines.DelicateCoroutinesApi
 
+/**
+ * Model class about state of a frame about [GamePlayFragment]
+ * @author Bognar, Gabor Bela
+ */
 data class GamePlayFrameInfo(
     val containerId: Int,
     var fragment: GamePlayFragment?,
@@ -13,6 +17,10 @@ data class GamePlayFrameInfo(
     var isFree: Boolean
 )
 
+/**
+ * Model class about state of a frame about [SpectatorFragment]
+ * @author Bognar, Gabor Bela
+ */
 @DelicateCoroutinesApi
 data class SpectatorFrameInfo(
     val containerId: Int,
