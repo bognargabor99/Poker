@@ -85,7 +85,7 @@ class AuthFragment : DialogFragment() {
     private fun setOnClickListeners() {
 
         binding.btnGuest.setOnClickListener {
-            PokerAPI.connect(MainFragment.POKER_DOMAIN, UserAuthInfo("",""), {
+            PokerAPI.connect(PokerAPI.POKER_DOMAIN, UserAuthInfo("",""), {
                 MainFragment._this.interactionEnabled = true
             }) {
                 MainFragment._this.interactionEnabled = false
@@ -105,7 +105,7 @@ class AuthFragment : DialogFragment() {
                     else
                         savePreferences()
 
-                    PokerAPI.connect(MainFragment.POKER_DOMAIN, UserAuthInfo(username, password), {
+                    PokerAPI.connect(PokerAPI.POKER_DOMAIN, UserAuthInfo(username, password), {
                         MainFragment._this.interactionEnabled = true
                     }) {
                         MainFragment._this.interactionEnabled = false
@@ -146,7 +146,7 @@ class AuthFragment : DialogFragment() {
 
         return withContext(dispatcher) {
             try {
-                val response: HttpResponse = client.post("https://${MainFragment.POKER_DOMAIN}.ngrok.io/register") {
+                val response: HttpResponse = client.post("https://${PokerAPI.POKER_DOMAIN}.ngrok.io/register") {
                     headers {
                         append(HttpHeaders.Accept, "text/html")
                         append(HttpHeaders.Accept, "application/json")
@@ -172,7 +172,7 @@ class AuthFragment : DialogFragment() {
 
         return withContext(dispatcher) {
             try {
-                val response: HttpResponse = client.get("https://${MainFragment.POKER_DOMAIN}.ngrok.io/authenticate") {
+                val response: HttpResponse = client.get("https://${PokerAPI.POKER_DOMAIN}.ngrok.io/authenticate") {
                     headers {
                         append(HttpHeaders.Accept, "text/html")
                         append(HttpHeaders.Accept, "application/json")

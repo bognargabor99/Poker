@@ -75,4 +75,6 @@ object PokerAPI {
                 messageReceivingRoutine.cancelAndJoin()
         }
     }
+
+    const val POKER_DOMAIN = "b26d-2a00-1110-136-65c6-10f8-d5a9-21ae-339e"
 }
