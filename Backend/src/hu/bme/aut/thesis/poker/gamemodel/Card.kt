@@ -1,5 +1,11 @@
 package hu.bme.aut.thesis.poker.gamemodel
 
+/**
+ * Represents a traditional card in the game
+ * @property value Value of the card
+ * @property suit Suit of the card
+ * @author Bognar, Gabor Bela
+ */
 data class Card(
     val value: Int,
     val suit: Suit

@@ -1,6 +1,7 @@
 package hu.bme.aut.thesis.poker.data
 
 import hu.bme.aut.thesis.poker.gamemodel.Statistics
+import hu.bme.aut.thesis.poker.network.User
 import io.ktor.auth.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -8,7 +9,16 @@ import java.security.MessageDigest
 import java.time.LocalDate
 import kotlin.math.max
 
+/**
+ * This class implements the whole data access layer, manages the database,
+ * creates and deletes [User]s and [Statistics]
+ * @author Bognar, Gabor Bela
+ */
 object DatabaseHelper {
+    /**
+     * Stores data about the managed database
+     * @author Bognar, Gabor Bela
+     */
     private val db by lazy {
         Database.connect("jdbc:sqlite:resources/poker.db", "org.sqlite.JDBC")
     }
@@ -19,6 +29,10 @@ object DatabaseHelper {
         }
     }
 
+    /**
+     * Extension method for [String] class to create the SHA-256 hash of the string
+     * @author Bognar, Gabor Bela
+     */
     private fun String.hash(): String {
         val hexChars = "0123456789ABCDEF"
         val bytes = MessageDigest
@@ -35,6 +49,12 @@ object DatabaseHelper {
         return result.toString()
     }
 
+    /**
+     * Authenticates the [User] with the given credentials
+     * @param credentials Credentials of the [User]
+     * @return A [Principal] if the database contains a user with the given credentials; otherwise null
+     * @author Bognar, Gabor Bela
+     */
     fun authenticate(credentials: UserPasswordCredential): Principal? =
         transaction(db) {
             val query = Users.select { Users.userName eq credentials.name }
@@ -44,6 +64,12 @@ object DatabaseHelper {
                 null
         }
 
+    /**
+     * Register a new [User] with the given credentials
+     * @param newUser Credentials of the new [User]
+     * @return True, if the [User] was successfully registered; otherwise false
+     * @author Bognar, Gabor Bela
+     */
     fun registerUser(newUser: UserAuthInfo) : Boolean =
         transaction(db) {
             if (Users.select { Users.userName eq newUser.userName }.count() > 0L)
@@ -61,12 +87,23 @@ object DatabaseHelper {
             return@transaction Users.select { Users.userName eq newUser.userName }.count() == 1L
         }
 
+    /**
+     * Deletes a [User] from the database
+     * @param userToDelete Name of the [User] to delete
+     * @author Bognar, Gabor Bela
+     */
     fun deleteUser(userToDelete: String) {
         transaction(db) {
             Users.deleteWhere { Users.userName eq userToDelete }
         }
     }
 
+    /**
+     * Updates the stats of a [User].
+     * @param userName Name of the [User]
+     * @param stats [Statistics] to update with
+     * @author Bognar, Gabor Bela
+     */
     fun updateStatsForUser(userName: String, stats: Statistics) {
         transaction(db) {
             val biggestPot = UserStatistics.select { UserStatistics.userName eq userName }.single()[UserStatistics.biggestPotWon]
@@ -91,6 +128,12 @@ object DatabaseHelper {
         }
     }
 
+    /**
+     * Queries [Statistics] of a [User]
+     * @param userName Name of the user
+     * @return The [Statistics] of the user
+     * @author Bognar, Gabor Bela
+     */
     fun getStatisticsByName(userName: String): Statistics =
         transaction(db) {
             if (Users.select { Users.userName eq userName }.count() > 1L)
@@ -120,12 +163,20 @@ object DatabaseHelper {
         }
 }
 
+/**
+ * Static class representing the "users" table in our database
+ * @author Bognar, Gabor Bela
+ */
 object Users: Table(name = "users") {
     override val primaryKey = PrimaryKey(integer("id").autoIncrement(), name = "id")
     val userName = varchar("username", 50)
     val passwordHash = varchar("password", 200)
 }
 
+/**
+ * Static class representing the "statistics" table in our database
+ * @author Bognar, Gabor Bela
+ */
 object UserStatistics: Table(name = "statistics") {
     override val primaryKey = PrimaryKey(integer("id").autoIncrement(), name = "id")
     val userName = varchar("username", 50) references Users.userName

@@ -1,6 +1,17 @@
 package hu.bme.aut.thesis.poker.gamemodel
 
+/**
+ * This class implements the poker hand evaluation algorithm.
+ * ONLY works with a maximum of SEVEN (7) cards.
+ * @author Bognar, Gabor Bela
+ */
 object HandEvaluator {
+    /**
+     * Determines the [Hand] that the cards represent
+     * @param fromCards [Card]s to evaluate
+     * @return The [Hand] that the cards represent
+     * @author Bognar, Gabor Bela
+     */
     fun evaluateHand(fromCards: List<Card>) : Hand {
         val sortedCards = fromCards.sortedDescending()
         //Flush section

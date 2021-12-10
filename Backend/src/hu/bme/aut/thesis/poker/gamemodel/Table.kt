@@ -6,6 +6,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
+/**
+ * Represents the table. Manages players, cards, the deck and ensures rules and state of the game.
+ * @author Bognar, Gabor Bela
+ */
 @DelicateCoroutinesApi
 class Table(val rules: TableRules) : PokerActionListener{
     private var fastForwarding: Boolean = false
@@ -25,6 +29,12 @@ class Table(val rules: TableRules) : PokerActionListener{
     private val cardsOnTable: MutableList<Card> = mutableListOf()
     private var previousAction: ActionIncomingMessage? = null
 
+    /**
+     * Adds a [Player] to the [Table]
+     * @param userName Name of the new player
+     * @return Successfulness of adding the player
+     * @author Bognar, Gabor Bela
+     */
     fun addInGamePlayer(userName: String): Boolean =
         if (!isStarted && players.size < rules.playerCount &&
             !players.any { it.userName == userName } &&
@@ -39,6 +49,12 @@ class Table(val rules: TableRules) : PokerActionListener{
             } else
                 false
 
+    /**
+     * Adds a spectator to the [Table]
+     * @param Name of the new spectator
+     * @return Successfulness of adding the spectator
+     * @author Bognar, Gabor Bela
+     */
     fun addSpectator(userName: String): Boolean {
         if (players.any { it.userName == userName } || spectators.any { it.userName == userName })
             return false
@@ -51,13 +67,26 @@ class Table(val rules: TableRules) : PokerActionListener{
         return true
     }
 
+    /**
+     * Sends the initial message to the spectator
+     * @author Bognar, Gabor Bela
+     */
     private fun sendFirstMessageToSpectator(spectatorName: String) {
         val spectatorMessage = createSpectatorGSMessage()
         UserCollection.sendToClient(spectatorName, spectatorMessage.toJsonString(), SpectatorGameStateMessage.MESSAGE_CODE)
     }
 
+    /**
+     * Removes a spectator from the [Table]
+     * @param userName Name of the spectator to remove
+     * @author Bognar, Gabor Bela
+     */
     fun removeSpectator(userName: String): Boolean = spectators.removeIf { it.userName == userName }
 
+    /**
+     * Starts the game
+     * @author Bognar, Gabor Bela
+     */
     private fun startGame() {
         isStarted = true
         val usersInTable = (spectators + players).map { it.userName }
@@ -65,6 +94,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         newTurn()
     }
 
+    /**
+     * Initializes a new turn
+     * @author Bognar, Gabor Bela
+     */
     private fun newTurn() {
         if (turnCount != 0 && turnCount % rules.doubleBlindsAfterTurnCount == 0)
             bigBlindAmount*=2
@@ -94,6 +127,11 @@ class Table(val rules: TableRules) : PokerActionListener{
         spreadGameState()
     }
 
+    /**
+     * This function should be called when an [Action] is coming.
+     * @param actionMsg Information about the action
+     * @author Bognar, Gabor Bela
+     */
     override fun onAction(actionMsg: ActionIncomingMessage) {
         if (!validateAction(actionMsg))
             return
@@ -107,6 +145,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Should be called when the current [Player] folds their [Card]s
+     * @author Bognar, Gabor Bela
+     */
     override fun onFold() {
         val toRemove = nextPlayerId
         if (playersInTurn.size > 2)
@@ -134,6 +176,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Should be called when the current [Player] checks and the action is validated
+     * @author Bognar, Gabor Bela
+     */
     override fun onCheck() {
         players.single { it.id == nextPlayerId }.actedThisRound = true
         if (isEndOfRound()) {
@@ -147,6 +193,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Should be called when the current [Player] calls
+     * @author Bognar, Gabor Bela
+     */
     override fun onCall() {
         players.single { it.id == nextPlayerId }.apply {
             putInPot(maxRaiseThisRound)
@@ -171,9 +221,11 @@ class Table(val rules: TableRules) : PokerActionListener{
     }
 
     /**
+     * Should be called when the current [Player] checks and the action is validated
      * @param amount The amount of chips the player has put in the pot this round
      * (so if re-raise, then not just the re-raise amount)
-    */
+     * @author Bognar, Gabor Bela
+     */
     override fun onRaise(amount: Int) {
         maxRaiseThisRound = amount
         players.single { it.id == nextPlayerId }.apply {
@@ -192,6 +244,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Fast-forwards a turn. Only call if fast forwarding if valid (allInExceptOne -> true)
+     * @author Bognar, Gabor Bela
+     */
     private fun fastForwardTurn() {
         cardsOnTable.addAll(deck.getCards(5 - cardsOnTable.size))
         fastForwarding = true
@@ -209,6 +265,11 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Determines if all players are all-in in the turn except one
+     * True, if all players are all-in in the turn except one
+     * @author Bognar, Gabor Bela
+     */
     private fun allinExceptOne(): Boolean {
         var noAllInCount = 0
         players.filter { playersInTurn.contains(it.id) }
@@ -222,6 +283,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         return noAllInCount <= 1
     }
 
+    /**
+     * Hands new cards to the players
+     * @author Bognar, Gabor Bela
+     */
     private fun handCardsToPlayers() {
         with(deck) {
             reset()
@@ -232,12 +297,20 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Sends out state messages of the current state to players and spectators
+     * @author Bognar, Gabor Bela
+     */
     private fun spreadGameState() {
         spreadToPlayers()
         spreadToSpectators()
         fastForwarding = false
     }
 
+    /**
+     * Creates [SpectatorGameStateMessage] of the current state
+     * @author Bognar, Gabor Bela
+     */
     private fun createSpectatorGSMessage(): SpectatorGameStateMessage {
         val playerDtos: List<PlayerToSpectateDto> = List(players.size) { i -> PlayerToSpectateDto(players[i].toDto(), players[i].inHandCards) }
         return SpectatorGameStateMessage(
@@ -253,6 +326,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         )
     }
 
+    /**
+     * Sends out state messages of the current state to spectators
+     * @author Bognar, Gabor Bela
+     */
     private fun spreadToSpectators() {
         val spectatorMessage = createSpectatorGSMessage()
 
@@ -261,6 +338,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Sends out state messages of the current state to players
+     * @author Bognar, Gabor Bela
+     */
     private fun spreadToPlayers() {
         val playerDtos: List<InGamePlayerDto> = List(players.size) { i -> players[i].toDto() }
         val gameStateMessage = GameStateMessage(
@@ -283,6 +364,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Determines the next player to wait for an interaction from
+     * @author Bognar, Gabor Bela
+     */
     private fun setNextPlayer() {
         var thisPlayerIndex = playersInTurn.indexOf(nextPlayerId)
         while (true) {
@@ -295,6 +380,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Eliminates player with 0 chipstack
+     * @author Bognar, Gabor Bela
+     */
     private fun eliminatePlayers() {
         val toEliminate = players.filter { it.chipStack == 0 }
             .map { it.userName }
@@ -307,6 +396,11 @@ class Table(val rules: TableRules) : PokerActionListener{
             declareWinner()
     }
 
+    /**
+     * Declares the winner and send out a message about it.
+     * Should only be called if only one player is left.
+     * @author Bognar, Gabor Bela
+     */
     private fun declareWinner() {
         players.first().stats.tablesWon = 1
         val toInform = spectators + players.first()
@@ -317,6 +411,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         Casino.closeTable(id)
     }
 
+    /**
+     * Handles the situation when a player has been disconnected from the server
+     * @author Bognar, Gabor Bela
+     */
     fun playerDisconnected(name: String) {
         val index = players.indexOf(players.find { it.userName == name })
         if (index == -1)
@@ -358,6 +456,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Removes a player
+     * @author Bognar, Gabor Bela
+     */
     private fun removePlayer(vararg playerIds: Int) {
         for (pid in playerIds) {
             val p = players.find { it.id == pid }
@@ -368,6 +470,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
+    /**
+     * Showdown step at the end of a turn
+     * @author Bognar, Gabor Bela
+     */
     private fun showdown() {
         pot = players.sumOf { it.inPot }
         val handsOfPlayers: MutableList<Pair<Int, Hand>> = mutableListOf()
@@ -404,8 +510,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         }
     }
 
-    // Parameter: Pairs of <playerId, handOfPlayer>
-    // Returns Pairs of <playerId, chipsWon>
+    /**
+     * Gets the winners and the amount of chips won by each in list
+     * @author Bognar, Gabor Bela
+     */
     private fun getWinners(hands: MutableList<Pair<Int, Hand>>): List<Pair<Int, Int>> {
         hands.sortBy { it.second }
 
@@ -435,6 +543,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         return winningList
     }
 
+    /**
+     * Gets the maximum bet of any player in the turn and the sum of these all bets
+     * @author Bognar, Gabor Bela
+     */
     private fun getMaxAndSumBetOfWinners(playerIds: List<Int>): Pair<Int, Int> {
         var sum = 0
         var max = 0
@@ -446,6 +558,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         return Pair(max, sum)
     }
 
+    /**
+     * Helper function in the showdown step.
+     * @author Bognar, Gabor Bela
+     */
     private fun getWinnerCount(hands: MutableList<Pair<Int, Hand>>): Int {
         var winnerCount = 1
         if (hands.size == 1)
@@ -458,6 +574,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         return winnerCount
     }
 
+    /**
+     * Validates an incoming action
+     * @author Bognar, Gabor Bela
+     */
     private fun validateAction(actionMsg: ActionIncomingMessage): Boolean =
         if (actionMsg.name != players.single { nextPlayerId == it.id }.userName) // if action not from next player
             false
@@ -472,6 +592,10 @@ class Table(val rules: TableRules) : PokerActionListener{
         } else
             true
 
+    /**
+     * Should be called when only one person remains in the turn
+     * @author Bognar, Gabor Bela
+     */
     private fun oneLeft() {
         var winnerName: String
         pot = players.sumOf { it.inPot }
@@ -487,12 +611,25 @@ class Table(val rules: TableRules) : PokerActionListener{
         newTurn()
     }
 
+    /**
+     * Determines if there is only one player left in the turn
+     * @author Bognar, Gabor Bela
+     */
     private fun isOneLeftInTurn(): Boolean = playersInTurn.size == 1
 
+    /**
+     * Determines if round has ended
+     * @author Bognar, Gabor Bela
+     */
     private fun isEndOfRound(): Boolean =
         players.filter { playersInTurn.contains(it.id) }
             .all { it.actedThisRound && (it.inPotThisRound == maxRaiseThisRound || it.chipStack == 0) }
 
+
+    /**
+     * Manages the starting a new round (new card to the table etc.)
+     * @author Bognar, Gabor Bela
+     */
     private fun nextRound() {
         maxRaiseThisRound = 0
         var state = turnState
@@ -515,8 +652,17 @@ class Table(val rules: TableRules) : PokerActionListener{
         spreadGameState()
     }
 
+    /**
+     * Evaluates the hand of a player
+     * @author Bognar, Gabor Bela
+     */
     private fun evaluateHand(fromCards: MutableList<Card>) = HandEvaluator.evaluateHand(fromCards)
 
+    /**
+     * Determines if the [Table] is open
+     * @return True, if the table is open
+     * @author Bognar, Gabor Bela
+     */
     fun isOpen() = rules.isOpen
 
     private fun Player.toDto() = InGamePlayerDto(

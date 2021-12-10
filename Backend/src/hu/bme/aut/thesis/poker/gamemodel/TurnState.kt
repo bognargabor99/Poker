@@ -1,11 +1,19 @@
 package hu.bme.aut.thesis.poker.gamemodel
 
+/**
+ * Enum class representing the state of a turn
+ * @author Bognar, Gabor Bela
+ */
 enum class TurnState {
     PREFLOP,
     AFTER_FLOP,
     AFTER_TURN,
     AFTER_RIVER;
 
+    /**
+     * Increases the state of the turn (e.g. FLOP -> TURN, RIVER -> PREFLOP)
+     * @author Bognar, Gabor Bela
+     */
     operator fun inc(): TurnState =
         when (this) {
             PREFLOP -> AFTER_FLOP
@@ -15,6 +23,13 @@ enum class TurnState {
         }
 
     companion object {
+        /**
+         * Converts number of [Card]s on the [Table] to [TurnState].
+         * (e.g. 3 -> FLOP, 4 -> TURN)
+         * @param cardCount Number of cards on the table
+         * @exception IllegalArgumentException If [cardCount] is not one of (0,3,4,5)
+         * @author Bognar, Gabor Bela
+         */
         fun fromCardCount(cardCount: Int): TurnState {
             return when (cardCount) {
                 0 -> PREFLOP

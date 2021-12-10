@@ -7,6 +7,11 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
+/**
+ * This function configures the authentication
+ * with a helper REST endpoint to help client with authentication
+ * @author Bognar, Gabor Bela
+ */
 fun Application.configureAuthentication() {
     install(Authentication) {
         basic("auth-basic") {

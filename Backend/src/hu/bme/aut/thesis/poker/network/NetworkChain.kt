@@ -4,7 +4,13 @@ package hu.bme.aut.thesis.poker.network
 
 import com.google.gson.Gson
 import hu.bme.aut.thesis.poker.gamemodel.Casino
+import hu.bme.aut.thesis.poker.gamemodel.Table
+import hu.bme.aut.thesis.poker.gamemodel.Statistics
 
+/**
+ * This class represents the chain in the "Chain of responsibility" pattern
+ * @author Bognar, Gabor Bela
+ */
 class NetworkChain {
     private lateinit var chain: Processor
 
@@ -19,12 +25,20 @@ class NetworkChain {
     fun process(message: NetworkMessage) = chain.process(message)
 }
 
+/**
+ * Base class of all the Processors in the [NetworkChain]
+ * @author Bognar, Gabor Bela
+ */
 abstract class Processor(private val processor: Processor?) {
     open fun process(message: NetworkMessage?) {
         processor?.process(message)
     }
 }
 
+/**
+ * This processor class handles creating [Table]s
+ * @author Bognar, Gabor Bela
+ */
 class CreateTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == CreateTableMessage.MESSAGE_CODE) {
@@ -37,6 +51,10 @@ class CreateTableProcessor(processor: Processor?) : Processor(processor) {
             super.process(message)
 }
 
+/**
+ * This processor class handles joining [Table]s
+ * @author Bognar, Gabor Bela
+ */
 class JoinTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == JoinTableMessage.MESSAGE_CODE) {
@@ -47,6 +65,10 @@ class JoinTableProcessor(processor: Processor?) : Processor(processor) {
             super.process(message)
 }
 
+/**
+ * This processor class handles asking for open [Table]s
+ * @author Bognar, Gabor Bela
+ */
 class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == GetOpenTablesMessage.MESSAGE_CODE) {
@@ -59,6 +81,10 @@ class GetOpenTablesProcessor(processor: Processor?) : Processor(processor) {
             super.process(message)
 }
 
+/**
+ * This processor class forwards interactions on [Table]s
+ * @author Bognar, Gabor Bela
+ */
 class ActionProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == ActionIncomingMessage.MESSAGE_CODE) {
@@ -69,6 +95,10 @@ class ActionProcessor(processor: Processor?) : Processor(processor) {
             super.process(message)
 }
 
+/**
+ * This processor class handles requests to leave a [Table]
+ * @author Bognar, Gabor Bela
+ */
 class LeaveTableProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == LeaveTableMessage.MESSAGE_CODE) {
@@ -80,6 +110,10 @@ class LeaveTableProcessor(processor: Processor?) : Processor(processor) {
             super.process(message)
 }
 
+/**
+ * This processor class handles requests to start spectating a [Table]
+ * @author Bognar, Gabor Bela
+ */
 class SpectatorSubscriptionProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) {
         if (message?.messageCode == SpectatorSubscriptionMessage.MESSAGE_CODE) {
@@ -91,6 +125,10 @@ class SpectatorSubscriptionProcessor(processor: Processor?) : Processor(processo
     }
 }
 
+/**
+ * This processor class handles requests to stop spectating a [Table]
+ * @author Bognar, Gabor Bela
+ */
 class SpectatorUnsubscriptionProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == SpectatorUnsubscriptionMessage.MESSAGE_CODE) {
@@ -101,6 +139,10 @@ class SpectatorUnsubscriptionProcessor(processor: Processor?) : Processor(proces
             super.process(message)
 }
 
+/**
+ * This processor class handles requests for [Statistics]
+ * @author Bognar, Gabor Bela
+ */
 class GetStatisticsProcessor(processor: Processor?) : Processor(processor) {
     override fun process(message: NetworkMessage?) =
         if (message?.messageCode == StatisticsMessage.MESSAGE_CODE) {

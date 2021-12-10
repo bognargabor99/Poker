@@ -5,6 +5,10 @@ import io.ktor.features.*
 import io.ktor.request.*
 import org.slf4j.event.Level
 
+/**
+ * Configures logging for every incoming network request
+ * @author Bognar, Gabor Bela
+ */
 fun Application.configureLogging() {
     install(CallLogging) {
         level = Level.DEBUG

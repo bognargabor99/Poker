@@ -3,6 +3,12 @@ package hu.bme.aut.thesis.poker.data
 import io.ktor.auth.Principal
 import java.util.Base64
 
+/**
+ * Model class for [User] credentials
+ * @property userName Name of the user
+ * @property password Password of the user
+ * @author Bognar, Gabor Bela
+ */
 data class UserAuthInfo(val userName: String = "", val password: String = ""): Principal {
     companion object {
         fun fromAuthHeaderValue(base64String: String) : UserAuthInfo {

@@ -13,6 +13,10 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.Duration
 
+/**
+ * Configures WebSocket connection to the root endpoint with authorization protocol
+ * @author Bognar, Gabor Bela
+ */
 @DelicateCoroutinesApi
 fun Application.configureWebSockets(testing: Boolean = false) {
     install(WebSockets) {
@@ -54,6 +58,13 @@ fun Application.configureWebSockets(testing: Boolean = false) {
     }
 }
 
+/**
+ * Tries authenticating the user through the database
+ * @param authHeaderValue The value of the "Authorization" header in the WebSocket connection request
+ * @return The name that user is signed in with.
+ * It's an empty [String] if the credentials did not match any user in the database
+ * @author Bognar, Gabor Bela
+ */
 fun tryAuthenticate(authHeaderValue: String) : String {
     val authInfo = UserAuthInfo.fromAuthHeaderValue(authHeaderValue)
     val principal = DatabaseHelper.authenticate(UserPasswordCredential(authInfo.userName, authInfo.password))

@@ -10,6 +10,11 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
+/**
+ * Configures a root endpoint for testing
+ * and POST endpoint for registering new users
+ * @author Bognar, Gabor Bela
+ */
 fun Application.configureRouting() {
     install(ContentNegotiation) {
         gson()

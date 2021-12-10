@@ -1,5 +1,11 @@
 package hu.bme.aut.thesis.poker.gamemodel
 
+/**
+ * Represents a poker hand with [HandType] and corresponding values
+ * @property type Type of the hand
+ * @property values Corresponding values of the hand
+ * @author Bognar, Gabor Bela
+ */
 data class Hand(
     val type: HandType,
     val values: List<Int>
