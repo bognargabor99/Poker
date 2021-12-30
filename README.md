@@ -1,5 +1,12 @@
 # Multiplayer Poker Game for Android
 
+### Videos
+
+[Video 1](https://youtu.be/8xXr62r_1ZI)
+[Video 2](https://youtu.be/T2FUphQ47qQ)
+[Video 3](https://youtu.be/wubtrQB6pj4)
+[Video 4](https://youtu.be/1eumaUDSJDU)
+
 ### Badges
 
 ![Backend build](https://github.com/bognargabor99/poker/actions/workflows/backend.yml/badge.svg)
